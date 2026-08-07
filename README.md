@@ -6,8 +6,22 @@ UDP socket. Running the model code in a separate process (not a native plugin in
 any DepthAI/GPU instability out of the editor — that was the whole point of the sidecar design
 (ADR-016, "Option B2").
 
-The Unity consumer lives in the separate `viitorx-vrm-avtar-unity` project
+The Unity consumer lives in the `viitorx-vrm-avtar-unity` project
 (`Runtime/Tracking/OakD/OakDUdpPoseProvider.cs`).
+
+## Repository role (submodule)
+
+This repo (`vinayak-vc/viitorx-vrm-model-python`) is consumed as a **git submodule** of the Unity
+project repo `vinayak-vc/viitorx-vrm-avtar-unity`, checked out at:
+
+```
+Assets/Games/viitorx-vrm-avtar-unity/python-sidecar~/
+```
+
+The trailing `~` makes Unity's asset pipeline **ignore the whole folder** (same convention as
+`Samples~`), so the model blobs and the `.venv` are never imported by the editor. The virtualenv is
+named `.venv` (dot-hidden) as a second safeguard. **This supersedes the old `oak_sidecar/` folder at
+the Unity-project root, which is deprecated — use this submodule from now on.**
 
 ---
 
@@ -33,12 +47,14 @@ The Unity consumer lives in the separate `viitorx-vrm-avtar-unity` project
 ## Setup (Windows, Python 3.10)
 
 ```bash
-python -m venv venv
-venv\Scripts\python -m pip install --upgrade pip
-venv\Scripts\python -m pip install -r requirements.txt
+"C:\Program Files\Python310\python.exe" -m venv .venv
+.venv\Scripts\python -m pip install --upgrade pip
+.venv\Scripts\python -m pip install -r requirements.txt
 ```
 
-> The `venv/` is git-ignored. Use Python **3.10** to match the OAK-D `depthai` wheels (cp310).
+> The `.venv/` is git-ignored (and Unity-ignored). Use Python **3.10** to match the OAK-D `depthai`
+> wheels (cp310). ONNX Runtime uses the DirectML execution provider on the RTX 3060 — no CUDA toolkit
+> required.
 
 ---
 
@@ -51,9 +67,9 @@ Runs Google BlazePose on the OAK-D's own VPU (edge mode) and streams 33 body lan
 
 ```bash
 cd depthai_blazepose
-..\venv\Scripts\python udp_pose_sender.py                 # 127.0.0.1:8899, lite model
-..\venv\Scripts\python udp_pose_sender.py --lm full       # more accurate, ~18 fps
-..\venv\Scripts\python udp_pose_sender.py --show          # + cv2 preview of the OAK view
+..\.venv\Scripts\python udp_pose_sender.py                 # 127.0.0.1:8899, lite model
+..\.venv\Scripts\python udp_pose_sender.py --lm full       # more accurate, ~18 fps
+..\.venv\Scripts\python udp_pose_sender.py --show          # + cv2 preview of the OAK view
 ```
 
 Device note: this unit is an **OAK-D-PRO-W** (wide lens, **OV9782** 1280×800 color). The defaults
