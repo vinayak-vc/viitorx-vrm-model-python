@@ -1,0 +1,14 @@
+# Virtual Mirror — Python model/tracking sidecar dependencies
+# Python 3.10 (match the OAK-D depthai wheels: cp310).
+
+# --- Phase 1: OAK-D BlazePose edge sidecar (currently working) ---
+depthai>=2.32,<3        # OAK-D device + on-device BlazePose (edge mode)
+opencv-python>=4.5       # RGB frame handling + optional --show debug preview
+numpy<2                  # landmark math (numpy 1.26.x matches the depthai wheels)
+
+# --- Phase 2: host-side GPU whole-body model (RTMW3D) — added during Stage B ---
+# onnxruntime-directml>=1.17   # RTMW3D inference on the RTX 3060 via DirectML
+# mediapipe>=0.10              # face blendshapes on the OAK RGB (Stage D)
+
+# NOTE: geaxgx/depthai_blazepose lists open3d, but this sidecar deliberately does NOT
+# import it (the --show preview draws with cv2 directly), so open3d is omitted here.
