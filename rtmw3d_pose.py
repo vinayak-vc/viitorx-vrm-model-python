@@ -125,7 +125,11 @@ class RTMW3D:
         ix = simcc_x.argmax(axis=1)
         iy = simcc_y.argmax(axis=1)
         iz = simcc_z.argmax(axis=1)
-        conf = np.minimum(simcc_x.max(axis=1), simcc_y.max(axis=1))
+        # LOW-D: conf is the RAW SimCC peak (min of the x/y activation maxima), NOT normalized to [0,1].
+        # For RTMPose these peaks land in a ~0..1 range for confident joints, so the sender's 0.3 gate is
+        # tuned to this raw scale — do not treat it as a probability. Clamp only the lower bound to 0 so a
+        # rare negative activation can't read as "confident-ish".
+        conf = np.maximum(np.minimum(simcc_x.max(axis=1), simcc_y.max(axis=1)), 0.0)
         px = ix / SIMCC_SPLIT  # input-space pixels [0,288)
         py = iy / SIMCC_SPLIT  # [0,384)
         u = x0 + px / INPUT_W * w  # frame pixels
@@ -155,7 +159,18 @@ def bbox_from_keypoints(uv, conf, frame_w, frame_h, thr=0.3, margin=0.25):
     h = (y_max - y_min) * (1.0 + margin)
     cx = (x_min + x_max) / 2.0
     cy = (y_min + y_max) / 2.0
-    return adjust_bbox_to_aspect(cx, cy, w, h)
+    cx, cy, w, h = adjust_bbox_to_aspect(cx, cy, w, h)
+    # Clamp the centre so the aspect-corrected box stays in-frame — otherwise a person near an edge
+    # yields a box past the image, warpAffine fills it black, and edge keypoints get clipped (LOW-D).
+    if w <= frame_w:
+        cx = min(max(cx, w / 2.0), frame_w - w / 2.0)
+    else:
+        cx = frame_w / 2.0
+    if h <= frame_h:
+        cy = min(max(cy, h / 2.0), frame_h - h / 2.0)
+    else:
+        cy = frame_h / 2.0
+    return cx, cy, w, h
 
 
 def center_bbox(frame_w, frame_h):

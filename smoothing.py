@@ -69,7 +69,9 @@ class KeypointSmoother:
     metres from the last smoothed point it is treated as an outlier and the last smoothed value is held.
     """
 
-    def __init__(self, count, freq=30.0, min_cutoff=1.0, beta=0.02, max_jump=0.5):
+    # LOW-D: default max_jump aligned to the sender's --max-jump default (1.5). The old 0.5 froze
+    # keypoints whenever the coarse depth-quantization step at distance exceeded it every frame.
+    def __init__(self, count, freq=30.0, min_cutoff=1.0, beta=0.02, max_jump=1.5):
         self.max_jump = max_jump
         self._fx = [OneEuro(freq, min_cutoff, beta) for _ in range(count)]
         self._fy = [OneEuro(freq, min_cutoff, beta) for _ in range(count)]
