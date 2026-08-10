@@ -97,14 +97,43 @@ def build_body_landmarks(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, h
     for foot_idx, joint_id in R.FOOT_TO_JOINTID.items():
         emit(foot_idx, joint_id)
 
-    # Trunk-flatten: the torso "up" = mid-shoulder - mid-hip is hypersensitive to depth, and RTMW3D+stereo
-    # measures the upper body ~0.5-0.7 m farther than the hips, which tips the near-vertical spine into a
-    # permanent forward hunch. Zero the Z of the 4 trunk joints (shoulders + hips) so the trunk stays
-    # vertical (same idea as the Unity "hips upright-only" StableUp). Limbs/hands keep full measured depth.
+    # Trunk-flatten for a STABLE, UPRIGHT, FRONT-FACING avatar. The raw torso depth causes two problems:
+    #  (1) RTMW3D+stereo measures the upper body ~0.5-0.7 m farther than the hips -> the near-vertical spine
+    #      tips into a forward hunch;
+    #  (2) the shoulder/hip lines carry noisy Z, and the Kalidokit hips/spine yaw is HYPERSENSITIVE to it
+    #      (measured live in Unity: ~0.10 m of hip-Z rotates the avatar ~40 deg, ~0.25 m ~64 deg) -> the
+    #      avatar swings into PROFILE even when the user faces the camera.
+    # History: the 2026-08-07 fix zeroed ONLY the 4 trunk joints' Z, which left the elbows/wrists at measured
+    # Z -> a false forward ARM-bend. A later "shift the whole upper body by mid-shoulder Z" attempt fixed the
+    # arm-bend but left the hip Z measured -> it REGRESSED facing into profile (problem 2 above, 2026-08-10).
+    # Fix (ADR-023): zero the shoulders' AND hips' Z so both lines stay horizontal -> upright trunk + a
+    # stable frontal facing (single-camera depth can't drive facing reliably; ADR-019 precedent). To avoid
+    # the false arm-bend, SHIFT each arm's joints by ITS shoulder's Z *before* zeroing the shoulder — this
+    # preserves the arm's segment vectors EXACTLY (upper-arm/forearm unchanged, just re-based to a Z=0
+    # shoulder). Head shifts with the shoulders; legs keep measured depth.
+    # TRADE-OFF: facing is frontal-locked (turning is NOT tracked) — the single-front-camera limit; a real
+    # turn needs multi-view or a stabilized-depth facing signal. A stable frontal avatar >> a profile one.
     if flatten_trunk:
-        for joint_id in (11, 12, 23, 24):  # Left/RightShoulder, Left/RightHip (JointId)
-            if lm[joint_id][3] > 0.0:
-                lm[joint_id][2] = 0.0
+        ms_z = 0.0
+        n = 0
+        for s in (11, 12):  # Left/RightShoulder (JointId)
+            if lm[s][3] > 0.0:
+                ms_z += lm[s][2]
+                n += 1
+        ms_z = ms_z / n if n > 0 else 0.0
+        for shoulder, chain in ((11, (13, 15, 17, 19, 21)), (12, (14, 16, 18, 20, 22))):  # each arm w/ its shoulder
+            if lm[shoulder][3] > 0.0:
+                sz = lm[shoulder][2]
+                for j in chain:
+                    if lm[j][3] > 0.0:
+                        lm[j][2] -= sz  # re-base the arm to a Z=0 shoulder (segment vectors preserved)
+                lm[shoulder][2] = 0.0
+        for j in range(0, 11):  # head + face: keep above the flattened shoulders
+            if lm[j][3] > 0.0:
+                lm[j][2] -= ms_z
+        for h in (23, 24):  # hips: flat hip line -> frontal-stable facing (no profile swing)
+            if lm[h][3] > 0.0:
+                lm[h][2] = 0.0
     return lm, src
 
 
