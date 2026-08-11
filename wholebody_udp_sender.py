@@ -27,6 +27,7 @@ import argparse
 import json
 import socket
 import time
+import os
 
 import numpy as np
 import cv2
@@ -177,10 +178,20 @@ def main():
     parser.add_argument("--min-cutoff", type=float, default=0.7, help="One-Euro min cutoff Hz — sets smoothness WHEN STILL (lower = smoother/steadier when you hold still, but adds lag to slow moves). Unity's jointFilter is bypassed for OAK (single-owner smoothing, ADR-020), so this is the ONLY smoothing stage. Range ~0.3 (very steady) .. 1.0 (snappier when still).")
     parser.add_argument("--beta", type=float, default=0.4, help="One-Euro beta — sets REACTION SPEED during motion (higher = less lag on fast moves). The old 0.02 felt sluggish on metric keypoints; 0.4 reacts quickly while --min-cutoff keeps stillness steady. Raise toward ~1.0 if it still feels laggy, lower if fast moves look jittery (ADR-020).")
     parser.add_argument("--max-jump", type=float, default=1.5, help="rate-limit a keypoint that jumps more than this many metres in one frame (only catches gross depth-spike garbage; keep it ABOVE the depth-quantization step so normal motion is untouched)")
+    parser.add_argument("--depth-min-cutoff", type=float, default=0.3, help="LIMB depth (z) gets a HEAVIER One-Euro min-cutoff than the image plane (limb depth is ~5x noisier for small/distant hands). Lower = steadier depth, more lag. Arms+hands only.")
+    parser.add_argument("--depth-beta", type=float, default=0.1, help="One-Euro beta for LIMB depth (low = depth reacts slowly, since it is the noisy axis). Raise if reaching toward/away the camera feels laggy.")
+    parser.add_argument("--max-hold-frames", type=int, default=8, help="hold a LIMB keypoint's last-good value through up to N depth-dropout frames instead of the noisy zrel fallback (kills the 8-12 m spikes). 0 = off. Bounded so a genuinely-gone limb still drops.")
     parser.add_argument("--zrel-fallback", action=argparse.BooleanOptionalAction, default=True,
                         help="M16: for keypoints with NO measured depth (holes), use the model's root-relative z as the depth offset from the hip plane instead of flattening to the plane. --no-zrel-fallback restores the flat hip-plane. If occluded limbs poke the wrong way in depth, flip ZREL_SIGN in this file.")
     parser.add_argument("--seconds", type=float, default=0.0, help="auto-stop after N seconds (0 = run forever)")
+    parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     args = parser.parse_args()
+
+    log_f = None
+    if args.log_dir:
+        os.makedirs(args.log_dir, exist_ok=True)
+        log_f = open(os.path.join(args.log_dir, "sender_log.jsonl"), "w", buffering=1)
+        print("[wb] pipeline logging -> %s" % os.path.join(args.log_dir, "sender_log.jsonl"))
 
     print("[wb] loading RTMW3D ...")
     model = R.RTMW3D(args.model)
@@ -203,7 +214,13 @@ def main():
         bbox = R.center_bbox(rgb_w, rgb_h)
         body_smoother = None
         if args.smooth:
-            body_smoother = smoothing.KeypointSmoother(133, min_cutoff=args.min_cutoff, beta=args.beta, max_jump=args.max_jump)
+            # LIMB depth-smoothing + hold-on-dropout target: arms (elbows 7/8, wrists 9/10) + both hands
+            # (WholeBody 91-132). Legs are intentionally EXCLUDED so an occluded lower body still drops.
+            limb_idx = set([7, 8, 9, 10]) | set(range(91, 133))
+            body_smoother = smoothing.KeypointSmoother(
+                133, min_cutoff=args.min_cutoff, beta=args.beta, max_jump=args.max_jump,
+                depth_min_cutoff=args.depth_min_cutoff, depth_beta=args.depth_beta,
+                limb_indices=limb_idx, max_hold=args.max_hold_frames)
         frames = 0            # monotonic total frame count (never reset)
         win_frames = 0        # LOW-D: separate windowed counter for the fps estimate (reset each log window)
         sent = 0
@@ -244,10 +261,11 @@ def main():
                 si = 0
                 sn = xyz_cam.shape[0]
                 while si < sn:
-                    sx, sy, sz = body_smoother.filter(si, float(xyz_cam[si, 0]), float(xyz_cam[si, 1]), float(xyz_cam[si, 2]), bool(measured[si]))
+                    sx, sy, sz, eff = body_smoother.filter(si, float(xyz_cam[si, 0]), float(xyz_cam[si, 1]), float(xyz_cam[si, 2]), bool(measured[si]))
                     xyz_cam[si, 0] = sx
                     xyz_cam[si, 1] = sy
                     xyz_cam[si, 2] = sz
+                    measured[si] = eff  # hold-on-dropout can report a held limb as measured -> build uses it, not the fallback
                     si = si + 1
 
             # Mid-hip origin (M11): both hips → midpoint; one hip → that hip; neither but a recent mid-hip
@@ -286,6 +304,8 @@ def main():
                         round(float(mid_hip[1] * 1000.0), 1),
                         round(float(mid_hip[2] * 1000.0), 1)],
                 "src": src,
+                "seq": frames,                 # monotonic frame id (aligns sender/recv/model logs)
+                "t": round(time.time(), 4),    # send epoch seconds
             }
             # H7: only include a hand when confidently tracked. Unity treats a missing lh/rh as
             # "not tracked" and holds the rest pose instead of curling fingers from noise.
@@ -319,6 +339,19 @@ def main():
             sock.sendto(json.dumps(message).encode("utf-8"), addr)
             sent += 1
 
+            if log_f is not None:
+                # Key signals for pipeline diffing: shoulders(11,12), hips(23,24), wrists(15,16) xyz, plus the
+                # palm-basis hand points (0 wrist, 9 middle-MCP) so a wrist-spin can be traced to its source.
+                rec = {"seq": frames, "t": round(time.time(), 4),
+                       "sh": [lm[11][:3], lm[12][:3]], "el": [lm[13][:3], lm[14][:3]],
+                       "hip": [lm[23][:3], lm[24][:3]], "wr": [lm[15][:3], lm[16][:3]],
+                       "hipZ": round(hip_z, 3), "cov": int(sum(src))}  # distance (m) + measured-coverage (0-33)
+                if lh is not None:
+                    rec["lh"] = [lh[0], lh[9]]
+                if rh is not None:
+                    rec["rh"] = [rh[0], rh[9]]
+                log_f.write(json.dumps(rec) + "\n")
+
             if time.time() - t_log > 2.0:
                 cov = int(sum(src))
                 # LOW-D: fps uses the windowed counter; `frames` stays a monotonic total.
@@ -333,6 +366,8 @@ def main():
                     break
 
     sock.close()
+    if log_f is not None:
+        log_f.close()
     print("[wb] stopped.")
 
 
