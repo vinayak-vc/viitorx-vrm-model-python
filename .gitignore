@@ -221,3 +221,5 @@ __marimo__/
 # RTMW3D ONNX (~369 MB) is downloaded, not committed — see README / ADR-015 for the URL.
 *.onnx
 # Keep the small BlazePose .blob device models tracked (they are needed to run Phase 1).
+pipeline_logs/model_log.jsonl
+pipeline_logs/

@@ -169,13 +169,13 @@ def main():
     parser.add_argument("--conf", type=float, default=0.3, help="keypoint confidence threshold")
     parser.add_argument("--kwin", type=int, default=5, help="depth sampling window (px)")
     parser.add_argument("--show", action="store_true", help="cv2 preview of the OAK view + skeleton")
-    parser.add_argument("--flatten-trunk", action=argparse.BooleanOptionalAction, default=True,
-                        help="zero the Z of shoulders+hips so the trunk stays vertical (fixes the forward hunch from noisy torso depth). --no-flatten-trunk to disable.")
+    parser.add_argument("--flatten-trunk", action=argparse.BooleanOptionalAction, default=False,
+                        help="DEFAULT OFF (Milestone-2): keep the measured trunk Z so the model can BEND at the waist and TURN like the skeleton. The trunk joints are now depth-smoothed (see limb_idx) so this is stable at ~2 m without the old profile swing. Pass --flatten-trunk to restore the frontal-locked fallback (zeroes shoulders+hips Z) if a noisy/farther setup swings into profile.")
     parser.add_argument("--mirror", action=argparse.BooleanOptionalAction, default=False,
                         help="DEFAULT OFF. Mirroring the INPUT skeleton (negate X + swap sides) reflects the pose, but the FK retarget builds rotations with LookRotation and a reflected skeleton twists the torso/limbs. Leave off (clean 'copy' retarget); do the mirror on the Unity/avatar side instead. --mirror to experiment.")
     parser.add_argument("--smooth", action=argparse.BooleanOptionalAction, default=True,
                         help="temporal One-Euro smoothing + depth-outlier gate to kill jitter. --no-smooth to disable.")
-    parser.add_argument("--min-cutoff", type=float, default=0.7, help="One-Euro min cutoff Hz — sets smoothness WHEN STILL (lower = smoother/steadier when you hold still, but adds lag to slow moves). Unity's jointFilter is bypassed for OAK (single-owner smoothing, ADR-020), so this is the ONLY smoothing stage. Range ~0.3 (very steady) .. 1.0 (snappier when still).")
+    parser.add_argument("--min-cutoff", type=float, default=0.5, help="One-Euro min cutoff Hz — sets smoothness WHEN STILL (lower = smoother/steadier when you hold still, but adds lag to slow moves). Unity's jointFilter is bypassed for OAK (single-owner smoothing, ADR-020), so this is the ONLY smoothing stage. Range ~0.3 (very steady) .. 1.0 (snappier when still).")
     parser.add_argument("--beta", type=float, default=0.4, help="One-Euro beta — sets REACTION SPEED during motion (higher = less lag on fast moves). The old 0.02 felt sluggish on metric keypoints; 0.4 reacts quickly while --min-cutoff keeps stillness steady. Raise toward ~1.0 if it still feels laggy, lower if fast moves look jittery (ADR-020).")
     parser.add_argument("--max-jump", type=float, default=1.5, help="rate-limit a keypoint that jumps more than this many metres in one frame (only catches gross depth-spike garbage; keep it ABOVE the depth-quantization step so normal motion is untouched)")
     parser.add_argument("--depth-min-cutoff", type=float, default=0.3, help="LIMB depth (z) gets a HEAVIER One-Euro min-cutoff than the image plane (limb depth is ~5x noisier for small/distant hands). Lower = steadier depth, more lag. Arms+hands only.")
@@ -214,9 +214,11 @@ def main():
         bbox = R.center_bbox(rgb_w, rgb_h)
         body_smoother = None
         if args.smooth:
-            # LIMB depth-smoothing + hold-on-dropout target: arms (elbows 7/8, wrists 9/10) + both hands
-            # (WholeBody 91-132). Legs are intentionally EXCLUDED so an occluded lower body still drops.
-            limb_idx = set([7, 8, 9, 10]) | set(range(91, 133))
+            # Depth-smoothing + hold-on-dropout target: TRUNK (shoulders 5/6, hips 11/12) + arms (elbows 7/8,
+            # wrists 9/10) + both hands (WholeBody 91-132). Trunk added in Milestone-2 so the un-flattened
+            # trunk Z (which now drives waist-bend + body-turn) is stable — steady depth there, no profile
+            # swing. Legs (knees/ankles 13-16) stay EXCLUDED so an occluded lower body still drops.
+            limb_idx = set([5, 6, 7, 8, 9, 10, 11, 12]) | set(range(91, 133))
             body_smoother = smoothing.KeypointSmoother(
                 133, min_cutoff=args.min_cutoff, beta=args.beta, max_jump=args.max_jump,
                 depth_min_cutoff=args.depth_min_cutoff, depth_beta=args.depth_beta,

@@ -19,7 +19,7 @@ set "MODEL=%~1"
 if "%MODEL%"=="" set "MODEL=..\..\..\SentisModel\rtmw3d-x.onnx"
 set "LOGDIR=pipeline_logs"
 REM sidecar smoothing/limb-depth defaults (see ADR-020); tweak here without touching code:
-set "SIDECAR_ARGS=--min-cutoff 0.7 --beta 0.4 --depth-min-cutoff 0.3 --depth-beta 0.1 --max-hold-frames 8"
+set "SIDECAR_ARGS=--min-cutoff 0.5 --beta 0.4 --depth-min-cutoff 0.3 --depth-beta 0.1 --max-hold-frames 8"
 REM set SECONDS to a number for auto-stop instead of pressing q (0 = manual q/ESC):
 set "SECONDS=0"
 REM --------------------------------------------
