@@ -72,10 +72,15 @@ class KeypointSmoother:
     # LOW-D: default max_jump aligned to the sender's --max-jump default (1.5). The old 0.5 froze
     # keypoints whenever the coarse depth-quantization step at distance exceeded it every frame.
     def __init__(self, count, freq=30.0, min_cutoff=1.0, beta=0.02, max_jump=1.5,
-                 depth_min_cutoff=None, depth_beta=None, limb_indices=None, max_hold=0):
+                 depth_min_cutoff=None, depth_beta=None, limb_indices=None, max_hold=0,
+                 max_jump_overrides=None):
         self.max_jump = max_jump
         self.max_hold = max_hold
         self.limb_indices = set(limb_indices) if limb_indices else set()
+        # P0-2 (audit F-03/F-04): per-index displacement cap. The global max_jump (1.5 m) sits ABOVE the
+        # observed ~0.8 m limb spikes, so they pass; give wrists/elbows/knees/ankles a tighter cap while
+        # leaving the (already stable) trunk + the fast-moving hands on the global default. {index: metres}.
+        self.max_jump_overrides = dict(max_jump_overrides) if max_jump_overrides else {}
         dmc = depth_min_cutoff if depth_min_cutoff is not None else min_cutoff
         dbeta = depth_beta if depth_beta is not None else beta
         self._fx = [OneEuro(freq, min_cutoff, beta) for _ in range(count)]
@@ -90,8 +95,9 @@ class KeypointSmoother:
         self._hold = [0] * count
 
     def filter(self, index, x, y, z, valid):
-        # Returns (x, y, z, effective_valid). effective_valid can be True even when the raw point was
-        # invalid, when a LIMB dropout is being held (below) — the caller should then treat it as measured.
+        # Returns (x, y, z, effective_valid, action, displacement). effective_valid can be True even when the
+        # raw point was invalid, when a LIMB dropout is being held. `action` is one of ACCEPT / RATE_LIMIT /
+        # HOLD / DROP (for P0-2 diagnostics); `displacement` is the raw step (m) before any rate-limit.
         if not valid:
             # HOLD-ON-DROPOUT (limbs only): a limb keypoint with no measured depth would otherwise fall
             # back to the model's zrel back-projection (garbage — 8-12 m spikes). Instead hold the last
@@ -100,30 +106,36 @@ class KeypointSmoother:
             prev = self._last[index]
             if index in self.limb_indices and self.max_hold > 0 and prev is not None and self._hold[index] < self.max_hold:
                 self._hold[index] = self._hold[index] + 1
-                return prev[0], prev[1], prev[2], True
+                return prev[0], prev[1], prev[2], True, 'HOLD', 0.0
             self._fx[index].reset()
             self._fy[index].reset()
             self._fz[index].reset()
             self._last[index] = None
             self._hold[index] = 0
-            return x, y, z, False
+            return x, y, z, False, 'DROP', 0.0
         self._hold[index] = 0
         prev = self._last[index]
-        if prev is not None and self.max_jump > 0.0:
+        action = 'ACCEPT'
+        disp = 0.0
+        # P0-2: per-index displacement cap (tighter for wrist/elbow/knee/ankle; global for trunk/hands).
+        mj = self.max_jump_overrides.get(index, self.max_jump)
+        if prev is not None:
             dx = x - prev[0]
             dy = y - prev[1]
             dz = z - prev[2]
             d2 = dx * dx + dy * dy + dz * dz
-            if d2 > (self.max_jump * self.max_jump):
+            disp = math.sqrt(d2)
+            if mj > 0.0 and d2 > (mj * mj):
                 # Big step (depth spike OR the coarse depth-quantization step at distance): RATE-LIMIT it
-                # (move at most max_jump toward the target) instead of holding — holding froze keypoints
+                # (move at most mj toward the target) instead of holding — holding froze keypoints
                 # permanently when the quantization step exceeded max_jump every frame.
-                t = self.max_jump / math.sqrt(d2)
+                t = mj / disp
                 x = prev[0] + dx * t
                 y = prev[1] + dy * t
                 z = prev[2] + dz * t
+                action = 'RATE_LIMIT'
         sx = self._fx[index].filter(x)
         sy = self._fy[index].filter(y)
         sz = self._fz[index].filter(z)
         self._last[index] = (sx, sy, sz)
-        return sx, sy, sz, True
+        return sx, sy, sz, True, action, disp

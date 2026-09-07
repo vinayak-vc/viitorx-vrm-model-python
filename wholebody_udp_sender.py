@@ -39,6 +39,13 @@ import smoothing
 
 NUM_BODY = 33
 
+# P0-2 diagnostics: WholeBody index -> readable name for the tracked body joints we log spike/hold events on.
+JOINT_NAMES = {
+    5: "left_shoulder", 6: "right_shoulder", 7: "left_elbow", 8: "right_elbow",
+    9: "left_wrist", 10: "right_wrist", 11: "left_hip", 12: "right_hip",
+    13: "left_knee", 14: "right_knee", 15: "left_ankle", 16: "right_ankle",
+}
+
 # Left<->right JointId pairs for mirroring (a true reflection swaps sides AND negates X).
 MIRROR_PAIRS = [(1, 4), (2, 5), (3, 6), (7, 8), (9, 10), (11, 12), (13, 14), (15, 16),
                 (17, 18), (19, 20), (21, 22), (23, 24), (25, 26), (27, 28), (29, 30), (31, 32)]
@@ -177,7 +184,9 @@ def main():
                         help="temporal One-Euro smoothing + depth-outlier gate to kill jitter. --no-smooth to disable.")
     parser.add_argument("--min-cutoff", type=float, default=0.5, help="One-Euro min cutoff Hz — sets smoothness WHEN STILL (lower = smoother/steadier when you hold still, but adds lag to slow moves). Unity's jointFilter is bypassed for OAK (single-owner smoothing, ADR-020), so this is the ONLY smoothing stage. Range ~0.3 (very steady) .. 1.0 (snappier when still).")
     parser.add_argument("--beta", type=float, default=0.4, help="One-Euro beta — sets REACTION SPEED during motion (higher = less lag on fast moves). The old 0.02 felt sluggish on metric keypoints; 0.4 reacts quickly while --min-cutoff keeps stillness steady. Raise toward ~1.0 if it still feels laggy, lower if fast moves look jittery (ADR-020).")
-    parser.add_argument("--max-jump", type=float, default=1.5, help="rate-limit a keypoint that jumps more than this many metres in one frame (only catches gross depth-spike garbage; keep it ABOVE the depth-quantization step so normal motion is untouched)")
+    parser.add_argument("--max-jump", type=float, default=1.5, help="GLOBAL rate-limit (m/frame) for trunk + hands. Kept generous; the distal-limb caps below are tighter (P0-2).")
+    parser.add_argument("--arm-max-jump", type=float, default=0.35, help="P0-2: tighter per-frame displacement cap (m) for elbows+wrists (WB 7,8,9,10). Below the observed ~0.8 m spikes, above the depth-quantization step. Rate-limited (slewed), not dropped, so genuine fast motion catches up in 1-2 frames.")
+    parser.add_argument("--leg-max-jump", type=float, default=0.35, help="P0-2: tighter per-frame displacement cap (m) for knees+ankles (WB 13,14,15,16). Same rationale as --arm-max-jump; legs are now also depth-smoothed + hold-protected.")
     parser.add_argument("--depth-min-cutoff", type=float, default=0.3, help="LIMB depth (z) gets a HEAVIER One-Euro min-cutoff than the image plane (limb depth is ~5x noisier for small/distant hands). Lower = steadier depth, more lag. Arms+hands only.")
     parser.add_argument("--depth-beta", type=float, default=0.1, help="One-Euro beta for LIMB depth (low = depth reacts slowly, since it is the noisy axis). Raise if reaching toward/away the camera feels laggy.")
     parser.add_argument("--max-hold-frames", type=int, default=8, help="hold a LIMB keypoint's last-good value through up to N depth-dropout frames instead of the noisy zrel fallback (kills the 8-12 m spikes). 0 = off. Bounded so a genuinely-gone limb still drops.")
@@ -188,10 +197,13 @@ def main():
     args = parser.parse_args()
 
     log_f = None
+    holds_f = None
     if args.log_dir:
         os.makedirs(args.log_dir, exist_ok=True)
         log_f = open(os.path.join(args.log_dir, "sender_log.jsonl"), "w", buffering=1)
-        print("[wb] pipeline logging -> %s" % os.path.join(args.log_dir, "sender_log.jsonl"))
+        # P0-2: separate stream of rejected/held joint events (spike rate-limits + depth dropouts).
+        holds_f = open(os.path.join(args.log_dir, "holds_log.jsonl"), "w", buffering=1)
+        print("[wb] pipeline logging -> %s (+ holds_log.jsonl)" % os.path.join(args.log_dir, "sender_log.jsonl"))
 
     print("[wb] loading RTMW3D ...")
     model = R.RTMW3D(args.model)
@@ -215,14 +227,26 @@ def main():
         body_smoother = None
         if args.smooth:
             # Depth-smoothing + hold-on-dropout target: TRUNK (shoulders 5/6, hips 11/12) + arms (elbows 7/8,
-            # wrists 9/10) + both hands (WholeBody 91-132). Trunk added in Milestone-2 so the un-flattened
-            # trunk Z (which now drives waist-bend + body-turn) is stable — steady depth there, no profile
-            # swing. Legs (knees/ankles 13-16) stay EXCLUDED so an occluded lower body still drops.
-            limb_idx = set([5, 6, 7, 8, 9, 10, 11, 12]) | set(range(91, 133))
+            # wrists 9/10) + LEGS (knees 13/14, ankles 15/16) + both hands (WholeBody 91-132). P0-2 (audit
+            # F-04): legs were previously EXCLUDED, so a bad/occluded knee got only the light image-plane
+            # One-Euro (no heavy depth cutoff, no hold) → leg jitter/collapse. They now get the SAME depth
+            # smoothing + bounded hold as the arms. The hold is bounded (max_hold), so a genuinely-gone
+            # lower body still drops after N frames rather than freezing.
+            limb_idx = set([5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]) | set(range(91, 133))
+            # P0-2: per-index displacement caps. Trunk (5,6,11,12) + hands keep the global --max-jump; the
+            # spike-prone distal joints (wrist/elbow/knee/ankle) get tighter caps that sit BELOW the observed
+            # ~0.8 m spikes but ABOVE the depth-quantization step, so garbage is slewed out while genuine fast
+            # motion still catches up within a frame or two (rate-limited, never frozen).
+            limb_max_jump = {}
+            for _idx in (7, 8, 9, 10):
+                limb_max_jump[_idx] = args.arm_max_jump
+            for _idx in (13, 14, 15, 16):
+                limb_max_jump[_idx] = args.leg_max_jump
             body_smoother = smoothing.KeypointSmoother(
                 133, min_cutoff=args.min_cutoff, beta=args.beta, max_jump=args.max_jump,
                 depth_min_cutoff=args.depth_min_cutoff, depth_beta=args.depth_beta,
-                limb_indices=limb_idx, max_hold=args.max_hold_frames)
+                limb_indices=limb_idx, max_hold=args.max_hold_frames,
+                max_jump_overrides=limb_max_jump)
         frames = 0            # monotonic total frame count (never reset)
         win_frames = 0        # LOW-D: separate windowed counter for the fps estimate (reset each log window)
         sent = 0
@@ -263,11 +287,22 @@ def main():
                 si = 0
                 sn = xyz_cam.shape[0]
                 while si < sn:
-                    sx, sy, sz, eff = body_smoother.filter(si, float(xyz_cam[si, 0]), float(xyz_cam[si, 1]), float(xyz_cam[si, 2]), bool(measured[si]))
+                    raw_measured = bool(measured[si])
+                    sx, sy, sz, eff, action, disp = body_smoother.filter(
+                        si, float(xyz_cam[si, 0]), float(xyz_cam[si, 1]), float(xyz_cam[si, 2]), raw_measured)
                     xyz_cam[si, 0] = sx
                     xyz_cam[si, 1] = sy
                     xyz_cam[si, 2] = sz
                     measured[si] = eff  # hold-on-dropout can report a held limb as measured -> build uses it, not the fallback
+                    # P0-2 diagnostics: log only the interesting events (spike rate-limited, dropout held/dropped)
+                    # on the tracked body joints — never per-frame for healthy joints. Opt-in via --log-dir.
+                    if holds_f is not None and action != 'ACCEPT' and si in JOINT_NAMES:
+                        holds_f.write(json.dumps({
+                            "seq": frames, "t": round(time.time(), 4), "joint": JOINT_NAMES[si],
+                            "confidence": round(float(conf[si]), 3), "displacement": round(disp, 4),
+                            "depthValid": raw_measured, "action": action,
+                            "reason": ("DISPLACEMENT_OUTLIER" if action == 'RATE_LIMIT'
+                                       else "DEPTH_DROPOUT_HOLD" if action == 'HOLD' else "MEASUREMENT_INVALID")}) + "\n")
                     si = si + 1
 
             # Mid-hip origin (M11): both hips → midpoint; one hip → that hip; neither but a recent mid-hip
@@ -370,6 +405,8 @@ def main():
     sock.close()
     if log_f is not None:
         log_f.close()
+    if holds_f is not None:
+        holds_f.close()
     print("[wb] stopped.")
 
 
