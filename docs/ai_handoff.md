@@ -16,7 +16,7 @@ Purpose: the next agent can continue without re-deriving context.
 | **P0-2** — distal caps + legs protected | **COMPLETE**, live-verified | P003 |
 | **P1-1** — per-joint temporal tracking + plausibility | **COMPLETE** | P004 |
 | **P1-2** — latest-frame queue policy | **COMPLETE**, live human A/B | P005 |
-| **P1-4** — skeleton constraints + long-horizon recovery | **COMPLETE** (conditional) | P008 |
+| **P1-4** — skeleton constraints + long-horizon recovery | **REJECTED** — default OFF, retained for forensics only | P008 (superseded) |
 | Next | palm / foot work — **NOT STARTED** | — |
 
 **Sidecar half, measured:** camera→UDP **161.8 → 62.0 ms** · frame age **131.5 → 31.4 ms** · limb peak
@@ -95,20 +95,33 @@ before `pipeline_logs/` was added to `.gitignore`. They are regenerable capture 
 
 ## Next recommended task
 
-**Make P1-4 reconstruction actually usable on live data** — or decide it cannot be, and say so.
+**Audit upstream measurement quality (F-08). Produce findings, not code.**
 
-P1-4 (ADR-P008) shipped with its *rejection* path working (slow impossible drift: 0.6265 m → 0.1993 m,
-−68%) but its *reconstruction* path effectively **dormant on real captures**: no bone-length estimator
-reaches the 30% acceptance ratio required to drive reconstruction, because this pipeline'''s landmarks
-are not metrically stable (bone deviation p99 = 1.791).
+P1-4 was **REJECTED** on 2026-09-08 after live human validation — full evidence in
+[`P1_4_CLOSEOUT_2026-09-08.md`](P1_4_CLOSEOUT_2026-09-08.md). The architectural conclusion:
 
-Two honest options, pick one deliberately:
-1. **Fix the metric stability upstream** so bone lengths mean something — this is the same root cause as
-   confidence normalisation (audit F-08) and would unlock reconstruction as a side effect.
-2. **Accept that reconstruction is not viable here** and simplify P1-4 to the angle-based rejection
-   path, removing the solver rather than carrying unused code.
+> Skeleton-level kinematic reconstruction cannot currently be made reliable using the present
+> landmark geometry, because the bone-length signal's natural variation **overlaps** the corruption
+> signal we need to detect. An 0.85 m knee displacement yields `relLenErr` ≈ 1.50 while *clean*
+> frames already reach p99 = 1.791. The safe threshold band is empty.
 
-Do NOT start by lowering `len_min_accept_ratio` — that gate exists because reconstructing from a 5%
-sample was measurably WORSE than holding (0.170 m → 0.327 m).
+Therefore: **do not** continue threshold tuning, **do not** add more smoothing, and **do not** add
+further heuristic rejection layers on the same unstable signal.
 
-Also outstanding: **P1-4 has not been visually validated on the avatar** (brief Part 21) — needs a human.
+The audit must determine *why*:
+
+- high-confidence wrong joints keep their high confidence;
+- bone lengths fluctuate so strongly frame to frame;
+- depth/landmark geometry can become physically impossible while confidence stays high.
+
+and then say which of these is the useful next step:
+
+```text
+better confidence calibration
+better RGB/depth temporal correspondence
+better depth sampling
+joint-specific measurement quality
+another upstream signal entirely
+```
+
+**Do not implement any of them yet.** Produce the audit first.

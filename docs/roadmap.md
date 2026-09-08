@@ -14,7 +14,7 @@ are the Unity repo's. See `../AGENTS.md` §2.
 | **P0-2** | 0.35 m distal caps + legs into the protected set | **done**, live-verified | P003 |
 | **P1-1** | Per-joint temporal tracking + plausibility | **done**, 6/6 adversarial | P004 |
 | **P1-2** | Latest-frame queue policy (frame freshness) | **done**, live A/B | P005 |
-| **P1-4** | Skeleton constraints + long-horizon recovery | **done** (conditional: rejection works, reconstruction dormant) | P008 |
+| **P1-4** | Skeleton constraints + long-horizon recovery | **REJECTED 2026-09-08** — disabled by default; see `docs/P1_4_CLOSEOUT_2026-09-08.md` | P008 (superseded) |
 
 **Cumulative measured effect on the sidecar half:** camera→UDP **161.8 → 62.0 ms**; frame age
 **131.5 → 31.4 ms**; limb peak displacement **−67…−76%**; RGB/depth pairing max error
@@ -31,7 +31,8 @@ Pick one deliberately. Do not batch; each needs its own measurement and ADR.
 
 | Candidate | Why | Owner repo | Prerequisite |
 |---|---|---|---|
-| **Short-gap prediction + blended recovery** | P1-1's known limit: a sustained high-confidence teleport past the 6-frame window ends LOST with slow recovery during fast motion | **this repo** | met — P1-1 supplies the per-joint state |
+| **Upstream measurement-quality audit (F-08)** | **DO THIS FIRST.** P1-4 proved skeleton-level reconstruction cannot be made reliable on the present landmark geometry: the bone-length signal's natural variation *overlaps* the corruption it must detect. Audit only — no implementation | **this repo** | met |
+| ~~Short-gap prediction + blended recovery~~ | Attempted as P1-4 and **REJECTED**. Do not retry on the same unstable signal | **this repo** | blocked on F-08 |
 | **Confidence normalisation** | Root cause of "confident-but-wrong" (audit F-08). The `0.3` threshold is brittle across distance/lighting; P1-1 currently works around it kinematically | **this repo** | met, but larger scope |
 | **Inference headroom** | RTMW3D-x ~21 ms is why the 30 fps sensor cannot be consumed; a smaller model trades accuracy for latency | **this repo** | not evaluated |
 | **RGB/depth systematic offset** | stable ~12.1 ms device stereo lag remains after P1-2 | **this repo** | means touching the depth pipeline |
@@ -47,3 +48,17 @@ Pick one deliberately. Do not batch; each needs its own measurement and ADR.
 - **Do not** move safety into this repo (ADR-P007) — Unity's LimbGate is the final gate by design.
 - **Do not** change the UDP wire format without a coordinated ADR in **both** repos.
 - Any new behaviour ships behind a flag with the safe default and an off-switch for A/B.
+
+## Project status (as of 2026-09-08)
+
+```text
+P0 safety                         OK
+P1-1 temporal tracker             OK
+P1-2 latest-frame freshness       OK
+P1-3 Unity pose buffer            OK
+P1-4 kinematic recovery           REJECTED
+Palm robustness                   NEXT
+Foot / ground locking             LATER
+Confidence normalization          IMPORTANT
+IK                                OFF
+```

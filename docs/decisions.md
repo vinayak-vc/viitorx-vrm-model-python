@@ -144,6 +144,12 @@ Cross-repo decisions are recorded in **both** files.
 
 ## ADR-P008 — P1-4: skeleton constraints + long-horizon recovery; bone length is NOT a veto on this pipeline
 
+> **SUPERSEDED 2026-09-08 by ADR-P009 — P1-4 is REJECTED.** Live human validation showed P1-4 MISSED
+> the controlled 0.85 m knee corruption entirely (`GEOMETRIC_REJECT = 0`, `RECONSTRUCT = 0`) while
+> raising P0 limb holds 0.47% → 17.83% and LOST episodes 1 → 122. The −68% replay win did NOT
+> reproduce on hardware. Read the section below as the historical record of a rejected approach,
+> not as guidance. See `docs/P1_4_CLOSEOUT_2026-09-08.md`.
+
 - **Status:** Accepted 2026-09-08 (CONDITIONAL — see the limits). Unity counterpart: none required.
 - **Context:** P1-1 reasons about one joint at a time, so it cannot catch a joint that is
   *confidently wrong and stays wrong* past its 6-frame prediction horizon — the hip-correct /
@@ -232,3 +238,68 @@ median / 0.303 ms p99**. `host→UDP` unchanged (29.81 vs 30.3 ms).
   at median/p95/p99. Correcting it means touching the depth pipeline.
 - **Inference cost.** RTMW3D-x at ~21 ms is the single largest stage and the reason the sensor cannot
   be consumed at 30 fps. A smaller model would trade accuracy for headroom — not yet evaluated.
+
+---
+
+## ADR-P009 — P1-4 REJECTED: the bone-length signal overlaps its own noise floor
+
+- **Status:** Accepted 2026-09-08. Supersedes ADR-P008. Unity counterpart: ADR-032.
+- **Context:** ADR-P008 accepted P1-4 conditionally on **offline replay** evidence. Live validation with
+  a human subject and the real OAK-D contradicted that verdict on every axis that matters.
+- **Decision:** **P1-4 is rejected for production.** `--recovery` now defaults to **False**;
+  `kinematic_recovery.py` is retained on disk, marked `REJECTED / EXPERIMENTAL / NOT FOR SHIPPING`,
+  and cannot execute unless explicitly opted in. No algorithm or constant was changed — this is a
+  rollback, not another tuning round.
+
+### The measurement that decided it
+
+The controlled block-8 injection (0.85 m right-knee drift and teleport, high confidence, upstream of
+P1-1 and P1-4) is the only fully controlled comparison in the run:
+
+| pass | error reaching the wire | `GEOMETRIC_REJECT` | `RECONSTRUCT` |
+|---|---|---|---|
+| P1-3 baseline (drift / teleport) | 0.8388 / 0.8542 m | 0 | 0 |
+| **P1-4 (drift / teleport)** | **0.8419 / 0.8439 m** | **0** | **0** |
+
+**P1-4 never fired on the case it exists for.** The mechanism is arithmetic, not tuning:
+
+```text
+corruption to detect (0.85 m knee)  relLenErr ~ 1.50
+natural variation, clean capture    p99       = 1.791
+shipping threshold                            = 1.80
+```
+
+The corruption produces a *smaller* bone-length error than clean human motion already produces. The
+safe threshold band is **empty**. P0-2's 0.35 m/frame leg cap compounds it by slewing a teleport so the
+rolling-median estimator **learns** the corrupted length.
+
+### Collateral damage measured on the avatar
+
+| metric | P1-3 | P1-4 |
+|---|---|---|
+| frames with a limb HELD by the P0 gate | 0.47% | **17.83%** |
+| LOST episodes | 1 | **122** (longest 0.607 s) |
+| snaps > 45° per pose | 15 | **27** |
+| reconstruction displacement, left_knee | — | mean **2.19 m**, max **4.16 m** |
+
+Within-pass control (same performance, so free of the "danced harder" confound): frames within 250 ms
+of a P1-4 event were **13×** more likely to exceed 20° of rotation (1.248% vs 0.095%).
+87% of rejections came from the bone-length check (`segment` 1001 / `angle` 128).
+
+CPU (0.329 vs 0.173 ms) and latency (42.2 vs 39.1 ms) were both fine. **P1-4 was rejected for
+correctness, not cost.**
+
+### Consequences
+
+- Production path is `P1-1 → P1-2 → UDP → P1-3 → Kalidokit → P0 LimbGate → VRM`.
+- Rollback verified live: P0 limb-held **0.14%**, LOST **1**, tracker CPU **0.175 ms**, 0 packet loss,
+  P1-1 37/37, P1-4 39/39, Unity 47/47, 0 compile errors.
+- **Skeleton-level reconstruction cannot be made reliable on the present landmark geometry.** The next
+  work is an upstream measurement-quality audit (F-08), not another downstream heuristic.
+
+### DO NOT
+
+- Tune `seg_reject`, `angle_min_deg`, `len_min_accept_ratio` or any other P1-4 constant.
+- Add another heuristic rejection layer on the bone-length signal.
+- Re-enable `--recovery` in production, or ship a launcher that passes it.
+- Treat ADR-P008's −68% replay result as valid — it did not reproduce on hardware.

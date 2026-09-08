@@ -1,6 +1,29 @@
 #!/usr/bin/env python3
 """P1-4 — LONG-HORIZON JOINT RECOVERY + KINEMATIC CONSTRAINTS.
 
+================================================================================
+REJECTED / EXPERIMENTAL / NOT FOR SHIPPING
+================================================================================
+Status: REJECTED for production on 2026-09-08 after live human validation.
+Default: OFF (`--recovery` is opt-in, research use only).
+
+This module is retained for FORENSIC REFERENCE, not for use. On real hardware it:
+  * MISSED the controlled 0.85 m knee drift and teleport entirely
+    (GEOMETRIC_REJECT = 0, RECONSTRUCT = 0 for the injected corruption);
+  * raised P0 LimbGate holds from 0.47%% to 17.83%% of rendered frames;
+  * raised LOST episodes from 1 to 122 (4.65%% of run, longest 0.607 s);
+  * produced 16 avatar snaps > 45 deg/frame vs 2 without it;
+  * relocated knees by up to 4.16 m from the incoming measurement.
+
+ROOT CAUSE: 87%% of its rejections come from the bone-length signal, whose NATURAL
+variation on this pipeline (p99 relative deviation = 1.791) OVERLAPS the corruption
+it must detect (an 0.85 m knee displacement yields only ~1.50). The safe threshold
+band is empty. This is a measurement-quality problem upstream, NOT a tuning problem.
+
+DO NOT tune these constants. DO NOT re-enable without solving upstream metric
+stability first. See docs/P1_4_CLOSEOUT_2026-09-08.md.
+================================================================================
+
 P1-1 (`joint_tracker.py`) reasons about ONE joint at a time. That is enough for a spike or a
 short dropout, but it cannot solve the case P1-4 exists for:
 

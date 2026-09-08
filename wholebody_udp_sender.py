@@ -204,6 +204,11 @@ def main():
                              "(maxSize=4) stays full and every pose is ~4 frames (~133 ms) stale.")
     parser.add_argument("--no-latest-frame", dest="latest_frame", action="store_false",
                         help="P1-2 OFF: original FIFO behaviour (for A/B).")
+    parser.add_argument("--inject-drift-file", default="",
+                        help="TEST-ONLY (P1-4 visual validation). Path polled once per frame; when the file "
+                        "appears it is read as JSON {mode:drift|teleport, joint:N, meters:F, frames:N} and "
+                        "DELETED, then that joint is corrupted for N frames at HIGH confidence upstream of "
+                        "P1-1/P1-4. Never set this in production; it deliberately falsifies measurements.")
     parser.add_argument("--inject-load-ms", type=float, default=0.0,
                         help="TEST-ONLY (P1-2 diagnostics): add N ms of artificial work per frame to "
                              "reproduce the consumer-slower-than-sensor condition a tracked subject "
@@ -218,19 +223,24 @@ def main():
                         help="P1-1 max PREDICTED frames before a joint goes LOST (2-6 typical).")
     parser.add_argument("--tracker-reacquire-frames", type=int, default=5,
                         help="P1-1 frames to blend predicted -> measured on reacquisition (never teleport).")
-    # ---- P1-4 ----
-    parser.add_argument("--recovery", dest="recovery", action="store_true", default=True,
-                        help="P1-4 (default ON): skeleton-level constraints + long-horizon recovery. "
-                             "Catches a joint that is CONFIDENTLY WRONG for longer than P1-1's "
-                             "prediction horizon, using bone lengths and joint angles rather than "
-                             "model confidence.")
+    # ---- P1-4: REJECTED / EXPERIMENTAL -- NOT FOR SHIPPING (see docs/P1_4_CLOSEOUT_2026-09-08.md)
+    # DEFAULT OFF. Live human validation on 2026-09-08 showed P1-4 MISSED the controlled
+    # 0.85 m knee drift/teleport (GEOMETRIC_REJECT=0, RECONSTRUCT=0) while raising P0 limb
+    # holds 0.47% -> 17.83% and LOST episodes 1 -> 122. The bone-length signal it rejects on
+    # overlaps the natural noise floor of this pipeline, so no threshold separates them.
+    # Retained for forensic/research use ONLY; do not enable in production.
+    parser.add_argument("--recovery", dest="recovery", action="store_true", default=False,
+                        help="RESEARCH ONLY -- P1-4 is REJECTED (default OFF). Skeleton-level "
+                             "constraints + long-horizon recovery. It did NOT catch the controlled "
+                             "corruption on hardware and it degraded the avatar; see "
+                             "docs/P1_4_CLOSEOUT_2026-09-08.md before enabling.")
     parser.add_argument("--no-recovery", dest="recovery", action="store_false",
-                        help="disable P1-4 (A/B against P1-1 only).")
+                        help="explicitly disable P1-4 (already the default).")
     parser.add_argument("--recovery-max-frames", type=int, default=30,
-                        help="P1-4 max frames a joint may be geometrically reconstructed before it "
-                             "goes LOST rather than drifting indefinitely.")
+                        help="RESEARCH ONLY (P1-4 rejected): max frames a joint may be "
+                             "geometrically reconstructed before it goes LOST.")
     parser.add_argument("--recovery-blend-frames", type=int, default=8,
-                        help="P1-4 frames to blend a recovered joint back to the real measurement.")
+                        help="RESEARCH ONLY (P1-4 rejected): frames to blend a recovered joint back.")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     args = parser.parse_args()
 
@@ -301,11 +311,14 @@ def main():
             recovery = KR.KinematicRecovery(KR.RecoveryConfig(
                 max_reconstruct_frames=args.recovery_max_frames,
                 recover_frames=args.recovery_blend_frames))
-            print("[wb] P1-4 kinematic recovery ON (reconstruct<=%d, blend=%d)"
+            print("[wb] *** WARNING: P1-4 kinematic recovery ENABLED (reconstruct<=%d, blend=%d)"
                   % (args.recovery_max_frames, args.recovery_blend_frames))
+            print("[wb] *** P1-4 is REJECTED for production -- research use only.")
+            print("[wb] *** See docs/P1_4_CLOSEOUT_2026-09-08.md")
         stale_rgb = 0         # P1-2: RGB frames discarded as stale (never inferred on)
         stale_depth = 0       # P1-2: depth frames discarded as stale
         frames = 0            # monotonic total frame count (never reset)
+        inject = None         # TEST-ONLY --inject-drift-file: active injection, or None
         win_frames = 0        # LOW-D: separate windowed counter for the fps estimate (reset each log window)
         sent = 0
         last_mid_hip = None   # M11: hold last good mid-hip through transient hip depth-holes
@@ -433,6 +446,42 @@ def main():
             hip_z = float(mid_hip[2])
             # M16: the hips' own root-relative z, so a hole's zrel is offset relative to the hips (origin).
             zrel_hip = float((zrel[11] + zrel[12]) / 2.0)
+
+            # ---- TEST-ONLY landmark injection (--inject-drift-file) -----------------
+            # Falsifies ONE joint at high confidence BEFORE P1-1/P1-4 see it, so a live
+            # run can exercise the "confidently wrong" path on demand instead of waiting
+            # for nature to produce one. Off unless the flag is set AND the file appears.
+            if args.inject_drift_file:
+                if inject is None and os.path.exists(args.inject_drift_file):
+                    try:
+                        with open(args.inject_drift_file) as _f:
+                            _spec = json.load(_f)
+                        os.remove(args.inject_drift_file)
+                        inject = {"mode": _spec.get("mode", "drift"),
+                                  "joint": int(_spec.get("joint", 14)),
+                                  "meters": float(_spec.get("meters", 0.85)),
+                                  "frames": int(_spec.get("frames", 25)),
+                                  "i": 0, "seq0": frames}
+                        print("[INJECT] %s joint=%d %.2fm over %d frames (seq %d)"
+                              % (inject["mode"], inject["joint"], inject["meters"],
+                                 inject["frames"], frames))
+                    except Exception as _e:
+                        print("[INJECT] bad spec: %s" % _e)
+                        inject = None
+                if inject is not None:
+                    _j = inject["joint"]
+                    _i = inject["i"]
+                    if _i >= inject["frames"]:
+                        print("[INJECT] end (seq %d)" % frames)
+                        inject = None
+                    else:
+                        # drift ramps linearly (P1-1 tracks it, only geometry catches it);
+                        # teleport applies the full offset at once.
+                        _f = (float(_i + 1) / inject["frames"]) if inject["mode"] == "drift" else 1.0
+                        xyz_cam[_j, 0] += inject["meters"] * _f
+                        conf[_j] = max(float(conf[_j]), 0.85)   # CONFIDENTLY wrong
+                        measured[_j] = True
+                        inject["i"] = _i + 1
 
             # ---- P1-1 tracker -------------------------------------------------------
             # Consumes the P0-smoothed metric keypoints and returns temporally-validated
