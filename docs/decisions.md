@@ -303,3 +303,70 @@ correctness, not cost.**
 - Add another heuristic rejection layer on the bone-length signal.
 - Re-enable `--recovery` in production, or ship a launcher that passes it.
 - Treat ADR-P008's −68% replay result as valid — it did not reproduce on hardware.
+
+---
+
+## ADR-P010 — F-08: surface-aware depth sampling; `depthQuality` is advisory
+
+- **Status:** Accepted 2026-09-08 (CONDITIONAL — see the open item). Report:
+  `docs/F08_SURFACE_AWARE_DEPTH_IMPLEMENTATION_2026-09-08.md`.
+- **Context:** ADR-P009 closed P1-4 and the F-08 audit found why: the pipeline carries a quality
+  signal for the 2D landmark only. The single depth check counted valid pixels (passing 98%+) while
+  15–32% of windows straddled a >150 mm discontinuity, producing 10.4× larger depth jumps at p99.
+- **Decision:** `sample_depth_surface` splits the sampling window into depth surfaces (gap > 100 mm)
+  and takes **the surface nearest the keypoint pixel** — not the nearest depth, not the largest
+  cluster. It returns `depthQuality` in [0,1] and per-window diagnostics. `sample_depth_mm` stays as
+  a wrapper; `backproject` keeps its 2-tuple default return.
+  **`depthQuality` is ADVISORY: nothing gates, suppresses or reweights on it.**
+
+### Measured
+
+- **94.07%** of 22,745 real joint-windows produce a **byte-identical** depth; a single-surface window
+  is provably unchanged (400/400 vs the legacy sampler). Delta p95 128.8 mm, p99 236.0 mm.
+- Quality separates clean from contaminated windows **1.49×** (0.944 vs 0.632), 90.7% accuracy at a
+  single threshold. Reported as evidence; **not** used as an operating point.
+- **3× FASTER than the sampler it replaces** — 2.813 vs 8.430 ms for 133 keypoints. `np.percentile`
+  re-sorts and has large fixed overhead on 25-element windows.
+- Live: camera→apply p50 **40.8 → 37.1 ms**, fps 21.32 → 21.34, rotation p95 **17.66 → 14.85°**,
+  p99 **36.28 → 30.05°**, packet loss 0.
+- Tests **32/32**; P1-1 37/37, P1-4 39/39, Unity 47/47 unchanged.
+
+### The negative result, recorded deliberately
+
+A wrist physically hidden behind the torso scores `depthQuality` **0.881 — high** — with depth valid
+100% of frames. **Depth quality cannot see a hallucinated limb**, because the measurement itself is
+excellent; it is measuring the wrong object. The remaining defect is upstream 2D semantic/occlusion
+uncertainty and no depth-side signal reaches it.
+
+### Open item — CLOSED
+
+The initially unattributable gate-hold/LOST delta was closed by a controlled A/B: two back-to-back
+live runs, identical block wording, sampler as the only difference, in-block frames only, input
+motion matched to **1.2%**.
+
+| metric | legacy | surface-aware |
+|---|---|---|
+| P0 gate held | 0.58% | **0.45%** |
+| LOST | 3 | **0** |
+| snaps > 45° | 18 | **15** |
+| snaps > 20° | 86 | 105 |
+| camera→apply p50 | 45.2 ms | **39.6 ms** |
+| fps | 20.18 | **21.25** |
+
+The earlier apparent regression was a reworded block-2 instruction plus prep-gap frames where the
+operator is repositioning. **Walk — the block that produced it — is now 0.00% held and 0 LOST in
+both passes.** Per block, holds follow input motion, not the sampler: fast-legs had +32% motion under
+surface-aware and gained holds; dance had −23% motion and lost them.
+
+Residual: mid-range rotation tail (p95 +5%, >20° +22%) against *fewer* large snaps (>45° −17%) with
+1.2% more motion — mixed in direction, within run-to-run variation, claimed neither way.
+
+**Status: ACCEPTED. `--surface-depth` is the shipping default.**
+
+### DO NOT
+
+- Gate, suppress or reweight a joint on `depthQuality` until that A/B exists.
+- Treat `depthQuality` as a probability — it is a geometry score, uncalibrated by design.
+- Expect it to solve the hallucinated-limb case; it provably does not.
+- Re-tune `SURFACE_GAP_MM` without evidence; it is reasoned from limb thickness vs background
+  separation and validated by the 94% identical rate.

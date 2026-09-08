@@ -210,6 +210,14 @@ def main():
                              "(maxSize=4) stays full and every pose is ~4 frames (~133 ms) stale.")
     parser.add_argument("--no-latest-frame", dest="latest_frame", action="store_false",
                         help="P1-2 OFF: original FIFO behaviour (for A/B).")
+    # ---- F-08: surface-aware depth sampling (measurement change, quality is ADVISORY) ----
+    parser.add_argument("--surface-depth", dest="surface_depth", action="store_true", default=True,
+                        help="F-08 (default ON): separate depth surfaces inside the sampling window "
+                             "and take the one at the keypoint pixel, instead of a percentile over "
+                             "every valid pixel. Single-surface windows are unchanged; only "
+                             "multi-surface windows differ.")
+    parser.add_argument("--no-surface-depth", dest="surface_depth", action="store_false",
+                        help="A/B only: restore the pre-F-08 whole-window percentile sampler.")
     # ---- F-08 AUDIT: DIAG-ONLY, default OFF, no effect on the emitted pose ----
     parser.add_argument("--audit-log", action="store_true", default=False,
                         help="F-08 AUDIT (DIAG-ONLY, default OFF): write audit_log.jsonl with, per "
@@ -342,6 +350,9 @@ def main():
         stale_depth = 0       # P1-2: depth frames discarded as stale
         frames = 0            # monotonic total frame count (never reset)
         inject = None         # TEST-ONLY --inject-drift-file: active injection, or None
+        # F-08 depth-quality aggregate, flushed on the periodic log tick.
+        # [qSum, n, clusterSum, occSum, selSpreadSum, winSpreadSum, validSum, multiCount]
+        dq_agg = dict((n, [0.0] * 8) for n, _ in AUDIT_JOINTS)
         win_frames = 0        # LOW-D: separate windowed counter for the fps estimate (reset each log window)
         sent = 0
         last_mid_hip = None   # M11: hold last good mid-hip through transient hip depth-holes
@@ -420,7 +431,25 @@ def main():
                 else:
                     bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
 
-            xyz_cam, measured = D.backproject(uv, depth, rgb_w, rgb_h, intr, k=args.kwin)
+            # F-08: quality + per-window diagnostics come back alongside the SAME xyz/measured
+            # contract. depthQuality is ADVISORY in this change -- nothing consumes it to gate,
+            # suppress or reweight a joint. See docs/F08_SURFACE_AWARE_DEPTH_IMPLEMENTATION_*.
+            xyz_cam, measured, dquality, ddiag = D.backproject(
+                uv, depth, rgb_w, rgb_h, intr, k=args.kwin,
+                with_quality=True, legacy=not args.surface_depth)
+            for _n, _i in AUDIT_JOINTS:          # periodic aggregate (NOT per frame)
+                _agg = dq_agg[_n]
+                _agg[0] += float(dquality[_i])
+                _agg[1] += 1
+                _dg = ddiag[_i]
+                if _dg is not None:
+                    _agg[2] += _dg["clusterCount"]
+                    _agg[3] += _dg["selectedClusterOccupancy"]
+                    _agg[4] += _dg["selectedClusterSpread"]
+                    _agg[5] += _dg["depthWindowSpread"]
+                    _agg[6] += _dg["validPixelCount"]
+                    if _dg["clusterCount"] > 1:
+                        _agg[7] += 1
             # ---- F-08 AUDIT (DIAG-ONLY) -------------------------------------------
             # Observes exactly what production just computed: the RAW SimCC confidence, the 2D
             # pixel, the depth-validity flag, and the CONTENTS of the depth window that produced
@@ -461,6 +490,13 @@ def main():
                         _cy0, _cy1 = max(0, _y - _ck), min(depth.shape[0], _y + _ck + 1)
                         if _cx1 > _cx0 and _cy1 > _cy0:
                             _e["crop"] = depth[_cy0:_cy1, _cx0:_cx1].astype(int).tolist()
+                    _e["q"] = round(float(dquality[_i]), 4)
+                    _dgj = ddiag[_i]
+                    if _dgj is not None:
+                        _e["cl"] = _dgj["clusterCount"]
+                        _e["occ"] = round(_dgj["selectedClusterOccupancy"], 3)
+                        _e["csp"] = round(_dgj["selectedClusterSpread"], 1)
+                        _e["rsn"] = _dgj["reason"]
                     _rec["j"][_n] = _e
                 audit_f.write(json.dumps(_rec) + chr(10))
 
@@ -686,6 +722,30 @@ def main():
                 print("[wb] frames=%d sent=%d hip_z=%.2fm measured_body=%d/33 fps~%.1f age=%.0fms stale=%d"
                       % (frames, sent, hip_z, cov, win_frames / (time.time() - t_log + 1e-6),
                          _cam_lat_ms, stale_rgb))
+                # F-08 periodic depth-quality aggregate (per tick, never per frame).
+                _tot = sum(v[1] for v in dq_agg.values())
+                if _tot > 0:
+                    _q = sum(v[0] for v in dq_agg.values()) / _tot
+                    _mc = 100.0 * sum(v[7] for v in dq_agg.values()) / _tot
+                    _ws = sum(v[5] for v in dq_agg.values()) / _tot
+                    print("[wb] depthQuality mean=%.3f multiSurface=%.1f%% winSpread=%.0fmm (%s)"
+                          % (_q, _mc, _ws, "surface-aware" if args.surface_depth else "LEGACY"))
+                    if audit_f is not None:
+                        audit_f.write(json.dumps({"seq": frames, "t": time.time(),
+                                                  "event": "F08_DEPTH_AGGREGATE",
+                                                  "surfaceAware": bool(args.surface_depth),
+                                                  "joints": dict(
+                                                      (k, {"depthQuality": round(v[0] / v[1], 4),
+                                                           "clusterCount": round(v[2] / v[1], 3),
+                                                           "selectedClusterOccupancy": round(v[3] / v[1], 3),
+                                                           "selectedClusterSpread": round(v[4] / v[1], 1),
+                                                           "depthWindowSpread": round(v[5] / v[1], 1),
+                                                           "validPixelCount": round(v[6] / v[1], 2),
+                                                           "multiSurfacePct": round(100.0 * v[7] / v[1], 2)})
+                                                      for k, v in dq_agg.items() if v[1])}) + chr(10))
+                    for _v in dq_agg.values():
+                        for _i2 in range(8):
+                            _v[_i2] = 0.0
                 win_frames = 0
                 t_log = time.time()
 

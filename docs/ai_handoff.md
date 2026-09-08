@@ -17,7 +17,8 @@ Purpose: the next agent can continue without re-deriving context.
 | **P1-1** — per-joint temporal tracking + plausibility | **COMPLETE** | P004 |
 | **P1-2** — latest-frame queue policy | **COMPLETE**, live human A/B | P005 |
 | **P1-4** — skeleton constraints + long-horizon recovery | **REJECTED** — default OFF, retained for forensics only | P008 (superseded) |
-| Next | palm / foot work — **NOT STARTED** | — |
+| **F-08** — surface-aware depth sampling + advisory `depthQuality` | **COMPLETE**, A/B validated | P010 |
+| Next | palm / foot work, or upstream 2D occlusion uncertainty — **NOT STARTED** | — |
 
 **Sidecar half, measured:** camera→UDP **161.8 → 62.0 ms** · frame age **131.5 → 31.4 ms** · limb peak
 displacement **−67…−76%** · RGB/depth pairing max error **54.6 → 21.2 ms** · P1-1 cost **0.085 ms**.

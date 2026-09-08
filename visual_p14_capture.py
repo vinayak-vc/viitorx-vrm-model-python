@@ -48,45 +48,42 @@ INJECTIONS = [
 # (key, seconds, title, instruction lines)
 BLOCKS = [
     ("1", 15, "STAND STILL",
-     ["Stand still, arms relaxed at your sides.",
-      "Full body in frame. Do not move."]),
+     ["Stand facing the camera, feet slightly apart.",
+      "Let both arms hang down at your sides.",
+      "Stay as still as you can. Do not shift your weight."]),
     ("2", 20, "WALK TOWARD / AWAY",
-     ["Walk TOWARD the camera, then AWAY. Repeat.",
-      "Stay within the frame at the near end."]),
+     ["Walk SLOWLY toward the camera until you are about 1 metre away.",
+      "Then walk SLOWLY backwards until your whole body is in frame again.",
+      "Repeat that twice. Keep facing the camera the whole time."]),
     ("3", 20, "FAST ARMS",
-     ["Fast waving, both arms. Large swings.",
-      "Then reach OVERHEAD repeatedly, fast."]),
+     ["1) Wave BOTH arms fast, like you are signalling someone.",
+      "2) Then swing both arms in big circles.",
+      "3) Then reach both hands straight UP overhead and back down,",
+      "   fast, over and over until the timer ends."]),
     ("4", 20, "FAST LEGS",
-     ["Kicks, then squats.",
-      "Rapid knee bends, then fast stepping."]),
-    ("5", 25, "DANCE  (production stress test)",
-     ["Dance freely: fast arms, fast legs, body turns,",
-      "crossed limbs, rapid direction changes."]),
-    ("6", 30, "HAND BEHIND TORSO  *** CRITICAL ***",
-     ["LEFT hand behind your back:  hold 3s, release.",
-      "Again: hold 8s, release.",
-      "Now repeat both with the RIGHT hand."]),
-    ("7", 25, "KNEE / LEG PARTIAL OCCLUSION  *** CRITICAL ***",
-     ["Stand BEHIND a chair so one knee is hidden, hold 5s.",
-      "No chair? Cross one leg fully behind the other, hold 5s.",
-      "Repeat on the other side. 2x each."]),
-    ("8", 25, "INJECTED DRIFT / TELEPORT  *** WATCH THE RIGHT KNEE ***",
-     ["Stand still, full body in frame, and WATCH THE AVATAR RIGHT LEG.",
-      "At ~4s a slow impossible drift is injected for 25 frames.",
-      "At ~14s a teleport is injected for 10 frames.",
-      "Note whether you SEE either one."]),
-    ("9", 25, "REACQUISITION AFTER LOSS",
-     ["Step FULLY out of frame for 5s, then step back in. Repeat.",
-      "Then cover the lens with your hand for 5s and uncover."]),
+     ["1) Kick your RIGHT leg forward, then your LEFT. Keep alternating.",
+      "2) Then do about 5 squats.",
+      "3) Then march on the spot, lifting your knees HIGH and fast."]),
+    ("5", 25, "DANCE  (hardest test - be energetic)",
+     ["Just dance. Move arms and legs at the same time.",
+      "Turn your body left and right. Change direction often.",
+      "The more energetic the better - this is the stress test."]),
+    ("6", 30, "HAND BEHIND TORSO",
+     ["1) LEFT hand behind your back. Hold 3 seconds. Return it to your side.",
+      "2) LEFT hand behind your back again. Hold 8 seconds. Return it.",
+      "3) Now RIGHT hand behind your back. Hold 3 seconds. Return it.",
+      "4) RIGHT hand behind your back again. Hold 8 seconds. Return it."]),
 ]
 
 
 # F-08 AUDIT (Part 9): a SUSTAINED occlusion, long enough that the wrist stays wrong well past
 # P1-1's 6-frame prediction horizon -- the "confident-but-wrong" case, on demand.
-AUDIT_BLOCK = ("10", 45, "SUSTAINED HAND BEHIND TORSO  *** F-08 PART 9 ***",
-               ["LEFT hand behind your back. HOLD IT THERE for a FULL 20 SECONDS.",
-                "Do not bring it out. Stand otherwise still.",
-                "Then bring it out, pause 5s, and repeat with the RIGHT hand for 15s."])
+AUDIT_BLOCK = ("10", 45, "LONG HOLD - HAND BEHIND BACK",
+               ["1) LEFT hand behind your back. KEEP IT THERE for 20 SECONDS.",
+                "   Count slowly to 20. Do not bring it out early.",
+                "   Stand otherwise still, facing the camera.",
+                "2) Bring it out. Rest 5 seconds, arms at your sides.",
+                "3) Now RIGHT hand behind your back for the last 15 seconds."])
 
 
 def countdown(seconds, label, triggers=None, fired=None):
@@ -140,6 +137,13 @@ def main():
     ap.add_argument("--blocks", default="", help="comma-separated subset, e.g. 1,8")
     ap.add_argument("--dry-run", action="store_true", help="rehearse prompts without the camera")
     ap.add_argument("--lead-in", type=float, default=8.0)
+    ap.add_argument("--legacy-depth", action="store_true",
+                    help="F-08 A/B: run the sidecar with --no-surface-depth (the pre-F-08 whole-window "
+                         "percentile sampler). Block wording is unchanged, so the two passes differ "
+                         "ONLY in the sampler.")
+    ap.add_argument("--prep", type=float, default=7.0,
+                    help="seconds shown BEFORE each block, with that block's instructions on "
+                         "screen, so the operator can read them and get into position.")
     ap.add_argument("--audit", action="store_true",
                     help="F-08 AUDIT: add --audit-log to the sidecar and append block 10, a "
                          "SUSTAINED hand-behind-torso hold for the confident-but-wrong root-cause "
@@ -157,7 +161,7 @@ def main():
 
     # rollback deliberately passes NOTHING, so the run exercises the shipping default.
     recovery_flag = {"p14": "--recovery", "p13": "--no-recovery"}.get(a.which, "")
-    total = sum(b[1] for b in blocks) + a.lead_in + 3.0
+    total = sum(b[1] for b in blocks) + a.lead_in + 3.0 + a.prep * len(blocks)
     py = os.path.join(".venv", "Scripts", "python.exe")
     if not os.path.exists(py):
         py = sys.executable
@@ -169,6 +173,8 @@ def main():
     print(" Blocks   : %s" % ", ".join(b[0] for b in blocks))
     print(" Duration : %.0f s" % total)
     print(" Log dir  : %s" % a.log_dir)
+    print(" Sampler  : %s" % ("LEGACY (--no-surface-depth)" if a.legacy_depth
+                              else "SURFACE-AWARE (shipping default)"))
     print(" Unity    : must be in PLAY, pipelineLogging = ON, avatar visible")
     print("=" * 68)
 
@@ -187,6 +193,8 @@ def main():
             cmd.append(recovery_flag)
         if a.audit:
             cmd.append("--audit-log")
+        if a.legacy_depth:
+            cmd.append("--no-surface-depth")
         cmd += ["--inject-drift-file", stale,
                 "--seconds", str(int(total) + 5)] + SIDECAR_ARGS
         print("\n[starting sidecar] %s\n" % " ".join(cmd))
@@ -218,8 +226,14 @@ def main():
         trig = None
         if key == "8" and not a.dry_run:
             trig = [(off, make_injector(spec, a.log_dir)) for off, spec in INJECTIONS]
+        # Read-and-position gap. The block's own timer does not start until this ends, so the
+        # operator is never mid-transition while a block is being measured.
+        if a.prep > 0:
+            countdown(a.prep, ">>> READ THE STEPS - GET IN POSITION")
+        print("   %s" % ("-" * 62))
+        print("   *** GO - START DOING IT NOW ***")
         t0 = time.time()
-        countdown(secs, "BLOCK %s" % key, triggers=trig, fired=injections)
+        countdown(secs, "BLOCK %s RECORDING" % key, triggers=trig, fired=injections)
         t1 = time.time()
         records.append({"block": key, "title": title,
                         "tStart": round(t0, 4), "tEnd": round(t1, 4),
@@ -235,6 +249,7 @@ def main():
     out = os.path.join(a.log_dir, "blocks.json")
     with open(out, "w") as f:
         json.dump({"pass": a.which, "recovery": recovery_flag,
+                   "sampler": "legacy" if a.legacy_depth else "surface-aware",
                    "blocks": records, "injections": injections}, f, indent=2)
     print("\nblock boundaries -> %s" % out)
     print("\n" + "=" * 68)
