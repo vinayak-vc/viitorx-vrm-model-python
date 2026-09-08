@@ -142,6 +142,87 @@ Cross-repo decisions are recorded in **both** files.
 
 ---
 
+## ADR-P008 — P1-4: skeleton constraints + long-horizon recovery; bone length is NOT a veto on this pipeline
+
+- **Status:** Accepted 2026-09-08 (CONDITIONAL — see the limits). Unity counterpart: none required.
+- **Context:** P1-1 reasons about one joint at a time, so it cannot catch a joint that is
+  *confidently wrong and stays wrong* past its 6-frame prediction horizon — the hip-correct /
+  ankle-correct / knee-wrong case. Only skeleton-level evidence can.
+- **Decision:** new `kinematic_recovery.py` running AFTER P1-1 and BEFORE the message build:
+  robust per-bone length estimator (median + MAD over a bounded window, trusted samples only),
+  a two-anchor circle-intersection solver for a chain middle joint, scale-free interior-angle
+  limits, a `GEOMETRICALLY_SUSPECT` observation computed **without reference to model
+  confidence**, staged recovery (P1-1 predict → P1-4 reconstruct → LOST), and a bounded
+  recovery blend. `RECOVERING` added to `TrackingState` (additive; P1-1 never enters it).
+
+### THE MEASUREMENT THAT CHANGED THE DESIGN
+
+Bone-length constancy is the obvious skeleton prior. **On this pipeline it is not usable as a
+rejection criterion.** Measured over 853 frames of real human capture, relative deviation of each
+bone from its OWN median:
+
+| statistic | value |
+|---|---|
+| median | 0.101 |
+| p95 | **0.589** |
+| p99 | **1.791** |
+| max | 3.528 |
+| worst bone (R-shoulder→R-elbow) p95 | **1.514** |
+
+A "bone" in this pipeline routinely varies 50–150% on perfectly healthy frames. An initial
+`seg_reject = 0.45`, set by reasoning rather than measurement, therefore fired on **25.3% of clean
+joint-frames**, drove TRACKED from 95.7% down to **67.6%**, pushed 11.4% of joints to LOST and moved
+joints by up to 0.56 m on healthy data. It was a false-positive machine.
+
+**Corrected:** `seg_reject = 1.80` (above the measured p99 of natural variation) →
+false positives **25.3% → 1.39%**, joint-frames modified **14.97% → 0.54%**.
+
+By contrast the **interior angle** is scale-free and clean: measured min 30.5°, max 179.3° over
+3409 real chain-samples, so limits of [20°, 195°] produce **zero** false positives. **The angle
+check carries the real detection load; bone length is corroborating evidence only.**
+
+### Second measurement: reconstruction needs a trustworthy prior
+
+Reconstructing a 20-frame knee gap from the learned lengths was **worse than holding**
+(max error 0.170 m → 0.327 m). Cause: the hip-knee estimator accepted only **45 of 818** samples
+(5.5%) — an estimate built on an unrepresentative 5% does not describe a real limb. Added a
+`len_min_accept_ratio = 0.30` gate: a bone whose samples are mostly rejected may score plausibility
+but **may not drive reconstruction**. The regression disappeared.
+
+### Measured result (real capture, 853 frames, ground truth = raw un-injected measurement)
+
+| adversarial case | P1-1 only | P1-1+P1-4 | verdict |
+|---|---|---|---|
+| slow impossible knee drift, 25 frames | 0.6265 m | **0.1993 m** | **BETTER (−68%)** |
+| hi-conf knee teleport, 10 frames | 0.5746 m | 0.5701 m | same |
+| missing knee, 5 / 20 frames | 0.1702 m | 0.1702 m | same |
+| frozen wrist, 25 frames | 0.6622 m | 0.6617 m | same |
+| bad depth on elbow, 10 frames | 0.8707 m | 0.9056 m | same |
+
+**P1-4 is narrow: it delivers one large win on exactly the case it was specified for, and regresses
+nothing.** The "same" rows are cases P1-1 already handles, where P1-4 correctly does not engage.
+
+Cost: **0.093 ms median / 0.144 ms p99** (P1-4 alone); combined P1-1+P1-4 on hardware **0.219 ms
+median / 0.303 ms p99**. `host→UDP` unchanged (29.81 vs 30.3 ms).
+
+### HONEST LIMITS
+
+- **Reconstruction is effectively dormant on real captures** because no bone estimator currently
+  reaches the 30% acceptance ratio. P1-4's value today is the *rejection* path. Reconstruction is
+  proven by deterministic tests but has not earned its place on live data.
+- A rejected joint that cannot be reconstructed becomes **LOST** (1.0% vs P1-1's 0.0%), which hands
+  it to P0's LimbGate to hold. Deliberately conservative, per the brief.
+- **Not visually validated on the avatar** (P1-4 Part 21) — that needs a human in front of the camera.
+
+### DO NOT
+
+- Re-tighten `seg_reject` toward 0.45 without new evidence — that number is measured, not chosen.
+- Use bone length as a veto on this pipeline; use the angle check.
+- Let a bone estimator with a low acceptance ratio drive reconstruction.
+- Treat P1-4 as a smoothing stage — a healthy joint passes through byte-identical.
+
+---
+
 ## Open questions (no ADR yet — decide deliberately)
 
 - **Confidence normalisation.** Confidence is an un-normalised SimCC peak (Unity audit F-08), so the

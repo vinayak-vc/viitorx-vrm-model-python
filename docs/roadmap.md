@@ -14,6 +14,7 @@ are the Unity repo's. See `../AGENTS.md` §2.
 | **P0-2** | 0.35 m distal caps + legs into the protected set | **done**, live-verified | P003 |
 | **P1-1** | Per-joint temporal tracking + plausibility | **done**, 6/6 adversarial | P004 |
 | **P1-2** | Latest-frame queue policy (frame freshness) | **done**, live A/B | P005 |
+| **P1-4** | Skeleton constraints + long-horizon recovery | **done** (conditional: rejection works, reconstruction dormant) | P008 |
 
 **Cumulative measured effect on the sidecar half:** camera→UDP **161.8 → 62.0 ms**; frame age
 **131.5 → 31.4 ms**; limb peak displacement **−67…−76%**; RGB/depth pairing max error

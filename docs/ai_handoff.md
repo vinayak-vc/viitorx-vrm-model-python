@@ -16,7 +16,8 @@ Purpose: the next agent can continue without re-deriving context.
 | **P0-2** — distal caps + legs protected | **COMPLETE**, live-verified | P003 |
 | **P1-1** — per-joint temporal tracking + plausibility | **COMPLETE** | P004 |
 | **P1-2** — latest-frame queue policy | **COMPLETE**, live human A/B | P005 |
-| Next | short-gap prediction / confidence normalisation — **NOT STARTED** | — |
+| **P1-4** — skeleton constraints + long-horizon recovery | **COMPLETE** (conditional) | P008 |
+| Next | palm / foot work — **NOT STARTED** | — |
 
 **Sidecar half, measured:** camera→UDP **161.8 → 62.0 ms** · frame age **131.5 → 31.4 ms** · limb peak
 displacement **−67…−76%** · RGB/depth pairing max error **54.6 → 21.2 ms** · P1-1 cost **0.085 ms**.
@@ -94,15 +95,20 @@ before `pipeline_logs/` was added to `.gitignore`. They are regenerable capture 
 
 ## Next recommended task
 
-**Short-gap prediction + blended recovery** (`roadmap.md` → Next candidates).
+**Make P1-4 reconstruction actually usable on live data** — or decide it cannot be, and say so.
 
-Rationale: it is the only *known* functional gap in this repo's own scope, the prerequisite is already
-met (P1-1 supplies per-joint position, velocity, acceleration and validity state), and it directly
-closes the one adversarial case that still degrades — a sustained high-confidence teleport.
+P1-4 (ADR-P008) shipped with its *rejection* path working (slow impossible drift: 0.6265 m → 0.1993 m,
+−68%) but its *reconstruction* path effectively **dormant on real captures**: no bone-length estimator
+reaches the 30% acceptance ratio required to drive reconstruction, because this pipeline'''s landmarks
+are not metrically stable (bone deviation p99 = 1.791).
 
-Do it in this order: (1) reproduce the failure with `evaluate_p1.py` case E, (2) implement inside
-`JointTracker` only, (3) prove it with the existing adversarial harness **and** confirm the legitimate
-dancing metrics are unchanged, (4) ADR-P008 with the measurement and the new honest limit.
+Two honest options, pick one deliberately:
+1. **Fix the metric stability upstream** so bone lengths mean something — this is the same root cause as
+   confidence normalisation (audit F-08) and would unlock reconstruction as a side effect.
+2. **Accept that reconstruction is not viable here** and simplify P1-4 to the angle-based rejection
+   path, removing the solver rather than carrying unused code.
 
-**Do not** start it by raising `max_predict_frames` — that trades one failure for another, and the
-bound exists on purpose.
+Do NOT start by lowering `len_min_accept_ratio` — that gate exists because reconstructing from a 5%
+sample was measurably WORSE than holding (0.170 m → 0.327 m).
+
+Also outstanding: **P1-4 has not been visually validated on the avatar** (brief Part 21) — needs a human.

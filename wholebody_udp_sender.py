@@ -37,6 +37,7 @@ import rtmw3d_pose as R
 import oak_depth as D
 import smoothing
 import joint_tracker as JT   # P1-1 per-joint temporal tracking + plausibility
+import kinematic_recovery as KR   # P1-4 skeleton constraints + long-horizon recovery
 
 NUM_BODY = 33
 
@@ -217,6 +218,19 @@ def main():
                         help="P1-1 max PREDICTED frames before a joint goes LOST (2-6 typical).")
     parser.add_argument("--tracker-reacquire-frames", type=int, default=5,
                         help="P1-1 frames to blend predicted -> measured on reacquisition (never teleport).")
+    # ---- P1-4 ----
+    parser.add_argument("--recovery", dest="recovery", action="store_true", default=True,
+                        help="P1-4 (default ON): skeleton-level constraints + long-horizon recovery. "
+                             "Catches a joint that is CONFIDENTLY WRONG for longer than P1-1's "
+                             "prediction horizon, using bone lengths and joint angles rather than "
+                             "model confidence.")
+    parser.add_argument("--no-recovery", dest="recovery", action="store_false",
+                        help="disable P1-4 (A/B against P1-1 only).")
+    parser.add_argument("--recovery-max-frames", type=int, default=30,
+                        help="P1-4 max frames a joint may be geometrically reconstructed before it "
+                             "goes LOST rather than drifting indefinitely.")
+    parser.add_argument("--recovery-blend-frames", type=int, default=8,
+                        help="P1-4 frames to blend a recovered joint back to the real measurement.")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     args = parser.parse_args()
 
@@ -280,6 +294,15 @@ def main():
                 reacquire_frames=args.tracker_reacquire_frames))
             print("[wb] P1-1 joint tracker ON (predict<=%d, reacquire=%d)"
                   % (args.tracker_predict_frames, args.tracker_reacquire_frames))
+        recovery = None
+        if args.tracker and args.recovery:
+            # P1-4 sits AFTER P1-1 and consumes its output. It is meaningless without the
+            # tracker, so it is gated on it.
+            recovery = KR.KinematicRecovery(KR.RecoveryConfig(
+                max_reconstruct_frames=args.recovery_max_frames,
+                recover_frames=args.recovery_blend_frames))
+            print("[wb] P1-4 kinematic recovery ON (reconstruct<=%d, blend=%d)"
+                  % (args.recovery_max_frames, args.recovery_blend_frames))
         stale_rgb = 0         # P1-2: RGB frames discarded as stale (never inferred on)
         stale_depth = 0       # P1-2: depth frames discarded as stale
         frames = 0            # monotonic total frame count (never reset)
@@ -426,6 +449,14 @@ def main():
                     dv_in[_j] = bool(measured[_j])
                 res = skel.update(pos_in, cnf_in, time.time(), depth_valid=dv_in,
                                   collect_events=(holds_f is not None))
+                # ---- P1-4: skeleton constraints + long-horizon recovery -----------------
+                # Consumes P1-1's output and repairs joints that are geometrically wrong or
+                # have outlived P1-1's prediction horizon. Healthy joints pass through
+                # unchanged. Result keeps P1-1's tuple shape plus an observation code.
+                if recovery is not None:
+                    rec_out = recovery.apply(res, pos_in,
+                                             collect_events=(holds_f is not None))
+                    res = dict((k, v[:6]) for k, v in rec_out.items())
                 conf_emit = conf.copy()
                 for _j, (_x, _y, _z, _c, _st, _usable) in res.items():
                     if _usable:
@@ -442,6 +473,19 @@ def main():
                         _e["seq"] = frames
                         holds_f.write(json.dumps(_e) + chr(10))
                     del skel.events[:]
+                if holds_f is not None and recovery is not None:
+                    if recovery.events:
+                        for _e in recovery.events:
+                            _e["seq"] = frames
+                            _e["stage"] = "P1-4"
+                            holds_f.write(json.dumps(_e) + chr(10))
+                        del recovery.events[:]
+                    # periodic aggregate only -- never per frame (P1-4 Part 15)
+                    if frames % 300 == 0:
+                        _t = recovery.telemetry()
+                        _t["seq"] = frames
+                        _t["event"] = "P1-4_TELEMETRY"
+                        holds_f.write(json.dumps(_t) + chr(10))
             else:
                 track_ms = 0.0
 

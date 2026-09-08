@@ -37,8 +37,11 @@ class TrackingState:
     WEAK = 1        # low confidence or questionable plausibility -> reduced influence
     PREDICTED = 2   # measurement unusable; extrapolating from velocity, bounded
     LOST = 3        # prediction window exhausted -> explicitly INVALID (never zero-filled)
+    RECOVERING = 4  # P1-4: a real measurement returned after reconstruction/loss and is being
+                    # blended back in. Additive -- P1-1 itself never enters this state, so its
+                    # own logic and tests are unchanged.
 
-    NAMES = {0: "TRACKED", 1: "WEAK", 2: "PREDICTED", 3: "LOST"}
+    NAMES = {0: "TRACKED", 1: "WEAK", 2: "PREDICTED", 3: "LOST", 4: "RECOVERING"}
 
     @staticmethod
     def name(s):
