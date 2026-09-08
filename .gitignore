@@ -223,3 +223,15 @@ __marimo__/
 # Keep the small BlazePose .blob device models tracked (they are needed to run Phase 1).
 pipeline_logs/model_log.jsonl
 pipeline_logs/
+
+# --- capture / diagnostic output (P0..P1-3 test artifacts, regenerated on demand) ---
+# Every acceptance + A/B run writes a log dir; none of it belongs in the repo.
+pipeline_logs*/
+hw_check/
+lat_*/
+p12_*/
+p12h_*/
+p12load_*/
+p13_*.jsonl
+probe*/
+p0_human_report.txt

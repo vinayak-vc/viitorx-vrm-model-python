@@ -32,7 +32,7 @@ import math
 # ---------------------------------------------------------------- states
 
 
-class TrackingState(object):
+class TrackingState:
     TRACKED = 0     # healthy measurement, used directly
     WEAK = 1        # low confidence or questionable plausibility -> reduced influence
     PREDICTED = 2   # measurement unusable; extrapolating from velocity, bounded
@@ -45,7 +45,7 @@ class TrackingState(object):
         return TrackingState.NAMES.get(s, "?")
 
 
-class TrackerConfig(object):
+class TrackerConfig:
     """All tunables in one place. Same object can be shared by every joint, or cloned
     per joint class (a wrist tolerates more speed than a hip)."""
 
@@ -119,7 +119,7 @@ class TrackerConfig(object):
             setattr(self, k, v)
 
 
-class JointTracker(object):
+class JointTracker:
     """Temporal state + plausibility for ONE joint. Reusable for every joint type."""
 
     __slots__ = (
@@ -591,7 +591,7 @@ WB_NAMES = {
 DEFAULT_TRACKED = sorted(WB_NAMES.keys())
 
 
-class SkeletonTracker(object):
+class SkeletonTracker:
     """Holds one JointTracker per tracked index and applies them in parent-before-child
     order so the neighbour check always sees an already-stabilised parent."""
 
