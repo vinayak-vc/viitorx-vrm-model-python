@@ -36,6 +36,7 @@ import depthai as dai
 import rtmw3d_pose as R
 import oak_depth as D
 import smoothing
+import joint_tracker as JT   # P1-1 per-joint temporal tracking + plausibility
 
 NUM_BODY = 33
 
@@ -193,6 +194,29 @@ def main():
     parser.add_argument("--zrel-fallback", action=argparse.BooleanOptionalAction, default=True,
                         help="M16: for keypoints with NO measured depth (holes), use the model's root-relative z as the depth offset from the hip plane instead of flattening to the plane. --no-zrel-fallback restores the flat hip-plane. If occluded limbs poke the wrong way in depth, flip ZREL_SIGN in this file.")
     parser.add_argument("--seconds", type=float, default=0.0, help="auto-stop after N seconds (0 = run forever)")
+    # ---- P1-1 ----
+    # ---- P1-2 frame freshness ----
+    parser.add_argument("--latest-frame", dest="latest_frame", action="store_true", default=True,
+                        help="P1-2 (default ON): drain the RGB/depth queues to the NEWEST frame each "
+                             "iteration instead of consuming them FIFO. q.get() returns the OLDEST "
+                             "frame, so when inference is slower than the sensor the host queue "
+                             "(maxSize=4) stays full and every pose is ~4 frames (~133 ms) stale.")
+    parser.add_argument("--no-latest-frame", dest="latest_frame", action="store_false",
+                        help="P1-2 OFF: original FIFO behaviour (for A/B).")
+    parser.add_argument("--inject-load-ms", type=float, default=0.0,
+                        help="TEST-ONLY (P1-2 diagnostics): add N ms of artificial work per frame to "
+                             "reproduce the consumer-slower-than-sensor condition a tracked subject "
+                             "causes (~21 fps), so the queue policy can be proven without a human. "
+                             "0 = off. Never set this in production.")
+    parser.add_argument("--tracker", dest="tracker", action="store_true", default=True,
+                        help="P1-1 per-joint temporal tracking + plausibility (default ON). Catches "
+                             "CONFIDENT-BUT-WRONG landmarks that the confidence gate cannot see.")
+    parser.add_argument("--no-tracker", dest="tracker", action="store_false",
+                        help="disable P1-1 (A/B against P0-only).")
+    parser.add_argument("--tracker-predict-frames", type=int, default=6,
+                        help="P1-1 max PREDICTED frames before a joint goes LOST (2-6 typical).")
+    parser.add_argument("--tracker-reacquire-frames", type=int, default=5,
+                        help="P1-1 frames to blend predicted -> measured on reacquisition (never teleport).")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     args = parser.parse_args()
 
@@ -247,6 +271,17 @@ def main():
                 depth_min_cutoff=args.depth_min_cutoff, depth_beta=args.depth_beta,
                 limb_indices=limb_idx, max_hold=args.max_hold_frames,
                 max_jump_overrides=limb_max_jump)
+        # P1-1: one reusable tracker per tracked joint. Runs AFTER the P0 smoother, so P0-2's
+        # cap/hold behaviour is untouched; P1 only adds temporal state + plausibility on top.
+        skel = None
+        if args.tracker:
+            skel = JT.SkeletonTracker(cfg=JT.TrackerConfig(
+                max_predict_frames=args.tracker_predict_frames,
+                reacquire_frames=args.tracker_reacquire_frames))
+            print("[wb] P1-1 joint tracker ON (predict<=%d, reacquire=%d)"
+                  % (args.tracker_predict_frames, args.tracker_reacquire_frames))
+        stale_rgb = 0         # P1-2: RGB frames discarded as stale (never inferred on)
+        stale_depth = 0       # P1-2: depth frames discarded as stale
         frames = 0            # monotonic total frame count (never reset)
         win_frames = 0        # LOW-D: separate windowed counter for the fps estimate (reset each log window)
         sent = 0
@@ -260,19 +295,55 @@ def main():
             # DIAG-ONLY (P0 acceptance S16): stage timestamps so camera->pose->depth->send is MEASURED,
             # not estimated. `getTimestamp()` is the OAK device clock (synchronised to the host by
             # depthai), so `dai.Clock.now() - ts` is the true sensor->host latency. Read-only.
+            # ---- P1-2 FRAME FRESHNESS -------------------------------------------
+            # q.get() hands back the OLDEST queued packet. With inference (~21 ms) slower
+            # than the 30 fps sensor the host queue (maxSize=4) stays full, so FIFO makes
+            # every pose ~4 frames stale -- the measured ~131 ms camera->host latency.
+            # Fix: take one blocking packet (guarantees liveness), then drain whatever else
+            # has arrived and keep only the NEWEST. Stale intermediates are discarded.
             _rgb_pkt = q_rgb.get()
+            _rgb_dropped = 0
+            _depth_dropped = 0
+            _depth_pkt = q_depth.get()
+            if args.latest_frame:
+                _extra = q_rgb.tryGetAll()
+                if _extra:
+                    _rgb_dropped = len(_extra)
+                    _rgb_pkt = _extra[-1]
+                _dextra = q_depth.tryGetAll()
+                _depth_cands = [_depth_pkt] + list(_dextra)
+                _depth_dropped = len(_depth_cands) - 1
+                # RGB/depth pairing: pick the depth packet CLOSEST IN TIMESTAMP to the
+                # selected RGB frame. Taking newest-RGB + oldest-depth (or vice versa)
+                # would mis-associate depth, which the brief explicitly forbids.
+                try:
+                    _rts = _rgb_pkt.getTimestamp()
+                    _depth_pkt = min(_depth_cands,
+                                     key=lambda _d: abs((_d.getTimestamp() - _rts).total_seconds()))
+                except Exception:
+                    _depth_pkt = _depth_cands[-1]
             t_cap = time.time()
             try:
                 _cam_lat_ms = (dai.Clock.now() - _rgb_pkt.getTimestamp()).total_seconds() * 1000.0
             except Exception:
                 _cam_lat_ms = -1.0
+            try:
+                _sync_ms = abs((_rgb_pkt.getTimestamp() - _depth_pkt.getTimestamp()).total_seconds()) * 1000.0
+            except Exception:
+                _sync_ms = -1.0
             frame = _rgb_pkt.getCvFrame()
-            depth = q_depth.get().getFrame()
+            depth = _depth_pkt.getFrame()
             t_depth_ready = time.time()
+            stale_rgb += _rgb_dropped
+            stale_depth += _depth_dropped
             frames += 1
             win_frames += 1
 
             uv, zrel, conf = model.infer(frame, bbox)
+            if args.inject_load_ms > 0.0:      # TEST-ONLY, see --inject-load-ms
+                _busy_until = time.perf_counter() + args.inject_load_ms / 1000.0
+                while time.perf_counter() < _busy_until:
+                    pass
             t_pose = time.time()
             # Person-box tracking WITH recovery (M15): follow the person from the previous frame's
             # confident keypoints; if detection is lost OR the box wedges (body confidence stays low for a
@@ -340,7 +411,41 @@ def main():
             # M16: the hips' own root-relative z, so a hole's zrel is offset relative to the hips (origin).
             zrel_hip = float((zrel[11] + zrel[12]) / 2.0)
 
-            lm, src = build_body_landmarks(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z,
+            # ---- P1-1 tracker -------------------------------------------------------
+            # Consumes the P0-smoothed metric keypoints and returns temporally-validated
+            # ones. A LOST joint has its EMIT confidence zeroed so build_body_landmarks
+            # drops it -- which hands the decision to the P0 LimbGate in Unity exactly as
+            # a real occlusion would. The tracker never writes zeros itself.
+            conf_emit = conf
+            if skel is not None:
+                t_track0 = time.perf_counter()
+                pos_in, cnf_in, dv_in = {}, {}, {}
+                for _j in skel.indices:
+                    pos_in[_j] = (float(xyz_cam[_j, 0]), float(xyz_cam[_j, 1]), float(xyz_cam[_j, 2]))
+                    cnf_in[_j] = float(conf[_j]) if bool(measured[_j]) else 0.0
+                    dv_in[_j] = bool(measured[_j])
+                res = skel.update(pos_in, cnf_in, time.time(), depth_valid=dv_in,
+                                  collect_events=(holds_f is not None))
+                conf_emit = conf.copy()
+                for _j, (_x, _y, _z, _c, _st, _usable) in res.items():
+                    if _usable:
+                        xyz_cam[_j, 0] = _x
+                        xyz_cam[_j, 1] = _y
+                        xyz_cam[_j, 2] = _z
+                        measured[_j] = True
+                    else:
+                        measured[_j] = False
+                        conf_emit[_j] = 0.0      # LOST -> drop -> P0 LimbGate holds
+                track_ms = (time.perf_counter() - t_track0) * 1000.0
+                if holds_f is not None and skel.events:
+                    for _e in skel.events:
+                        _e["seq"] = frames
+                        holds_f.write(json.dumps(_e) + chr(10))
+                    del skel.events[:]
+            else:
+                track_ms = 0.0
+
+            lm, src = build_body_landmarks(uv, xyz_cam, measured, conf_emit, zrel, zrel_hip, mid_hip, hip_z,
                                            intr, args.conf, args.flatten_trunk, args.zrel_fallback)
             lm = [[round(v, 4) for v in p] for p in lm]
             lh = build_hand(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z, intr, 91,
@@ -398,8 +503,17 @@ def main():
                        "poseToDepthMs": round((t_backproj - t_pose) * 1000.0, 2),
                        "depthWaitMs": round((t_depth_ready - t_cap) * 1000.0, 2),
                        "capToSendMs": round((time.time() - t_cap) * 1000.0, 2),
+                       "trackerMs": round(track_ms, 3),   # P1-1 cost, measured not estimated
+                       # P1-2 freshness diagnostics (permanent):
+                       "frameAgeMs": round(_cam_lat_ms, 2),      # host processing - camera timestamp
+                       "queueDepth": _rgb_dropped + 1,           # packets waiting when we sampled
+                       "staleDropped": _rgb_dropped,             # discarded this iteration
+                       "rgbDepthSyncMs": round(_sync_ms, 2),     # RGB/depth pairing error
                        "sh": [lm[11][:3], lm[12][:3]], "el": [lm[13][:3], lm[14][:3]],
                        "hip": [lm[23][:3], lm[24][:3]], "wr": [lm[15][:3], lm[16][:3]],
+                       # P1-2 Phase 6: knees/ankles were never in sender_log, so the leg jitter
+                       # regression could not be measured sidecar-side.
+                       "kn": [lm[25][:3], lm[26][:3]], "an": [lm[27][:3], lm[28][:3]],
                        "hipZ": round(hip_z, 3), "cov": int(sum(src))}  # distance (m) + measured-coverage (0-33)
                 if lh is not None:
                     rec["lh"] = [lh[0], lh[9]]
@@ -410,8 +524,9 @@ def main():
             if time.time() - t_log > 2.0:
                 cov = int(sum(src))
                 # LOW-D: fps uses the windowed counter; `frames` stays a monotonic total.
-                print("[wb] frames=%d sent=%d hip_z=%.2fm measured_body=%d/33 fps~%.1f"
-                      % (frames, sent, hip_z, cov, win_frames / (time.time() - t_log + 1e-6)))
+                print("[wb] frames=%d sent=%d hip_z=%.2fm measured_body=%d/33 fps~%.1f age=%.0fms stale=%d"
+                      % (frames, sent, hip_z, cov, win_frames / (time.time() - t_log + 1e-6),
+                         _cam_lat_ms, stale_rgb))
                 win_frames = 0
                 t_log = time.time()
 
