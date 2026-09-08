@@ -257,12 +257,23 @@ def main():
         while True:
             if args.seconds > 0.0 and (time.time() - t_start) > args.seconds:
                 break
-            frame = q_rgb.get().getCvFrame()
+            # DIAG-ONLY (P0 acceptance S16): stage timestamps so camera->pose->depth->send is MEASURED,
+            # not estimated. `getTimestamp()` is the OAK device clock (synchronised to the host by
+            # depthai), so `dai.Clock.now() - ts` is the true sensor->host latency. Read-only.
+            _rgb_pkt = q_rgb.get()
+            t_cap = time.time()
+            try:
+                _cam_lat_ms = (dai.Clock.now() - _rgb_pkt.getTimestamp()).total_seconds() * 1000.0
+            except Exception:
+                _cam_lat_ms = -1.0
+            frame = _rgb_pkt.getCvFrame()
             depth = q_depth.get().getFrame()
+            t_depth_ready = time.time()
             frames += 1
             win_frames += 1
 
             uv, zrel, conf = model.infer(frame, bbox)
+            t_pose = time.time()
             # Person-box tracking WITH recovery (M15): follow the person from the previous frame's
             # confident keypoints; if detection is lost OR the box wedges (body confidence stays low for a
             # sustained run, e.g. it locked onto a false detection), re-acquire from the full-frame centre.
@@ -280,6 +291,7 @@ def main():
                     bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
 
             xyz_cam, measured = D.backproject(uv, depth, rgb_w, rgb_h, intr, k=args.kwin)
+            t_backproj = time.time()   # DIAG-ONLY (S16)
 
             # Smooth the metric keypoints at the source (One-Euro + depth-outlier gate) to kill jitter,
             # before hip-centring / building the message. Unmeasured points reset their filter.
@@ -380,6 +392,12 @@ def main():
                 # Key signals for pipeline diffing: shoulders(11,12), hips(23,24), wrists(15,16) xyz, plus the
                 # palm-basis hand points (0 wrist, 9 middle-MCP) so a wrist-spin can be traced to its source.
                 rec = {"seq": frames, "t": round(time.time(), 4),
+                       # DIAG-ONLY (S16) per-stage millisecond costs + true sensor->host latency.
+                       "camLatMs": round(_cam_lat_ms, 2),
+                       "capToPoseMs": round((t_pose - t_cap) * 1000.0, 2),
+                       "poseToDepthMs": round((t_backproj - t_pose) * 1000.0, 2),
+                       "depthWaitMs": round((t_depth_ready - t_cap) * 1000.0, 2),
+                       "capToSendMs": round((time.time() - t_cap) * 1000.0, 2),
                        "sh": [lm[11][:3], lm[12][:3]], "el": [lm[13][:3], lm[14][:3]],
                        "hip": [lm[23][:3], lm[24][:3]], "wr": [lm[15][:3], lm[16][:3]],
                        "hipZ": round(hip_z, 3), "cov": int(sum(src))}  # distance (m) + measured-coverage (0-33)
