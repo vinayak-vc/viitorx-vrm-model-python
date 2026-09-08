@@ -81,6 +81,14 @@ BLOCKS = [
 ]
 
 
+# F-08 AUDIT (Part 9): a SUSTAINED occlusion, long enough that the wrist stays wrong well past
+# P1-1's 6-frame prediction horizon -- the "confident-but-wrong" case, on demand.
+AUDIT_BLOCK = ("10", 45, "SUSTAINED HAND BEHIND TORSO  *** F-08 PART 9 ***",
+               ["LEFT hand behind your back. HOLD IT THERE for a FULL 20 SECONDS.",
+                "Do not bring it out. Stand otherwise still.",
+                "Then bring it out, pause 5s, and repeat with the RIGHT hand for 15s."])
+
+
 def countdown(seconds, label, triggers=None, fired=None):
     """Countdown that also fires (offsetSeconds, callable) triggers exactly once."""
     t0 = time.time()
@@ -132,10 +140,17 @@ def main():
     ap.add_argument("--blocks", default="", help="comma-separated subset, e.g. 1,8")
     ap.add_argument("--dry-run", action="store_true", help="rehearse prompts without the camera")
     ap.add_argument("--lead-in", type=float, default=8.0)
+    ap.add_argument("--audit", action="store_true",
+                    help="F-08 AUDIT: add --audit-log to the sidecar and append block 10, a "
+                         "SUSTAINED hand-behind-torso hold for the confident-but-wrong root-cause "
+                         "trace (Part 9).")
     a = ap.parse_args()
 
+    all_blocks = list(BLOCKS)
+    if a.audit:
+        all_blocks.append(AUDIT_BLOCK)
     wanted = [b.strip() for b in a.blocks.split(",") if b.strip()]
-    blocks = [b for b in BLOCKS if (not wanted or b[0] in wanted)]
+    blocks = [b for b in all_blocks if (not wanted or b[0] in wanted)]
     if not blocks:
         print("no blocks selected")
         return 2
@@ -170,6 +185,8 @@ def main():
                "--log-dir", a.log_dir, "--show"]
         if recovery_flag:
             cmd.append(recovery_flag)
+        if a.audit:
+            cmd.append("--audit-log")
         cmd += ["--inject-drift-file", stale,
                 "--seconds", str(int(total) + 5)] + SIDECAR_ARGS
         print("\n[starting sidecar] %s\n" % " ".join(cmd))

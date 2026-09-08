@@ -79,6 +79,12 @@ def _fallback_point(wb_index, uv, zrel, zrel_hip, mid_hip, hip_z, intr, use_zrel
     return np.array([x, y, z_cam], dtype=np.float32) - mid_hip
 
 
+# F-08 AUDIT (DIAG-ONLY): the COCO-WholeBody indices the audit traces, by name.
+AUDIT_JOINTS = (("L-shoulder", 5), ("R-shoulder", 6), ("L-elbow", 7), ("R-elbow", 8),
+                ("L-wrist", 9), ("R-wrist", 10), ("L-hip", 11), ("R-hip", 12),
+                ("L-knee", 13), ("R-knee", 14), ("L-ankle", 15), ("R-ankle", 16))
+
+
 def build_body_landmarks(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z, intr, conf_thr,
                          flatten_trunk=True, use_zrel=True):
     """Map the 133 WholeBody keypoints -> a 33-slot JointId body array of [x,y,z,vis] hip-relative m.
@@ -204,6 +210,18 @@ def main():
                              "(maxSize=4) stays full and every pose is ~4 frames (~133 ms) stale.")
     parser.add_argument("--no-latest-frame", dest="latest_frame", action="store_false",
                         help="P1-2 OFF: original FIFO behaviour (for A/B).")
+    # ---- F-08 AUDIT: DIAG-ONLY, default OFF, no effect on the emitted pose ----
+    parser.add_argument("--audit-log", action="store_true", default=False,
+                        help="F-08 AUDIT (DIAG-ONLY, default OFF): write audit_log.jsonl with, per "
+                             "frame and per body joint, the RAW SimCC confidence, the 2D pixel, the "
+                             "depth-validity flag and full depth-window statistics -- plus a raw "
+                             "depth crop every --audit-crop-every frames. Read-only: it observes "
+                             "the same values production uses and changes nothing.")
+    parser.add_argument("--audit-crop-every", type=int, default=3,
+                        help="F-08 AUDIT: dump the raw depth crop every Nth frame (0 = never).")
+    parser.add_argument("--audit-crop-k", type=int, default=11,
+                        help="F-08 AUDIT: side length of the raw depth crop (odd; 11 covers 5x5 "
+                             "and lets larger estimators be evaluated OFFLINE).")
     parser.add_argument("--inject-drift-file", default="",
                         help="TEST-ONLY (P1-4 visual validation). Path polled once per frame; when the file "
                         "appears it is read as JSON {mode:drift|teleport, joint:N, meters:F, frames:N} and "
@@ -251,6 +269,11 @@ def main():
         log_f = open(os.path.join(args.log_dir, "sender_log.jsonl"), "w", buffering=1)
         # P0-2: separate stream of rejected/held joint events (spike rate-limits + depth dropouts).
         holds_f = open(os.path.join(args.log_dir, "holds_log.jsonl"), "w", buffering=1)
+    audit_f = None
+    if args.audit_log and args.log_dir:
+        audit_f = open(os.path.join(args.log_dir, "audit_log.jsonl"), "w", buffering=1)
+        print("[wb] F-08 AUDIT logging -> %s (DIAG-ONLY)"
+              % os.path.join(args.log_dir, "audit_log.jsonl"))
         print("[wb] pipeline logging -> %s (+ holds_log.jsonl)" % os.path.join(args.log_dir, "sender_log.jsonl"))
 
     print("[wb] loading RTMW3D ...")
@@ -398,6 +421,49 @@ def main():
                     bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
 
             xyz_cam, measured = D.backproject(uv, depth, rgb_w, rgb_h, intr, k=args.kwin)
+            # ---- F-08 AUDIT (DIAG-ONLY) -------------------------------------------
+            # Observes exactly what production just computed: the RAW SimCC confidence, the 2D
+            # pixel, the depth-validity flag, and the CONTENTS of the depth window that produced
+            # z. Nothing here feeds back into the pose. See docs/F08_*.
+            if audit_f is not None:
+                _sxd = depth.shape[1] / float(rgb_w)
+                _syd = depth.shape[0] / float(rgb_h)
+                _r = args.kwin // 2
+                _crop = (args.audit_crop_every > 0
+                         and (frames % args.audit_crop_every) == 0)
+                _ck = args.audit_crop_k // 2
+                _rec = {"seq": frames, "t": t_cap, "hipZ": None, "syncMs": _sync_ms,
+                        "camLatMs": _cam_lat_ms, "j": {}}
+                for _n, _i in AUDIT_JOINTS:
+                    _ud = uv[_i, 0] * _sxd
+                    _vd = uv[_i, 1] * _syd
+                    _x, _y = int(round(_ud)), int(round(_vd))
+                    _x0, _x1 = max(0, _x - _r), min(depth.shape[1], _x + _r + 1)
+                    _y0, _y1 = max(0, _y - _r), min(depth.shape[0], _y + _r + 1)
+                    _e = {"c": round(float(conf[_i]), 4),
+                          "u": round(float(uv[_i, 0]), 2), "v": round(float(uv[_i, 1]), 2),
+                          "m": int(bool(measured[_i]))}
+                    if _x1 > _x0 and _y1 > _y0:
+                        _w = depth[_y0:_y1, _x0:_x1].reshape(-1)
+                        _v = _w[_w > 0]
+                        _e["n"] = int(_w.size)
+                        _e["nv"] = int(_v.size)
+                        if _v.size:
+                            _e["p30"] = round(float(np.percentile(_v, 30.0)), 1)
+                            _e["p50"] = round(float(np.percentile(_v, 50.0)), 1)
+                            _e["dmin"] = int(_v.min())
+                            _e["dmax"] = int(_v.max())
+                            _e["dsd"] = round(float(_v.std()), 1)
+                        _cp = depth[max(0, _y - 0):_y + 1, max(0, _x - 0):_x + 1]
+                        _e["ctr"] = int(_cp.reshape(-1)[0]) if _cp.size else 0
+                    if _crop:
+                        _cx0, _cx1 = max(0, _x - _ck), min(depth.shape[1], _x + _ck + 1)
+                        _cy0, _cy1 = max(0, _y - _ck), min(depth.shape[0], _y + _ck + 1)
+                        if _cx1 > _cx0 and _cy1 > _cy0:
+                            _e["crop"] = depth[_cy0:_cy1, _cx0:_cx1].astype(int).tolist()
+                    _rec["j"][_n] = _e
+                audit_f.write(json.dumps(_rec) + chr(10))
+
             t_backproj = time.time()   # DIAG-ONLY (S16)
 
             # Smooth the metric keypoints at the source (One-Euro + depth-outlier gate) to kill jitter,
@@ -633,6 +699,8 @@ def main():
         log_f.close()
     if holds_f is not None:
         holds_f.close()
+    if audit_f is not None:
+        audit_f.close()
     print("[wb] stopped.")
 
 
