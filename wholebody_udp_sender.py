@@ -83,6 +83,11 @@ def _fallback_point(wb_index, uv, zrel, zrel_hip, mid_hip, hip_z, intr, use_zrel
 AUDIT_JOINTS = (("L-shoulder", 5), ("R-shoulder", 6), ("L-elbow", 7), ("R-elbow", 8),
                 ("L-wrist", 9), ("R-wrist", 10), ("L-hip", 11), ("R-hip", 12),
                 ("L-knee", 13), ("R-knee", 14), ("L-ankle", 15), ("R-ankle", 16))
+# F-11 (DIAG-ONLY): face keypoints for the 2-D torso-yaw SIGN experiment. COCO-WholeBody indices,
+# confirmed against rtmw3d_pose.COCO17_TO_JOINTID: 0 nose, 1/2 eyes, 3/4 ears.
+# Deliberately SEPARATE from AUDIT_JOINTS: these carry no depth window, and keeping them out of that
+# tuple leaves the periodic depthQuality aggregate (which iterates AUDIT_JOINTS) numerically unchanged.
+AUDIT_FACE_JOINTS = (("nose", 0), ("L-eye", 1), ("R-eye", 2), ("L-ear", 3), ("R-ear", 4))
 
 
 def build_body_landmarks(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z, intr, conf_thr,
@@ -462,7 +467,7 @@ def main():
                          and (frames % args.audit_crop_every) == 0)
                 _ck = args.audit_crop_k // 2
                 _rec = {"seq": frames, "t": t_cap, "hipZ": None, "syncMs": _sync_ms,
-                        "camLatMs": _cam_lat_ms, "j": {}}
+                        "camLatMs": _cam_lat_ms, "j": {}, "f": {}}
                 for _n, _i in AUDIT_JOINTS:
                     _ud = uv[_i, 0] * _sxd
                     _vd = uv[_i, 1] * _syd
@@ -498,6 +503,12 @@ def main():
                         _e["csp"] = round(_dgj["selectedClusterSpread"], 1)
                         _e["rsn"] = _dgj["reason"]
                     _rec["j"][_n] = _e
+                # F-11 (DIAG-ONLY): pixel coords + confidence for the face keypoints. Read-only --
+                # nothing here feeds the pose, the UDP payload, filtering or retargeting.
+                for _n, _i in AUDIT_FACE_JOINTS:
+                    _rec["f"][_n] = {"c": round(float(conf[_i]), 4),
+                                     "u": round(float(uv[_i, 0]), 2),
+                                     "v": round(float(uv[_i, 1]), 2)}
                 audit_f.write(json.dumps(_rec) + chr(10))
 
             t_backproj = time.time()   # DIAG-ONLY (S16)
