@@ -291,6 +291,17 @@ def main():
 
     os.makedirs(a.out_dir, exist_ok=True)
     out = os.path.join(a.out_dir, "f10_gt_marks_%s.json" % a.distance)
+    # F-15 GUARD. The marks filename is derived only from --distance, so a second run at the same
+    # distance silently overwrote an earlier capture's block windows -- that is exactly how the F-10
+    # marks were destroyed (recovered later by f12_recover_f10_marks.py; see ADR-041). The subject's
+    # time is already spent by this point, so refusing here would throw the capture away: side-step
+    # to a timestamped name instead, and say so loudly.
+    if os.path.exists(out):
+        alt = os.path.join(a.out_dir, "f10_gt_marks_%s_%s.json"
+                           % (a.distance, time.strftime("%Y%m%d_%H%M%S")))
+        print("\n  !! %s ALREADY EXISTS -- refusing to overwrite a previous capture." % out)
+        print("  !! writing to %s instead. Pass --out-dir next time." % alt)
+        out = alt
     with open(out, "w") as f:
         json.dump({"distance": a.distance, "metres": a.metres, "headings": a.headings,
                    "estimatedHeadings": list(ESTIMATED_HEADINGS) if a.headings == "coarse" else [],

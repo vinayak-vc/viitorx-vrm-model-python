@@ -235,3 +235,38 @@ p12load_*/
 p13_*.jsonl
 probe*/
 p0_human_report.txt
+
+# --- torso-yaw investigation evidence (V4/V5, F-09..F-12) ---
+# The distilled .txt reports and the capture-mark .json files ARE the published evidence and are
+# tracked. The bulk working data underneath them (per-frame traces, screenshot dumps) is kept on
+# disk for further offline testing but is far too large for the repo.
+oak_v4_evidence/*
+!oak_v4_evidence/*.txt
+!oak_v4_evidence/*.json
+!oak_v4_evidence/*.md
+# F-15 onward put their evidence in per-investigation subdirectories. The exceptions above only
+# match the top level, so without these the reports would cite files that never reach the repo.
+# The distilled analyses AND the per-frame capture logs are small enough to track (~7 MB total);
+# f17/raw/ is NOT -- it is 336 MB of synchronised PNG frame sets, kept on disk only.
+!oak_v4_evidence/f15/
+!oak_v4_evidence/f15/*.txt
+!oak_v4_evidence/f15/*.json
+!oak_v4_evidence/f15/*.csv
+!oak_v4_evidence/f16/
+!oak_v4_evidence/f16/*.txt
+!oak_v4_evidence/f16/*.json
+!oak_v4_evidence/f16/*.jsonl
+!oak_v4_evidence/f17/
+!oak_v4_evidence/f17/*.txt
+!oak_v4_evidence/f17/*.json
+oak_v4_evidence/f17/raw/
+!oak_v4_evidence/f18/
+!oak_v4_evidence/f18/*.txt
+!oak_v4_evidence/f18/*.json
+!oak_v4_evidence/f18/*.jsonl
+!oak_v4_evidence/f18/*.csv
+arm_v1_evidence/*
+!arm_v1_evidence/*.txt
+arm_v2_evidence/*
+!arm_v2_evidence/*.py
+!arm_v2_evidence/*.txt
