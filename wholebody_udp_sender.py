@@ -26,6 +26,7 @@ PoseSpaceConverter + poseFlipX/Y/Z tuning apply the same way. Run:
 import argparse
 import json
 import socket
+import uuid
 import time
 import os
 
@@ -57,6 +58,19 @@ MIRROR_PAIRS = [(1, 4), (2, 5), (3, 6), (7, 8), (9, 10), (11, 12), (13, 14), (15
 # farther = +). +1 assumes they agree (a joint the model puts farther gets a larger camera Z). This is
 # convention-sensitive — if occluded limbs poke the WRONG way in depth on a live OAK-D, flip to -1.0.
 ZREL_SIGN = 1.0
+
+
+# ---- F-20A PRODUCER SESSION ID ---------------------------------------------------------------
+# Generated ONCE per sidecar process and stamped on every datagram. F-19 measured that restarting
+# this process restarts `seq` at 1, after which Unity's P1-3 buffer correctly rejected every packet
+# as out-of-order and the avatar rendered a 208-second-old pose while every health counter looked
+# fine. The consumer cannot distinguish "restarted producer" from "stale/duplicated packets" by
+# sequence numbers alone - and treating a seq reset as proof of a restart would be the same as
+# disabling ordering. An explicit per-process identifier is that proof.
+#
+# Adding a field is backward compatible: consumers that do not read `sid` are unaffected, and the
+# payload grows by ~22 bytes out of a ~6 KB datagram.
+SESSION_ID = uuid.uuid4().hex[:12]
 
 
 def _fallback_point(wb_index, uv, zrel, zrel_hip, mid_hip, hip_z, intr, use_zrel):
@@ -284,8 +298,26 @@ def main():
                              "mounted in portrait. OFF = landscape (default, rollback path).")
     parser.add_argument("--portrait-dir", default="ccw", choices=["ccw", "cw"],
                         help="F-19: rotation direction. F-18 measured CCW on this mount.")
+    # ---- F-19 STEREO SUB-PIXEL --------------------------------------------------------------
+    # Why this flag exists, stated plainly rather than slipped in: EVERY F-18 portrait measurement
+    # was taken with sub-pixel 1/8 (capture config "sub3"), while production ships setSubpixel(False).
+    # F-19's live preflight measured what that costs - at 0.90 m the shipped configuration has a
+    # 6.80 deg TORSO-YAW QUANTUM (235 of 270 frames sat on one 116 mm shoulder-dz bin), against
+    # 0.85 deg with 1/8 sub-pixel, and only the latter met the <=5 deg median gate on a square
+    # subject. Without this flag the live avatar test could only be run on a configuration that
+    # provably cannot meet its own measurement criterion.
+    # DEFAULT -1 LEAVES PRODUCTION EXACTLY AS SHIPPED - nothing changes unless it is passed.
+    parser.add_argument("--subpixel-bits", type=int, default=-1,
+                        help="F-19: -1 (default) = production stereo settings untouched. "
+                             "0 = sub-pixel off, 3 = 1/8 px (the configuration F-18 validated).")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     args = parser.parse_args()
+
+    if args.subpixel_bits >= 0:
+        # Applied to the shared STEREO_CONFIG BEFORE build_rgbd_pipeline reads it, so the startup
+        # banner and the pipeline cannot disagree.
+        D.STEREO_CONFIG["subpixel"] = args.subpixel_bits > 0
+        D.STEREO_CONFIG["subpixelBits"] = args.subpixel_bits
 
     log_f = None
     holds_f = None
@@ -336,10 +368,13 @@ def main():
                   % intr_landscape)
         print("[wb]   FOV  H %.2f deg  V %.2f deg"
               % (PORTRAIT.fov_deg(intr[0], dw), PORTRAIT.fov_deg(intr[1], dh)))
-        print("[wb]   stereo: subpixel=on(1/8) LR-check=on align=CAM_A  surfaceDepth=%s kwin=%d"
+        # Read back from oak_depth.STEREO_CONFIG, never hand-written: see the note there.
+        print("[wb]   stereo: %s" % D.stereo_config_str())
+        print("[wb]   depth sampling: surfaceDepth=%s kwin=%d (F-08)"
               % (args.surface_depth, args.kwin))
         print("[wb]   working-distance target: 0.90 m (F-18 preferred)")
         print("[wb]   udp -> %s" % str(addr))
+        print("[wb]   producer session id = %s  (F-20A: new on every process start)" % SESSION_ID)
         print("[wb] ======================================================================")
 
         bbox = R.center_bbox(rgb_w, rgb_h)
@@ -705,6 +740,7 @@ def main():
                         round(float(mid_hip[2] * 1000.0), 1)],
                 "src": src,
                 "seq": frames,                 # monotonic frame id (aligns sender/recv/model logs)
+                "sid": SESSION_ID,             # F-20A: per-PROCESS id; seq is only monotonic within it
                 "t": round(time.time(), 4),    # send epoch seconds
             }
             # H7: only include a hand when confidently tracked. Unity treats a missing lh/rh as

@@ -1,0 +1,38 @@
+====================================================================================================
+F-18 SECTION 16 - V6 TorsoYawGuard, OBSERVATION ONLY (no threshold changed)
+====================================================================================================
+WrapGuardDeg = 150   ValidatedRangeDeg = 60   (as shipped)
+
+----------------------------------------------------------------------------------------------------
+PORT VERIFICATION - replay the exact frames V6 published numbers for
+----------------------------------------------------------------------------------------------------
+  v6_replay_frames.csv : 20783 rows, columns seq,t,hipYawDeg,shoulderYawDeg,block,gt
+  detected columns: hip=hipYawDeg shoulder=shoulderYawDeg fresh=None
+  replayed: held 896 (4.31 %), runs 11, longest 314 frames = 12.31 s
+  V6 report published: held 896 (4.31 %), 11 runs, longest 12.33 s
+  PORT VERIFIED - reproduces the published figures
+
+----------------------------------------------------------------------------------------------------
+PORTRAIT OBSERVATION
+----------------------------------------------------------------------------------------------------
+CAVEAT, stated rather than buried: F-18's capture logs the SHOULDER yaw but not a hip yaw
+(hip depths were not retained), and TrunkGate's Fresh flag is not reproduced offline. The
+replay therefore feeds hipYaw = shoulderYaw and trunkFresh = true. That measures exactly what
+section 16 asks - whether the PORTRAIT YAW STREAM triggers new wrap/range guarding - but it
+cannot measure TrunkGate-driven holds, so the hold figures are a LOWER BOUND.
+
+  group                        n   Valid%  OutOfR%     Wrap%   maxStep  steps>10    held%
+  ALL portrait              6508    92.30     3.75      3.95    120.00       285     3.95
+  at 0.78 m                 1314    89.95     5.48      4.57    120.00        64     4.57
+  at 0.80 m                 1304    83.28    10.35      6.37    120.00        44     6.37
+  at 0.90 m                 2533    94.04     1.46      4.50    120.00        68     4.50
+  at 1.00 m                 1357   100.00     0.00      0.00     81.35       108     0.00
+  square blocks only        1080   100.00     0.00      0.00     14.24         1     0.00
+  interaction @0.90 m       1183   100.00     0.00      0.00     54.98        18     0.00
+
+  whole portrait stream: longest hold 24 frames = 1.11 s over 70 hold runs
+  rendered |yaw| median 23.95 deg, max 60.00 deg (the clamp caps it at 60)
+
+  SQUARE BLOCKS - the public-mirror resting case:
+    Valid 100.00 %   OutOfRange 0.00 %   WrapGuarded 0.00 %   held 0.00 %
+    max guarded step 14.24 deg, steps > 10 deg: 1

@@ -1,0 +1,17 @@
+﻿========================================================================================================
+ TORSO V5 -- rest jitter / over-twist, OLD vs NEW composition, identical recorded OAK-D input
+========================================================================================================
+ capture                composition    |   rest sd |   >45deg   >90deg  out max | err mean
+ pipeline_logs_armv1    OLD V4 @0.75   |     4.915 |    0.23%    0.13%   135.68 |     7.18
+                        NEW V5 @1.00   |     3.873 |    0.41%    0.16%   145.00 |     3.67
+
+ pipeline_logs_armv1b   OLD V4 @0.75   |     7.558 |    1.23%    0.00%    58.98 |     9.65
+                        NEW V5 @1.00   |     0.366 |    4.96%    0.00%    61.12 |     3.73
+
+ pipeline_logs_p14      OLD V4 @0.75   |    12.398 |    8.11%    6.82%   185.46 |    23.40
+                        NEW V5 @1.00   |    12.139 |   15.71%   12.44%   179.61 |     9.80
+
+ 'rest sd' = stdev of the avatar's commanded torso yaw over frames whose SOURCE yaw is
+ inside the 8 deg dead-zone floor -- what the torso does while the human stands still.
+ NEW is measured at scale 1.00 (its physically correct setting) against OLD at 0.75
+ (the value V4 shipped), i.e. the comparison each composition is actually used at.

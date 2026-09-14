@@ -1,0 +1,43 @@
+﻿
+========================================================================================================
+ DISTANCE 'near' (1.50 m)  --  2520 labelled frames, K=91.2  [hipZ p50=1.44 m]
+========================================================================================================
+
+ MAGNITUDE ACCURACY vs ground truth (deg)
+ estimator  |     MAE    RMSE     p50     p95     max |
+ yaw3D      |   26.70   43.26    5.28   90.00   93.99 | n=1226
+ yaw2D      |    5.90    9.28    4.67   17.37   45.00 | n=1226
+ hybrid     |    5.90    9.28    4.67   17.37   45.00 | n=1226
+
+ BIAS BY HEADING (signed mean error, deg)
+ headGT   |        n |    yaw3D    yaw2D   hybrid |  sign ok
+      -90 |      150 |   +37.20    -2.58    -2.58 |    29.3%
+      -45 |      224 |    -1.07    -3.10    -3.10 |    64.7%
+       +0 |      366 |    +9.25    +2.68    +2.68 |    -1.0%
+      +45 |      346 |    -0.81    +0.41    +0.41 |   100.0%
+      +90 |      140 |   -72.70   -10.33   -10.33 |   100.0%
+
+ SIGN ACCURACY of yaw3D over 860 non-zero-heading frames: 78.49%
+  confusion (rows = true, cols = yaw3D):   pred+   pred-
+    true+                                   486       0
+    true-                                   185     189
+    sign accuracy, |heading| >= 90  :  63.45%  (n=290)
+
+ TORSO TWIST (TASK 5) -- hip, shoulder and relative yaw must stay separable
+ block          |        n |  hipYaw3D   shYaw3D  relative
+ tw_opp_a       |      119 |      3.70    -43.09    -46.78
+ tw_opp_b       |      114 |     -7.35     16.11     23.46
+ tw_rigid_p45   |      110 |      4.97     42.76     37.79
+ tw_sh_m45      |      115 |    -16.27    -11.63      4.64
+ tw_sh_p45      |      116 |     -8.31     40.88     49.18
+
+ MOTION (TASK 6) -- jitter and step size, no ground-truth heading in these blocks
+ block            |        n |  yaw3D sd  yaw2D sd |   d3D p95   d2D p95
+ m_180            |      143 |    111.62     26.36 |     22.18     14.14
+ m_fast           |      127 |     52.35     24.51 |     14.86     10.19
+ m_normal         |      137 |     49.07     24.45 |     12.57     10.65
+ m_rev_lr         |      117 |     79.87     25.66 |     16.82     11.02
+ m_rev_rl         |      114 |    104.06     25.34 |     27.64     17.01
+ m_slow           |      175 |     21.12     21.78 |      3.91     10.62
+ m_turn_arms      |      126 |     55.42     23.23 |     23.91     12.25
+ m_turn_still     |      122 |     70.22     21.84 |     19.07     14.94

@@ -1,0 +1,49 @@
+﻿============================================================================================================
+ F-11 -- 2-D FACE SIGN vs GROUND TRUTH   (1457 labelled frames, K=88.8)
+============================================================================================================
+
+ sign convention inferred from the 518 static turned frames: B>0 corresponds to a NEGATIVE (left) turn
+
+ PER-BLOCK (median values; 'sign ok' vs the TORSO ground truth)
+ block              torso  head       n |    yaw2D     A px        B  earAsym |  sign ok
+ h_0                0      None     136 |      0.0    -1.40  -0.0206  -0.0049 |       --
+ h_p45              45     None     121 |     63.7    -4.32  -0.1406   0.0226 |   100.0%
+ h_p90              90     None     135 |     76.8    -7.37  -0.7498   0.0787 |    53.3%
+ h_0b               0      None      90 |      4.2    -0.94  -0.0138  -0.0101 |       --
+ h_m45              -45    None     115 |     58.5     5.69   0.1539  -0.0484 |   100.0%
+ h_m90              -90    None     147 |     81.1     9.79   0.8922  -0.1051 |   100.0%
+ h_0c               0      None     117 |      4.2     0.94   0.0140  -0.0002 |       --
+ dc_body45R_face0   45     0        148 |     54.2    -2.14  -0.0543  -0.0019 |    99.3%
+ dc_body45L_face0   -45    0        150 |     47.0     6.17   0.1300  -0.0472 |   100.0%
+ dc_body0_head45R   0      45       147 |      4.5   -26.58  -0.3725   0.2908 |       --
+ dc_body0_head45L   0      -45      151 |      9.9    21.12   0.3014  -0.2583 |       --
+
+ SIGN ACCURACY vs torso ground truth (static blocks only, 0 deg excluded)
+ candidate         n    overall   positive   negative
+ B               518     87.84%     75.39%    100.00%
+ A               518     87.84%     75.39%    100.00%
+ Dn              518     85.33%     70.31%    100.00%
+ earAsym         518      2.51%      5.08%      0.00%
+
+ SIGN ACCURACY at the difficult poses (candidate B)
+   |torso| = 45   n= 236   100.00%
+   |torso| = 90   n= 282    77.66%
+   torso = +90    n= 135    53.33%
+   torso = -90    n= 147   100.00%
+
+------------------------------------------------------------------------------------------------------------
+ HEAD / TORSO DECOUPLING -- the mirror failure mode
+------------------------------------------------------------------------------------------------------------
+   dc_body45R_face0   n= 148  B p50=-0.0543  yaw2D p50= 54.2  sign correct  99.32%
+      TORSO +45, FACE on camera  -> can the nose see the torso?
+   dc_body45L_face0   n= 150  B p50=+0.1300  yaw2D p50= 47.0  sign correct 100.00%
+      TORSO -45, FACE on camera  -> can the nose see the torso?
+   dc_body0_head45R   n= 147  B p50=-0.3725  |B| p95=0.3852  frames with |B| > 2x the frontal median: 93.2%
+      TORSO 0, HEAD +45 -> does it FALSELY claim a torso turn?   (frontal |B| median = 0.0141)
+   dc_body0_head45L   n= 151  B p50=+0.3014  |B| p95=0.3081  frames with |B| > 2x the frontal median: 100.0%
+      TORSO 0, HEAD -45 -> does it FALSELY claim a torso turn?   (frontal |B| median = 0.0141)
+
+ HYBRID  sign(faceB) * |yaw2D|  vs torso ground truth, static blocks
+   hybrid (signed)        : MAE  31.60  RMSE  59.21  p50  13.52  p95 166.82  max 169.36
+   yaw2D magnitude alone  : MAE  13.18  RMSE  13.79  p50  13.14  p95  20.34  max  22.76
+   (F-10 reference: production yaw3D signed MAE 61.08, depth-sign hybrid 13.09)

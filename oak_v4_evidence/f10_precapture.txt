@@ -1,0 +1,47 @@
+﻿==========================================================================================================
+ F-10 PRE-CAPTURE -- criteria 1 and 2, from 22727 recorded frames (no ground truth needed)
+==========================================================================================================
+
+ CRITERION 1 -- angular resolution of each estimator, at the recorded geometry
+ (a 1-pixel span error for 2-D; one disparity step for 3-D)
+   face-on shoulder pixel span (p98)      : 66.4 px
+   median 3-D shoulder length             : 0.350 m
+   median stereo depth step               : 53.2 mm
+
+   true yaw | 2-D  deg per 1 px      | 3-D  deg per depth step | which is finer
+        0   |               999.99   |                 8.71   | 3-D
+        5   |                 9.90   |                 8.67   | 3-D
+       10   |                 4.97   |                 8.57   | 2-D
+       20   |                 2.52   |                 8.18   | 2-D
+       30   |                 1.72   |                 7.54   | 2-D
+       45   |                 1.22   |                 6.16   | 2-D
+       60   |                 1.00   |                 4.35   | 2-D
+       75   |                 0.89   |                 2.25   | 2-D
+       90   |                 0.86   |                 0.00   | 3-D
+
+   The two are complementary: 3-D is finer below ~6 deg, 2-D is finer above it.
+   That crossover is the single most important number for the hybrid design, and it is
+   a property of the GEOMETRY, so the ground-truth capture must confirm it, not discover it.
+
+----------------------------------------------------------------------------------------------------------
+ CRITERION 2 -- is the DEPTH SIGN stable? (a sign that flips between adjacent frames
+ cannot be reliable regardless of ground truth)
+
+ |yaw3D| band |   frames | sign flips |  flip rate | adjacent-frame sign reversals
+     0-5      |     8821 |        187 |     2.120% |
+     5-10     |     3527 |         14 |     0.397% |
+    10-20     |     5121 |          8 |     0.156% |
+    20-30     |     3099 |          4 |     0.129% |
+    30-45     |     1067 |          3 |     0.281% |
+    45-90     |      517 |         14 |     2.708% |
+    90-180    |      567 |         38 |     6.702% |
+
+ A sign flip between adjacent frames while |yaw| is well away from 0 is a measurement
+ failure, not motion: the subject cannot cross from -30 to +30 deg in one frame.
+
+----------------------------------------------------------------------------------------------------------
+ SIGN STABILITY restricted to frames where the IMAGE agrees a real turn is happening
+ (yaw2D > 25 deg), i.e. the regime the hybrid would actually rely on the sign in:
+   21127 frame pairs, 227 sign reversals = 1.074%
+   NOTE: this bounds sign STABILITY only. Sign CORRECTNESS cannot be measured without
+   knowing which way the subject actually faced -- that is what the capture is for.

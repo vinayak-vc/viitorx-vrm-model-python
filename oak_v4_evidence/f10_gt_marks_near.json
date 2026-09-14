@@ -1,0 +1,102 @@
+{
+  "distance": "near",
+  "metres": 1.5,
+  "headings": "coarse",
+  "estimatedHeadings": [
+    45,
+    -45
+  ],
+  "start": 1789017989.3713,
+  "end": 1789018171.4832,
+  "transition_s": 7,
+  "blocks": [
+    {
+      "name": "h_0",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789017996.4943,
+      "t1": 1789018006.6899,
+      "instr": "LOOK STRAIGHT AT THE CAMERA"
+    },
+    {
+      "name": "h_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789018013.8103,
+      "t1": 1789018021.9574,
+      "instr": "TURN HALFWAY TO YOUR RIGHT"
+    },
+    {
+      "name": "h_p90",
+      "headingGT": 90,
+      "headGT": null,
+      "t0": 1789018029.0816,
+      "t1": 1789018039.2302,
+      "instr": "TURN ALL THE WAY RIGHT - stand sideways"
+    },
+    {
+      "name": "h_0b",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789018046.3516,
+      "t1": 1789018054.4888,
+      "instr": "FACE THE CAMERA AGAIN"
+    },
+    {
+      "name": "h_m45",
+      "headingGT": -45,
+      "headGT": null,
+      "t0": 1789018061.6242,
+      "t1": 1789018069.7491,
+      "instr": "TURN HALFWAY TO YOUR LEFT"
+    },
+    {
+      "name": "h_m90",
+      "headingGT": -90,
+      "headGT": null,
+      "t0": 1789018076.8749,
+      "t1": 1789018087.029,
+      "instr": "TURN ALL THE WAY LEFT - stand sideways"
+    },
+    {
+      "name": "h_0c",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789018094.1393,
+      "t1": 1789018102.2538,
+      "instr": "FACE THE CAMERA AGAIN"
+    },
+    {
+      "name": "dc_body45R_face0",
+      "headingGT": 45,
+      "headGT": 0,
+      "t0": 1789018109.3764,
+      "t1": 1789018119.5542,
+      "instr": "BODY halfway RIGHT but KEEP LOOKING AT THE CAMERA"
+    },
+    {
+      "name": "dc_body45L_face0",
+      "headingGT": -45,
+      "headGT": 0,
+      "t0": 1789018126.6699,
+      "t1": 1789018136.8448,
+      "instr": "BODY halfway LEFT but KEEP LOOKING AT THE CAMERA"
+    },
+    {
+      "name": "dc_body0_head45R",
+      "headingGT": 0,
+      "headGT": 45,
+      "t0": 1789018143.9691,
+      "t1": 1789018154.153,
+      "instr": "BODY STAYS FACING THE CAMERA - turn only your HEAD right"
+    },
+    {
+      "name": "dc_body0_head45L",
+      "headingGT": 0,
+      "headGT": -45,
+      "t0": 1789018161.2907,
+      "t1": 1789018171.4832,
+      "instr": "BODY STAYS FACING THE CAMERA - turn only your HEAD left"
+    }
+  ]
+}

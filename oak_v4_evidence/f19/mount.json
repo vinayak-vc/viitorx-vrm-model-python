@@ -1,0 +1,20 @@
+{
+  "auto": false,
+  "tilt_deg": 5.89,
+  "roll_dev_deg": 0.14,
+  "orientation": "PORTRAIT_CCW",
+  "inplane_deg": 1.94,
+  "accel_mean": [
+    0.327,
+    9.6482,
+    -0.9963
+  ],
+  "accel_std": [
+    0.0156,
+    0.0123,
+    0.0186
+  ],
+  "height_m": null,
+  "tilt_tolerance_deg": 2.0,
+  "note": "tilt is the optical-axis elevation from horizontal (magnitude only; the IMU sign convention is not asserted). roll is deviation from the portrait orientation held at the start of this run, not an absolute."
+}

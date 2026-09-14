@@ -270,3 +270,26 @@ arm_v1_evidence/*
 arm_v2_evidence/*
 !arm_v2_evidence/*.py
 !arm_v2_evidence/*.txt
+
+# ---- F-19 evidence -------------------------------------------------------------------
+# The rendered-bone telemetry is ~500 MB of per-frame JSONL (Unity renders at ~217 fps against a
+# 30 fps source). The ANALYSES derived from it are small and are what the report cites, so those
+# are tracked and the raw streams are not. Regenerate with f19_run/f19_session + f19_analyze_live.
+!oak_v4_evidence/f19/
+!oak_v4_evidence/f19/*.json
+!oak_v4_evidence/f19/*.txt
+!oak_v4_evidence/f19/*.png
+oak_v4_evidence/f19/bones_*.jsonl
+oak_v4_evidence/f19/live_log*/
+
+# ---- F-20A evidence ------------------------------------------------------------------
+# Same policy as F-19: the per-frame bone telemetry is large and regenerable, the analyses,
+# timelines and sidecar logs are small and are what the report cites.
+!oak_v4_evidence/f20a/
+!oak_v4_evidence/f20a/*.json
+!oak_v4_evidence/f20a/*.jsonl
+!oak_v4_evidence/f20a/*.txt
+!oak_v4_evidence/f20a/log_*/
+!oak_v4_evidence/f20a/log_*/*.jsonl
+!oak_v4_evidence/f20a/log_*/*.txt
+oak_v4_evidence/f20a/bones_*.jsonl

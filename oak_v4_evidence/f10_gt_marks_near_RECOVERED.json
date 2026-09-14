@@ -1,0 +1,176 @@
+{
+  "distance": "near",
+  "metres": 1.5,
+  "headings": "coarse",
+  "RECOVERED": true,
+  "recovery": {
+    "offset_s": 100.75,
+    "stretch": 1.0,
+    "contrast": 83.96
+  },
+  "start": 1789015466.438,
+  "end": 1789015792.438,
+  "transition_s": 7,
+  "blocks": [
+    {
+      "name": "h_0",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789015473.438,
+      "t1": 1789015483.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "h_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789015490.438,
+      "t1": 1789015498.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "h_p90",
+      "headingGT": 90,
+      "headGT": null,
+      "t0": 1789015505.438,
+      "t1": 1789015515.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "h_0b",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789015522.438,
+      "t1": 1789015530.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "h_m45",
+      "headingGT": -45,
+      "headGT": null,
+      "t0": 1789015537.438,
+      "t1": 1789015545.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "h_m90",
+      "headingGT": -90,
+      "headGT": null,
+      "t0": 1789015552.438,
+      "t1": 1789015562.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "h_0c",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789015569.438,
+      "t1": 1789015577.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "tw_rigid_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789015584.438,
+      "t1": 1789015592.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "tw_sh_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789015599.438,
+      "t1": 1789015607.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "tw_sh_m45",
+      "headingGT": -45,
+      "headGT": null,
+      "t0": 1789015614.438,
+      "t1": 1789015622.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "tw_opp_a",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015629.438,
+      "t1": 1789015637.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "tw_opp_b",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015644.438,
+      "t1": 1789015652.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_slow",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015659.438,
+      "t1": 1789015671.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_normal",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015678.438,
+      "t1": 1789015688.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_fast",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015695.438,
+      "t1": 1789015705.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_rev_lr",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015712.438,
+      "t1": 1789015722.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_rev_rl",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015729.438,
+      "t1": 1789015739.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_180",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015746.438,
+      "t1": 1789015758.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_turn_arms",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015765.438,
+      "t1": 1789015775.438,
+      "instr": "recovered"
+    },
+    {
+      "name": "m_turn_still",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789015782.438,
+      "t1": 1789015792.438,
+      "instr": "recovered"
+    }
+  ]
+}

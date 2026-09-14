@@ -1,0 +1,186 @@
+======================================================================================================================
+ F-15 -- CROSS-SESSION / SECOND-SUBJECT VALIDATION   (offline; no production code touched)
+======================================================================================================================
+  F-10  subject A  pipeline_logs_f10_near  32974->2478 frames | 1.45 m (p10 1.35 p90 1.62) | K=91.2  [marks RECOVERED]
+  F-11  subject A  pipeline_logs_f11       22389->1457 frames | 1.28 m (p10 1.25 p90 1.33) | K=88.8
+  F-15  subject B  pipeline_logs_f15       20379->2895 frames | 1.27 m (p10 1.20 p90 1.33) | K=83.5
+
+======================================================================================================================
+ (A) SIGN-CONVENTION CHECK -- is there a subject-specific inversion?
+======================================================================================================================
+ cap    subject    dzP30          dzP50          dzCtr          dzEmit         yaw3Dsig     
+ F-10   subject A  -1             -1             -1             -1             +1           
+ F-11   subject A  -1             -1             -1             -1             +1           
+ F-15   subject B  -1             -1             -1             -1             +1           
+
+   No inversion: every estimator infers the SAME polarity on all three captures. Criterion 3 passes.
+
+======================================================================================================================
+ (B) PER-HEADING SIGN ACCURACY (ALL frames; undefined counted wrong)
+======================================================================================================================
+
+  raw p30 dz
+   cap             +45         -45         +90         -90     macro avg
+   F-10        100.00%     100.00%      21.43%       0.00%         55.36%
+   F-11        100.00%      99.62%      45.93%       7.48%         63.26%
+   F-15        100.00%       2.42%       0.00%       0.00%         25.60%
+
+  raw p50 dz
+   cap             +45         -45         +90         -90     macro avg
+   F-10        100.00%     100.00%      21.43%       0.00%         55.36%
+   F-11        100.00%     100.00%      57.78%      12.24%         67.51%
+   F-15        100.00%       2.90%       0.00%       0.00%         25.72%
+
+  centre dz
+   cap             +45         -45         +90         -90     macro avg
+   F-10        100.00%     100.00%      21.43%       0.00%         55.36%
+   F-11        100.00%     100.00%      56.30%      11.56%         66.97%
+   F-15        100.00%       5.31%       0.00%       0.00%         26.33%
+
+  emitted dz
+   cap             +45         -45         +90         -90     macro avg
+   F-10        100.00%     100.00%     100.00%       0.00%         75.00%
+   F-11        100.00%     100.00%     100.00%      89.12%         97.28%
+   F-15        100.00%      27.54%       0.00%       0.00%         31.88%
+
+  sign(yaw3D)
+   cap             +45         -45         +90         -90     macro avg
+   F-10        100.00%     100.00%     100.00%       0.00%         75.00%
+   F-11        100.00%     100.00%     100.00%      89.12%         97.28%
+   F-15        100.00%      27.54%      23.86%       0.00%         37.85%
+
+======================================================================================================================
+ (C) F-10 vs F-11 vs F-15 -- macro-averaged over the shared headings
+======================================================================================================================
+ estimator                      F-10       F-11       F-15 F-15 vs best
+ raw p30 dz                   55.36%     63.26%     25.60%      -37.65
+ raw p50 dz                   55.36%     67.51%     25.72%      -41.78
+ centre dz                    55.36%     66.97%     26.33%      -40.64
+ emitted dz                   75.00%     97.28%     31.88%      -65.39
+ sign(yaw3D)                  75.00%     97.28%     37.85%      -59.43
+
+ hybrid MAE (deg)               F-10       F-11       F-15 F-15 vs best
+ yaw3D raw, no guard           47.25      10.33      78.61      +68.28
+ yaw3D + WRAP GUARD             5.13      10.33      45.29      +40.16
+ raw shoulder dz                5.13      11.32      38.02      +32.88
+ emitted shoulder dz            5.13      10.33      84.73      +79.59
+ perfect-sign ceiling           5.13      10.33       9.64       +4.51
+
+   'F-15 vs best' compares against the BETTER of the two prior captures, so a
+   collapse cannot hide behind F-10's weak -90 block. >15 points (or a large MAE
+   rise) is the brief's 'major collapse' trigger.
+
+======================================================================================================================
+ (D) BLOCK-LEVEL EVIDENCE for F-15 -- the primary unit
+======================================================================================================================
+ block              true        n | raw p30 dz                 | yaw3D + wrap guard        
+ h_m30              -30        95 | CORRECT    82/  95 def 100% agree | CORRECT    95/  95 def 100% agree
+ h_m45              -45        97 | CORRECT     7/  97 def  71% agree | CORRECT    97/  97 def  59% agree
+ h_m60              -60        91 | CORRECT    91/  91 def 100% agree | CORRECT    91/  91 def 100% agree
+ h_m90              -90        94 | WRONG       4/  94 def 100% agree | NO SIGNAL                 
+ h_p30              30         88 | CORRECT    88/  88 def 100% agree | CORRECT    88/  88 def 100% agree
+ h_p45              45         85 | CORRECT    85/  85 def 100% agree | CORRECT    85/  85 def 100% agree
+ h_p60              60         87 | CORRECT    62/  87 def 100% agree | CORRECT    87/  87 def 100% agree
+ h_p90              90         88 | NO SIGNAL                  | WRONG       1/  88 def 100% agree
+ dc_body45L_face0   -45       110 | WRONG     110/ 110 def 100% agree | WRONG     110/ 110 def 100% agree
+ dc_body45R_face0   45        112 | CORRECT   112/ 112 def 100% agree | CORRECT   112/ 112 def 100% agree
+
+                              correct    wrong   no signal
+ raw p30 dz                         7        2           1   (of 10 blocks)
+ yaw3D + wrap guard                 7        2           1   (of 10 blocks)
+
+======================================================================================================================
+ (E) WHERE DOES THE SHOULDER LINE COLLAPSE?  F-15's new +-30/+-60 holds
+======================================================================================================================
+ heading       n    span px     raw cov     raw acc   guard acc |yaw2D| p50
+ +0          496       63.8        4.6%       --          --            0.0
+ +30          88       37.2      100.0%     100.00%     100.00%        54.4
+ -30          95       52.9       86.3%      86.32%     100.00%        40.8
+ +45         197       41.0      100.0%     100.00%     100.00%        51.1
+ -45         207       41.8       56.5%       2.42%      27.54%        51.1
+ +60          87       17.3       71.3%      71.26%     100.00%        74.7
+ -60          91       53.5      100.0%     100.00%     100.00%        37.0
+ +90          88        7.4        0.0%       0.00%       0.00%        83.6
+ -90          94        8.4        4.3%       0.00%       0.00%        83.1
+
+   'span px' is the shoulder separation in pixels. F-14 measured the collapse at
+   +-90 (7.0 px) but had no intermediate holds; these rows locate the knee of the curve.
+
+======================================================================================================================
+ (F) WRAP-GUARD VALIDATION on F-15
+======================================================================================================================
+   frames triggering the guard (|yaw3D| > 150): 127 of 947 = 13.4%
+     by heading: -90: 94, +90: 33
+   of those, UNGUARDED yaw3D would be WRONG on 106 (83.5%) -- what the guard removes
+   raw dz is ALSO undefined on 123 of them (96.9%) -- replicating F-14's finding
+   no guard    MAE  78.61  wrong sign 53.07%  frames held   9.2%  longest hold 43 frames
+   with guard  MAE  45.29  wrong sign 33.11%  frames held  30.9%  longest hold 94 frames
+
+======================================================================================================================
+ (G) RAW-DEPTH INDEPENDENCE -- does raw dz rescue frames yaw3D gets wrong? (F-14 replication)
+======================================================================================================================
+   ALL shared headings  (n=318 defined, 268 no-signal)
+                         yaw3D correct    yaw3D wrong
+     raw dz correct                201              1
+     raw dz wrong                    0            116
+     TRUE RESCUES (dz right, yaw3D wrong): 1      lost: 0
+
+   |heading| = 90 only  (n=4 defined, 178 no-signal)
+                         yaw3D correct    yaw3D wrong
+     raw dz correct                  0              0
+     raw dz wrong                    0              4
+     TRUE RESCUES (dz right, yaw3D wrong): 0      lost: 0
+
+======================================================================================================================
+ (J) LABEL AUDIT -- did subject B actually turn the way the labels say?
+======================================================================================================================
+ The nose offset from the shoulder midpoint is an INDEPENDENT read on turn direction:
+ it uses face keypoints, not depth, not yaw3D. For a WHOLE-BODY turn the head goes with
+ the body, so its sign must mirror. It is INVALID for the dc_* blocks, which deliberately
+ hold the face on the camera while the body turns -- those are audited separately or not
+ at all. Convention is read off the POSITIVE blocks, not assumed.
+
+ block                label       n    |yaw2D|   nose norm      label check
+ dc_body45L_face0     -45       110       50.1      -0.284  n/a (decoupled)
+ dc_body45R_face0     45        112       44.1      -0.366  n/a (decoupled)
+ h_m30                -30        95       40.8       0.304               ok
+ h_m45                -45        97       58.6       0.645               ok
+ h_m60                -60        91       37.0       0.158               ok
+ h_m90                -90        94       83.1       3.614               ok
+ h_p30                30         88       54.4      -0.462               ok
+ h_p45                45         85       69.4      -1.083               ok
+ h_p60                60         87       74.7      -1.554               ok
+ h_p90                90         88       83.6      -2.787               ok
+
+   Every whole-body block is correctly labelled -- the protocol was followed.
+
+----------------------------------------------------------------------------------------------------------------------
+ WHOLE-BODY (h_*) BLOCKS ONLY -- the label-validated population
+----------------------------------------------------------------------------------------------------------------------
+                              correct    wrong   no signal
+ raw p30 dz                         6        1           1   (of 8 whole-body blocks)
+ yaw3D + wrap guard                 6        1           1   (of 8 whole-body blocks)
+   guarded yaw3D, |heading| <= 60  : 6 correct, 0 wrong, 0 no-signal
+   guarded yaw3D, |heading| == 90  : 0 correct, 1 wrong, 1 no-signal
+======================================================================================================================
+ (H) DYNAMIC BEHAVIOUR on F-15 -- behaviour only, no instantaneous truth
+======================================================================================================================
+ block              n |  raw cov   raw f/s  guard f/s    longest
+ m_slow           129 |    84.5%      0.00       0.16        109
+ m_normal         110 |    86.4%      0.00       0.20         95
+ m_fast           124 |    45.2%      1.39       0.60         30
+ m_rev_lr         134 |    50.7%      0.79       0.79         40
+ m_rev_rl         114 |    51.8%      0.80       0.00         28
+ m_180            144 |    18.8%      0.33       0.00         23
+ m_turn_arms      125 |    32.0%      1.19       0.60         18
+ m_turn_still     122 |    77.9%      0.20       0.20         79
+
+   Reference only: a subject physically reverses at most ~0.5 times/second (F-12).
+
+======================================================================================================================
+ (I) TRUE-ZERO on F-15 -- does an arbitrary sign move the avatar?
+======================================================================================================================
+ estimator                         MAE     RMSE      p95      max
+ sign(raw dz) * |yaw2D|           0.19     1.08     0.00     7.85
+ sign(guarded yaw3D) * |yaw2D|     1.11     2.49     6.04     9.20
+ production yaw3D                 1.00     1.84     4.42     6.40

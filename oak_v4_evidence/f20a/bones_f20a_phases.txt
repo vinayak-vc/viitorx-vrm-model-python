@@ -1,0 +1,19 @@
+F-20A phase summary: bones_f20a.jsonl  (23841 records)
+
+phase                    n tracking states                      moved/f   restEnd   maxStep   snaps
+STARTING              1756 NoStream:1241,Live:515                0.0868    107.92     9.825       0
+LIVE_BASELINE         3900 Live:3900                             0.1040     19.29     0.165       0
+KILL_FORCED            135 Live:113,StaleHold:22                 0.0173     19.13     0.067       0
+GAP_FORCED            2145 StaleFailsa:1761,StaleHold:384        0.0262      0.00     0.205       0
+RESTART_1             1500 StaleFailsa:904,Live:536              0.0824     47.06     2.266       0
+LIVE_AFTER_1          3735 Live:3735                             0.0427     66.29     0.022       0
+KILL_CLEAN             120 Live:107,StaleHold:13                 0.0184     66.29     0.000       0
+GAP_CLEAN             2100 StaleFailsa:1708,StaleHold:392        0.0423      0.00     0.000       0
+RESTART_2             1365 StaleFailsa:827,Live:484              0.1308     54.23     1.398       0
+LIVE_AFTER_2          3630 Live:3630                             0.2091     47.83     0.765       0
+DONE                  2164 StaleFailsa:1666,StaleHold:398        0.0243      0.00     0.019       0
+
+moved/f  = mean per-frame world rotation of hips+arms+head (deg); 0 = frozen
+restEnd  = mean bone LOCAL angle from the normalized rig rest pose at the phase end;
+           0.00 = the avatar reached the neutral failsafe pose exactly
+snaps    = rendered torso-yaw steps > 10 deg

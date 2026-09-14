@@ -1,0 +1,168 @@
+========================================================================================================
+ ARM RETARGET V1 -- LIVE VALIDATION  (2026-09-09)
+========================================================================================================
+ unity log      : C:\Users\Rushit Vaghela\Documents\MyMirror\Logs\virtual-mirror-20260909.log
+ retarget-trace : 53860 rows   arm-v1-trace: 8844 rows   model_log: 160706 rows
+ capture dirs   : pipeline_logs_armv1, pipeline_logs_armv1b
+ SUPERSEDED     : variant=new motion=2  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=new motion=3  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=new motion=4  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=new motion=5  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=old motion=2  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=old motion=3  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=old motion=4  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ SUPERSEDED     : variant=old motion=5  pipeline_logs_armv1 -> pipeline_logs_armv1b
+ rest basis     : left(valid=True upper=(1.00,-0.05,0.00) lower=(1.00,-0.01,-0.07) hinge=(0.05,0.97,-0.24)) right(valid=True upper=(-1.00,-0.05,0.00) lower=(-1.00,-0.01,-0.07) hinge=(0.05,-0.97,0.24))
+ rest basis     : left(valid=True upper=(1.00,-0.05,0.00) lower=(1.00,-0.01,-0.07) hinge=(0.05,0.97,-0.24)) right(valid=True upper=(-1.00,-0.05,0.00) lower=(-1.00,-0.01,-0.07) hinge=(0.05,-0.97,0.24))
+
+========================================================================================================
+ 1) RETARGETING CORRECTNESS -- angle between the avatar's arm bone and the RAW
+    landmark direction the green PoseDebugSkeleton draws. Lower is better.
+========================================================================================================
+   motion                       | NEW  mean / p95 / max       | OLD  mean / p95 / max       | DENSE  mean / p95 / max     |
+   1 RELAXED ARMS               |    0.2    0.7    7.1 (n= 220)|   35.0   52.3   55.3 (n= 244)| -                           |
+   2 ONE ARM HORIZONTAL         |    0.0    0.3    0.7 (n= 344)|   74.8  147.2  174.2 (n= 328)| -                           |
+   3 BOTH ARMS HORIZONTAL  (T   |    0.1    0.3    1.6 (n= 256)|   14.3   36.2   53.7 (n= 248)| -                           |
+   4 ONE ARM OVERHEAD           |    2.0    0.7  148.7 (n= 336)|   33.1   50.7  136.6 (n= 324)| -                           |
+   5 BOTH ARMS OVERHEAD         |    0.0    0.1    0.5 (n= 248)|   45.3  121.0  132.5 (n= 244)| -                           |
+   6 FAST WAVING                |    0.4    1.5    3.2 (n= 324)|   26.7   54.5  115.3 (n= 328)| -                           |
+   7 ARM CIRCLES                |    0.5    1.3    9.7 (n= 324)|   23.9   49.2   75.1 (n= 328)| -                           |
+   8 ASYMMETRIC ARM POSES       |    0.2    0.7    3.6 (n= 324)|   34.4   80.0  134.7 (n= 328)| -                           |
+   9 DANCE                      |    0.4    1.1    3.3 (n= 404)|   32.2   59.4   83.6 (n= 400)| -                           |
+   D1 ARM CIRCLES  (dense trac  | -                           | -                           |    0.6    1.3    5.5 (n=1992)|
+   D2 STRAIGHT ARMS HELD OUT    | -                           | -                           |    0.0    0.2    1.9 (n=1980)|
+   D3 FAST WAVING  (dense trac  | -                           | -                           |    0.2    0.5    3.2 (n=1868)|
+   --------------------------------------------------------------------------------------------------
+   NEW        ALL MOTIONS  n= 2780  mean=  0.46  p95=  0.90  max=148.70
+               leftUpperArm   n=  695  mean=  0.55  p95=  0.60  max= 77.40
+               leftLowerArm   n=  695  mean=  0.83  p95=  1.10  max=148.70
+               rightUpperArm  n=  695  mean=  0.17  p95=  0.60  max=  7.10
+               rightLowerArm  n=  695  mean=  0.31  p95=  1.20  max=  4.80
+   OLD        ALL MOTIONS  n= 2772  mean= 35.78  p95=107.30  max=174.20
+               leftUpperArm   n=  693  mean= 34.15  p95=122.10  max=131.10
+               leftLowerArm   n=  693  mean= 28.66  p95= 59.20  max=115.30
+               rightUpperArm  n=  693  mean= 33.68  p95= 53.70  max=118.50
+               rightLowerArm  n=  693  mean= 46.62  p95=132.80  max=174.20
+   DENSE      ALL MOTIONS  n= 5840  mean=  0.26  p95=  0.90  max=  5.50
+               leftUpperArm   n= 1460  mean=  0.25  p95=  0.90  max=  4.70
+               leftLowerArm   n= 1460  mean=  0.31  p95=  1.00  max=  5.40
+               rightUpperArm  n= 1460  mean=  0.24  p95=  0.80  max=  3.30
+               rightLowerArm  n= 1460  mean=  0.25  p95=  0.90  max=  5.50
+
+========================================================================================================
+ 2) WITHIN-RUN CONTROL -- LEG bones were not touched by this change. If the leg
+    error moves as much as the arm error, the A/B is measuring the subject, not the code.
+========================================================================================================
+   NEW        LEGS  n= 2780  mean= 10.51  p95= 23.20  max=124.40
+   OLD        LEGS  n= 2772  mean=  9.91  p95= 15.20  max=166.60
+   DENSE      LEGS  n= 5840  mean=  9.00  p95= 19.90  max= 31.60
+
+========================================================================================================
+ 3) LEFT/RIGHT ASYMMETRY -- |errDeg(left) - errDeg(right)| on the same trace frame.
+    The SR.mp4 'both arms up, avatar raises one' failure lives here.
+========================================================================================================
+   motion                       | upper arm  mean/p95/max  | forearm  mean/p95/max   
+   -- variant NEW
+   1 RELAXED ARMS               |     0.2     0.4     7.0 |     0.3     0.8     4.5
+   2 ONE ARM HORIZONTAL         |     0.1     0.3     0.5 |     0.1     0.3     0.6
+   3 BOTH ARMS HORIZONTAL  (T   |     0.2     0.6     1.5 |     0.0     0.1     1.1
+   4 ONE ARM OVERHEAD           |     3.1     5.5    77.2 |     4.7     2.3   148.6
+   5 BOTH ARMS OVERHEAD         |     0.0     0.2     0.4 |     0.0     0.1     0.2
+   6 FAST WAVING                |     0.2     0.5     1.4 |     0.3     1.6     3.0
+   7 ARM CIRCLES                |     0.1     0.3     0.7 |     0.4     0.8     9.7
+   8 ASYMMETRIC ARM POSES       |     0.1     0.3     0.6 |     0.2     0.4     3.1
+   9 DANCE                      |     0.2     0.6     2.2 |     0.3     1.3     2.6
+      ALL MOTIONS               |     0.5     0.4    77.2 |     0.8     0.8   148.6
+   -- variant OLD
+   1 RELAXED ARMS               |    22.1    26.2    26.3 |    20.3    24.4    24.6
+   2 ONE ARM HORIZONTAL         |    69.0    89.8   101.4 |    52.2   114.4   125.6
+   3 BOTH ARMS HORIZONTAL  (T   |     3.1    11.1    17.7 |     3.3     7.4    11.7
+   4 ONE ARM OVERHEAD           |    13.1    25.1    27.9 |    15.0    44.5   122.3
+   5 BOTH ARMS OVERHEAD         |    35.1    84.2    91.5 |    47.9    70.3    85.4
+   6 FAST WAVING                |    20.4    42.2    50.1 |    20.6    49.4    78.4
+   7 ARM CIRCLES                |    16.9    35.8    41.3 |    16.1    31.1    64.1
+   8 ASYMMETRIC ARM POSES       |     9.9    19.0    24.4 |    29.7    66.1   123.6
+   9 DANCE                      |    14.2    31.0    51.7 |    18.6    43.7    79.4
+      ALL MOTIONS               |    22.6    80.0   101.4 |    24.8    78.5   125.6
+   -- variant DENSE
+   D1 ARM CIRCLES  (dense trac  |     0.2     0.8     2.4 |     0.3     0.8     3.6
+   D2 STRAIGHT ARMS HELD OUT    |     0.0     0.2     0.4 |     0.0     0.2     1.9
+   D3 FAST WAVING  (dense trac  |     0.2     0.5     1.9 |     0.1     0.4     2.0
+      ALL MOTIONS               |     0.1     0.5     2.4 |     0.1     0.5     3.6
+
+========================================================================================================
+ 4) ARM-V1-TRACE -- solver intent vs achieved bone, and ROLL. NEW variant only
+    (the trace is emitted only while the aim solver is live).
+    NOTE: upperErrDeg/forearmErrDeg do NOT measure upstream tracking correctness.
+========================================================================================================
+   -- variant NEW (n=1390 trace rows)
+   motion                     | upperErrDeg mean/p95/max | foreErrDeg mean/p95/max | rollDeg step max / flips
+   1 RELAXED ARMS             |     0.2     0.7     7.1 |     0.2     0.7     4.8 |      159.4      1
+   2 ONE ARM HORIZONTAL       |     0.0     0.2     0.6 |     0.0     0.3     0.7 |      122.0      1
+   3 BOTH ARMS HORIZONTAL     |     0.1     0.4     1.5 |     0.0     0.1     1.6 |      153.9      1
+   4 ONE ARM OVERHEAD         |     1.6     0.5    77.4 |     2.4     0.8   148.7 |      129.7      2
+   5 BOTH ARMS OVERHEAD       |     0.0     0.1     0.5 |     0.0     0.1     0.3 |       10.7      0
+   6 FAST WAVING              |     0.3     0.7     1.7 |     0.5     1.7     3.2 |      130.7      9
+   7 ARM CIRCLES              |     0.3     0.7     1.1 |     0.8     1.8     9.7 |      178.2      4
+   8 ASYMMETRIC ARM POSES     |     0.2     0.7     1.1 |     0.2     0.6     3.6 |      176.7      7
+   9 DANCE                    |     0.3     0.7     2.5 |     0.5     1.2     3.3 |      172.9     11
+      ALL MOTIONS             |     0.4     0.6    77.4 |     0.6     1.2   148.7 |
+      bendDeg  mean=65.0 p05=11.1 p95=133.5   (BendSinMin=0.2 -> ~11.5 deg threshold)
+      normalSource: ElbowPlane=1316 (94.7%), Held=74 (5.3%)
+      leftArm   roll step (wrapped): max  179.6  p95 165.7  p99 177.5  TRUE flips(>90) 193   [raw-diff max  359.5, +/-180 seam artefacts 14]
+                achieved dir step: upper p95 106.9 max  131.3 | forearm p95 140.4 max  166.1
+      rightArm  roll step (wrapped): max  178.2  p95 136.3  p99 167.1  TRUE flips(>90) 131   [raw-diff max  338.5, +/-180 seam artefacts 11]
+                achieved dir step: upper p95  89.9 max  112.7 | forearm p95 139.7 max  172.6
+   variant OLD: no ARM-V1-TRACE rows (expected when the old branch is live)
+   -- variant DENSE (n=2920 trace rows)
+   motion                     | upperErrDeg mean/p95/max | foreErrDeg mean/p95/max | rollDeg step max / flips
+   D1 ARM CIRCLES  (dense tr  |     0.5     1.3     4.7 |     0.6     1.4     5.5 |      176.9      6
+   D2 STRAIGHT ARMS HELD OUT  |     0.0     0.2     0.6 |     0.0     0.2     1.9 |      136.1      3
+   D3 FAST WAVING  (dense tr  |     0.2     0.5     2.2 |     0.2     0.5     3.2 |       23.8      0
+      ALL MOTIONS             |     0.2     0.8     4.7 |     0.3     1.0     5.5 |
+      bendDeg  mean=57.0 p05=2.7 p95=131.7   (BendSinMin=0.2 -> ~11.5 deg threshold)
+      normalSource: ElbowPlane=2434 (83.4%), Held=486 (16.6%)
+      leftArm   roll step (wrapped): max  176.9  p95   8.7  p99  18.9  TRUE flips(>90) 6   [raw-diff max  337.2, +/-180 seam artefacts 2]
+                achieved dir step: upper p95   5.7 max  123.6 | forearm p95   7.0 max  100.5
+      rightArm  roll step (wrapped): max  165.3  p95   6.0  p99  14.9  TRUE flips(>90) 4   [raw-diff max  165.3, +/-180 seam artefacts 0]
+                achieved dir step: upper p95   5.7 max  107.5 | forearm p95   6.0 max  134.3
+
+========================================================================================================
+ 5) DENSE AVATAR STATE (model_log, every render frame) -- elbow angle, forearm
+    direction step (jitter/flips), bone-length constancy, arm gate holds.
+========================================================================================================
+   motion                     | elbow L/R mean      | forearm dir step p95/max  | upArm/foreArm len | arm gate held
+   -- variant NEW
+   1 RELAXED ARMS             |    121.4    124.0 |        0.93       72.35 |  0.540 /  0.520 |   1.29%  (n=3328)
+   2 ONE ARM HORIZONTAL       |    148.6    123.6 |        0.57       61.31 |  0.540 /  0.520 |   0.00%  (n=5162)
+   3 BOTH ARMS HORIZONTAL     |    116.1    161.1 |        0.57       67.25 |  0.540 /  0.520 |   0.00%  (n=3828)
+   4 ONE ARM OVERHEAD         |     65.6    124.0 |        0.78       23.98 |  0.540 /  0.520 |   6.52%  (n=5014)
+   5 BOTH ARMS OVERHEAD       |     56.0     47.2 |        0.43        1.34 |  0.540 /  0.520 |   0.00%  (n=3716)
+   6 FAST WAVING              |    138.3    141.2 |        2.11       79.36 |  0.540 /  0.520 |   0.00%  (n=4870)
+   7 ARM CIRCLES              |    109.2    120.2 |        1.89       83.54 |  0.540 /  0.520 |   0.00%  (n=4877)
+   8 ASYMMETRIC ARM POSES     |    131.9    122.6 |        1.28       87.66 |  0.540 /  0.520 |   0.00%  (n=4857)
+   9 DANCE                    |    102.6    106.9 |        1.79       77.81 |  0.540 /  0.520 |   0.40%  (n=6039)
+      ALL MOTIONS             |    110.8    119.5 |        1.38       87.66 |  0.540 /  0.520 |   0.95%  (n=41691)
+      bone length spread: upArm 0.00000 m (min 0.5400 max 0.5400), foreArm 0.00000 m
+      elbow angle range : L 28.6..179.9 deg   R 15.9..179.1 deg
+   -- variant OLD
+   1 RELAXED ARMS             |    154.0    136.0 |        0.54        1.10 |  0.540 /  0.520 |   0.00%  (n=3685)
+   2 ONE ARM HORIZONTAL       |    167.6    131.7 |        0.57        2.86 |  0.540 /  0.520 |   0.00%  (n=4968)
+   3 BOTH ARMS HORIZONTAL     |    164.4    160.6 |        0.57        2.81 |  0.540 /  0.520 |   0.00%  (n=3714)
+   4 ONE ARM OVERHEAD         |    121.9    125.8 |        0.57       19.41 |  0.540 /  0.520 |   0.00%  (n=4844)
+   5 BOTH ARMS OVERHEAD       |    113.3    118.7 |        0.79       14.69 |  0.540 /  0.520 |   0.00%  (n=3688)
+   6 FAST WAVING              |    122.8    137.2 |        1.36       14.94 |  0.540 /  0.520 |   0.00%  (n=4911)
+   7 ARM CIRCLES              |    128.4    130.0 |        1.26        7.98 |  0.540 /  0.520 |   0.00%  (n=4886)
+   8 ASYMMETRIC ARM POSES     |    151.9    140.4 |        0.77        3.35 |  0.540 /  0.520 |   0.00%  (n=4885)
+   9 DANCE                    |    137.1    142.9 |        1.80       32.76 |  0.540 /  0.520 |   0.83%  (n=5992)
+      ALL MOTIONS             |    139.8    135.9 |        0.98       32.76 |  0.540 /  0.520 |   0.12%  (n=41573)
+      bone length spread: upArm 0.00000 m (min 0.5400 max 0.5400), foreArm 0.00000 m
+      elbow angle range : L 97.9..175.1 deg   R 97.7..174.7 deg
+   -- variant DENSE
+   D1 ARM CIRCLES  (dense tr  |    150.2    138.8 |        2.48       85.37 |  0.540 /  0.520 |   0.00%  (n=2988)
+   D2 STRAIGHT ARMS HELD OUT  |    171.2    148.1 |        0.57       67.20 |  0.540 /  0.520 |   0.00%  (n=2972)
+   D3 FAST WAVING  (dense tr  |     63.6     59.2 |        0.81        9.13 |  0.540 /  0.520 |   0.00%  (n=2806)
+      ALL MOTIONS             |    129.6    116.5 |        1.40       85.37 |  0.540 /  0.520 |   0.00%  (n=8766)
+      bone length spread: upArm 0.00000 m (min 0.5400 max 0.5400), foreArm 0.00000 m
+      elbow angle range : L 31.7..179.8 deg   R 43.6..179.7 deg
+

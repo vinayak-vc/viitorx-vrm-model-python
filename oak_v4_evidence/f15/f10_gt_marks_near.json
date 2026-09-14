@@ -1,0 +1,235 @@
+{
+  "distance": "near",
+  "metres": 1.34,
+  "headings": "full",
+  "estimatedHeadings": [],
+  "start": 1789039134.2856,
+  "end": 1789039585.5325,
+  "transition_s": 7,
+  "blocks": [
+    {
+      "name": "h_0",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789039141.39,
+      "t1": 1789039149.513,
+      "instr": "FACE THE CAMERA squarely"
+    },
+    {
+      "name": "h_p30",
+      "headingGT": 30,
+      "headGT": null,
+      "t0": 1789039156.643,
+      "t1": 1789039164.7721,
+      "instr": "turn LEFT shoulder toward camera, 30 mark"
+    },
+    {
+      "name": "h_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789039171.8841,
+      "t1": 1789039180.0063,
+      "instr": "same direction, 45 mark"
+    },
+    {
+      "name": "h_p60",
+      "headingGT": 60,
+      "headGT": null,
+      "t0": 1789039187.1362,
+      "t1": 1789039195.2687,
+      "instr": "same direction, 60 mark"
+    },
+    {
+      "name": "h_p90",
+      "headingGT": 90,
+      "headGT": null,
+      "t0": 1789039202.3898,
+      "t1": 1789039210.5238,
+      "instr": "same direction, 90 mark (side on)"
+    },
+    {
+      "name": "h_0b",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789039217.6427,
+      "t1": 1789039223.7223,
+      "instr": "back to FACING THE CAMERA"
+    },
+    {
+      "name": "h_m30",
+      "headingGT": -30,
+      "headGT": null,
+      "t0": 1789039230.8501,
+      "t1": 1789039238.9961,
+      "instr": "turn RIGHT shoulder toward camera, 30 mark"
+    },
+    {
+      "name": "h_m45",
+      "headingGT": -45,
+      "headGT": null,
+      "t0": 1789039246.0977,
+      "t1": 1789039254.2216,
+      "instr": "same direction, 45 mark"
+    },
+    {
+      "name": "h_m60",
+      "headingGT": -60,
+      "headGT": null,
+      "t0": 1789039261.3357,
+      "t1": 1789039269.4682,
+      "instr": "same direction, 60 mark"
+    },
+    {
+      "name": "h_m90",
+      "headingGT": -90,
+      "headGT": null,
+      "t0": 1789039276.5917,
+      "t1": 1789039284.7196,
+      "instr": "same direction, 90 mark (side on)"
+    },
+    {
+      "name": "h_0c",
+      "headingGT": 0,
+      "headGT": null,
+      "t0": 1789039291.8227,
+      "t1": 1789039297.9311,
+      "instr": "back to FACING THE CAMERA"
+    },
+    {
+      "name": "dc_body45R_face0",
+      "headingGT": 45,
+      "headGT": 0,
+      "t0": 1789039305.0366,
+      "t1": 1789039315.1901,
+      "instr": "BODY halfway RIGHT but KEEP LOOKING AT THE CAMERA"
+    },
+    {
+      "name": "dc_body45L_face0",
+      "headingGT": -45,
+      "headGT": 0,
+      "t0": 1789039322.2954,
+      "t1": 1789039332.4504,
+      "instr": "BODY halfway LEFT but KEEP LOOKING AT THE CAMERA"
+    },
+    {
+      "name": "dc_body0_head45R",
+      "headingGT": 0,
+      "headGT": 45,
+      "t0": 1789039339.5939,
+      "t1": 1789039349.7579,
+      "instr": "BODY STAYS FACING THE CAMERA - turn only your HEAD right"
+    },
+    {
+      "name": "dc_body0_head45L",
+      "headingGT": 0,
+      "headGT": -45,
+      "t0": 1789039356.86,
+      "t1": 1789039367.0091,
+      "instr": "BODY STAYS FACING THE CAMERA - turn only your HEAD left"
+    },
+    {
+      "name": "tw_rigid_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789039374.1304,
+      "t1": 1789039382.2554,
+      "instr": "TURN HALFWAY RIGHT - move your FEET too"
+    },
+    {
+      "name": "tw_sh_p45",
+      "headingGT": 45,
+      "headGT": null,
+      "t0": 1789039389.3697,
+      "t1": 1789039397.492,
+      "instr": "FEET STAY STILL - twist only your CHEST halfway right"
+    },
+    {
+      "name": "tw_sh_m45",
+      "headingGT": -45,
+      "headGT": null,
+      "t0": 1789039404.5938,
+      "t1": 1789039412.7168,
+      "instr": "FEET STAY STILL - twist only your CHEST halfway left"
+    },
+    {
+      "name": "tw_opp_a",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039419.8271,
+      "t1": 1789039427.951,
+      "instr": "HIPS point LEFT while your CHEST turns RIGHT"
+    },
+    {
+      "name": "tw_opp_b",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039435.0647,
+      "t1": 1789039443.221,
+      "instr": "HIPS point RIGHT while your CHEST turns LEFT"
+    },
+    {
+      "name": "m_slow",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039450.3407,
+      "t1": 1789039462.5607,
+      "instr": "TURN SLOWLY left and right, keep going"
+    },
+    {
+      "name": "m_normal",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039469.6977,
+      "t1": 1789039479.8552,
+      "instr": "TURN AT NORMAL SPEED, left and right"
+    },
+    {
+      "name": "m_fast",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039486.9688,
+      "t1": 1789039497.1287,
+      "instr": "TURN FAST, left and right"
+    },
+    {
+      "name": "m_rev_lr",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039504.2381,
+      "t1": 1789039514.4056,
+      "instr": "TURN LEFT then SNAP BACK RIGHT, repeat"
+    },
+    {
+      "name": "m_rev_rl",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039521.5076,
+      "t1": 1789039531.676,
+      "instr": "TURN RIGHT then SNAP BACK LEFT, repeat"
+    },
+    {
+      "name": "m_180",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039538.7868,
+      "t1": 1789039550.9669,
+      "instr": "TURN RIGHT AROUND - show the camera your back - then come back"
+    },
+    {
+      "name": "m_turn_arms",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039558.0739,
+      "t1": 1789039568.2413,
+      "instr": "TURN while WAVING BOTH ARMS"
+    },
+    {
+      "name": "m_turn_still",
+      "headingGT": null,
+      "headGT": null,
+      "t0": 1789039575.3783,
+      "t1": 1789039585.5325,
+      "instr": "TURN with your ARMS HANGING STILL"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+==============================================================================================================
+F-16 SUBJECT-FREE SHOULDER-PAIR PROBE
+==============================================================================================================
+Pairs of pixels on the STATIC scene, separated by a constant METRIC baseline of
+313.1 mm (= 67 px at 1330 mm). yaw = atan(dz / baseline) -- the shipped formula.
+raw    = apparent yaw incl. the scene's own tilt (constant per pair)
+detilt = after removing each pair's own median -> pure sensor instability
+
+--------------------------------------------------------------------------------------------------------------
+[baseline] PRODUCTION (oak_depth.build_rgbd_pipeline)
+   band            pairs        n   raw_p50   raw_p95   det_p50   det_p95   <=5deg%     uniq
+   1100-1300         628     6227      0.00     12.43     0.000     0.000      87.2       10
+
+--------------------------------------------------------------------------------------------------------------
+[sub3] + sub-pixel 1/8 px
+   band            pairs        n   raw_p50   raw_p95   det_p50   det_p95   <=5deg%     uniq
+   1100-1300        1097     9233     11.73     17.88     1.361     3.922      22.4      131
+
+==============================================================================================================
+HEADLINE - apparent torso yaw on a RIGID scene, 1250-1400 mm band
+==============================================================================================================
+config                raw_p50    raw_p95    det_p50    det_p95    <=5deg%
+baseline           (band not populated)
+sub3               (band not populated)

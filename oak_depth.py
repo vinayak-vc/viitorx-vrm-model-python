@@ -13,6 +13,31 @@ import numpy as np
 import depthai as dai
 
 
+# F-19: the stereo settings below are declared ONCE, here, and both the pipeline builder and the
+# sidecar's startup banner read them. They were previously duplicated as a hand-written banner
+# string, which drifted: the banner announced "subpixel=on(1/8)" while the pipeline built
+# setSubpixel(False). A configuration log that can disagree with the configuration is worse than
+# no log, because it is trusted. Changing a value here changes both.
+STEREO_CONFIG = {
+    "preset": "HIGH_DENSITY",
+    "leftRightCheck": True,
+    "subpixel": False,          # <- production default; F-16 measured 1/8 sub-pixel as a large
+    "subpixelBits": 0,          #    quantisation win, but enabling it is NOT part of F-19.
+    "depthAlign": "CAM_A",
+    "monoRes": "400p",
+}
+
+
+def stereo_config_str():
+    """One-line description of the stereo configuration actually built, for the startup log."""
+    c = STEREO_CONFIG
+    sp = ("on(1/%d)" % (1 << c["subpixelBits"])) if c["subpixel"] and c["subpixelBits"] else (
+        "on" if c["subpixel"] else "OFF")
+    return ("preset=%s subpixel=%s LR-check=%s align=%s mono=%s"
+            % (c["preset"], sp, "on" if c["leftRightCheck"] else "off",
+               c["depthAlign"], c["monoRes"]))
+
+
 def build_rgbd_pipeline(color_res="800p", isp_num=1, isp_den=2, mono_res="400p"):
     """OAK-D-PRO-W: full-FOV color (OV9782 1280x800 -> 640x400 via ISP 1/2) + stereo depth aligned to RGB."""
     pipeline = dai.Pipeline()
@@ -36,8 +61,10 @@ def build_rgbd_pipeline(color_res="800p", isp_num=1, isp_den=2, mono_res="400p")
 
     stereo = pipeline.create(dai.node.StereoDepth)
     stereo.setDefaultProfilePreset(dai.node.StereoDepth.PresetMode.HIGH_DENSITY)
-    stereo.setLeftRightCheck(True)
-    stereo.setSubpixel(False)
+    stereo.setLeftRightCheck(STEREO_CONFIG["leftRightCheck"])
+    stereo.setSubpixel(STEREO_CONFIG["subpixel"])
+    if STEREO_CONFIG["subpixel"] and STEREO_CONFIG["subpixelBits"]:
+        stereo.setSubpixelFractionalBits(STEREO_CONFIG["subpixelBits"])
     stereo.setDepthAlign(dai.CameraBoardSocket.CAM_A)  # align depth -> RGB frame
     mono_left.out.link(stereo.left)
     mono_right.out.link(stereo.right)

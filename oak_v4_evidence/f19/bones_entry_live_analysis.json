@@ -1,0 +1,950 @@
+{
+  "file": "oak_v4_evidence/f19/bones_entry.jsonl",
+  "blocks": [
+    {
+      "block": "STAND CENTRED AND STILL",
+      "frames": 4485,
+      "fps": 222.3620571896371,
+      "yaw_min": 0.009421281652135235,
+      "yaw_max": 0.009421281652135235,
+      "yaw_step_p95": 0.0,
+      "yaw_step_max": 0.0,
+      "snaps": 0,
+      "bone_dev_pct": 0.0,
+      "bone_dev_chain": "",
+      "scale_dev": 9.999999999177334e-07,
+      "hinges": {
+        "L elbow": {
+          "flex_p50": 83.38966602554363,
+          "flex_p95": 83.38966602554363,
+          "flex_max": 83.38966602554363,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 4485,
+          "n": 4485
+        },
+        "R elbow": {
+          "flex_p50": 90.28178786966063,
+          "flex_p95": 90.28178786966063,
+          "flex_max": 90.28178786966063,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 4485,
+          "n": 4485
+        },
+        "L knee": {
+          "flex_p50": 66.7490687742251,
+          "flex_p95": 66.7490687742251,
+          "flex_max": 66.7490687742251,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 4485,
+          "n": 4485
+        },
+        "R knee": {
+          "flex_p50": 42.39097387179103,
+          "flex_p95": 42.39097387179103,
+          "flex_max": 42.39097387179103,
+          "spread_p95": 0.010104050339274482,
+          "over_fold": 0,
+          "n_bent": 4485,
+          "n": 4485
+        }
+      },
+      "temporal": {
+        "Hips": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Spine": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Chest": {
+          "p95": 0.12300175479129637,
+          "max": 0.12300175479129637,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "UpperChest": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Neck": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Head": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperLeg": {
+          "p95": 0.1493012468240546,
+          "max": 0.1493012468240546,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "RightLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        }
+      },
+      "worst_bone": "RightUpperLeg",
+      "worst_bone_p95": 0.1493012468240546,
+      "worst_bone_max": 0.1493012468240546,
+      "bone_snaps": 0,
+      "frozen_pct": 100.0,
+      "frozen_bone": "Hips",
+      "cross_frames": 0,
+      "cross_total": 4485,
+      "gate_held_pct": 0.0,
+      "gate_longest": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "gate_longest_s": 0.0
+    },
+    {
+      "block": "WALK OUT OF VIEW",
+      "frames": 2220,
+      "fps": 221.25977542132793,
+      "yaw_min": 0.009421281652135235,
+      "yaw_max": 0.009421281652135235,
+      "yaw_step_p95": 0.0,
+      "yaw_step_max": 0.0,
+      "snaps": 0,
+      "bone_dev_pct": 0.0,
+      "bone_dev_chain": "",
+      "scale_dev": 9.999999999177334e-07,
+      "hinges": {
+        "L elbow": {
+          "flex_p50": 83.38966602554363,
+          "flex_p95": 83.38966602554363,
+          "flex_max": 83.38966602554363,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 2220,
+          "n": 2220
+        },
+        "R elbow": {
+          "flex_p50": 90.28178786966063,
+          "flex_p95": 90.28178786966063,
+          "flex_max": 90.28178786966063,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 2220,
+          "n": 2220
+        },
+        "L knee": {
+          "flex_p50": 66.7490687742251,
+          "flex_p95": 66.7490687742251,
+          "flex_max": 66.7490687742251,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 2220,
+          "n": 2220
+        },
+        "R knee": {
+          "flex_p50": 42.39097387179103,
+          "flex_p95": 42.39097387179103,
+          "flex_max": 42.39097387179103,
+          "spread_p95": 0.010104050339274482,
+          "over_fold": 0,
+          "n_bent": 2220,
+          "n": 2220
+        }
+      },
+      "temporal": {
+        "Hips": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Spine": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Chest": {
+          "p95": 0.12300175479129637,
+          "max": 0.12300175479129637,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "UpperChest": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Neck": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Head": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperLeg": {
+          "p95": 0.1493012468240546,
+          "max": 0.1493012468240546,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "RightLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        }
+      },
+      "worst_bone": "RightUpperLeg",
+      "worst_bone_p95": 0.1493012468240546,
+      "worst_bone_max": 0.1493012468240546,
+      "bone_snaps": 0,
+      "frozen_pct": 100.0,
+      "frozen_bone": "Hips",
+      "cross_frames": 0,
+      "cross_total": 2220,
+      "gate_held_pct": 0.0,
+      "gate_longest": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "gate_longest_s": 0.0
+    },
+    {
+      "block": "WALK BACK IN AND STOP",
+      "frames": 2670,
+      "fps": 223.09885309642405,
+      "yaw_min": 0.009421281652135235,
+      "yaw_max": 0.009421281652135235,
+      "yaw_step_p95": 0.0,
+      "yaw_step_max": 0.0,
+      "snaps": 0,
+      "bone_dev_pct": 0.0,
+      "bone_dev_chain": "",
+      "scale_dev": 9.999999999177334e-07,
+      "hinges": {
+        "L elbow": {
+          "flex_p50": 83.38966602554363,
+          "flex_p95": 83.38966602554363,
+          "flex_max": 83.38966602554363,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 2670,
+          "n": 2670
+        },
+        "R elbow": {
+          "flex_p50": 90.28178786966063,
+          "flex_p95": 90.28178786966063,
+          "flex_max": 90.28178786966063,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 2670,
+          "n": 2670
+        },
+        "L knee": {
+          "flex_p50": 66.7490687742251,
+          "flex_p95": 66.7490687742251,
+          "flex_max": 66.7490687742251,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 2670,
+          "n": 2670
+        },
+        "R knee": {
+          "flex_p50": 42.39097387179103,
+          "flex_p95": 42.39097387179103,
+          "flex_max": 42.39097387179103,
+          "spread_p95": 0.010104050339274482,
+          "over_fold": 0,
+          "n_bent": 2670,
+          "n": 2670
+        }
+      },
+      "temporal": {
+        "Hips": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Spine": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Chest": {
+          "p95": 0.12300175479129637,
+          "max": 0.12300175479129637,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "UpperChest": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Neck": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Head": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperLeg": {
+          "p95": 0.1493012468240546,
+          "max": 0.1493012468240546,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "RightLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        }
+      },
+      "worst_bone": "RightUpperLeg",
+      "worst_bone_p95": 0.1493012468240546,
+      "worst_bone_max": 0.1493012468240546,
+      "bone_snaps": 0,
+      "frozen_pct": 100.0,
+      "frozen_bone": "Hips",
+      "cross_frames": 0,
+      "cross_total": 2670,
+      "gate_held_pct": 0.0,
+      "gate_longest": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "gate_longest_s": 0.0
+    },
+    {
+      "block": "WALK OUT THEN RE-ENTER TWICE",
+      "frames": 4035,
+      "fps": 223.84700071370304,
+      "yaw_min": 0.009421281652135235,
+      "yaw_max": 0.009421281652135235,
+      "yaw_step_p95": 0.0,
+      "yaw_step_max": 0.0,
+      "snaps": 0,
+      "bone_dev_pct": 0.0,
+      "bone_dev_chain": "",
+      "scale_dev": 9.999999999177334e-07,
+      "hinges": {
+        "L elbow": {
+          "flex_p50": 83.38966602554363,
+          "flex_p95": 83.38966602554363,
+          "flex_max": 83.38966602554363,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 4035,
+          "n": 4035
+        },
+        "R elbow": {
+          "flex_p50": 90.28178786966063,
+          "flex_p95": 90.28178786966063,
+          "flex_max": 90.28178786966063,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 4035,
+          "n": 4035
+        },
+        "L knee": {
+          "flex_p50": 66.7490687742251,
+          "flex_p95": 66.7490687742251,
+          "flex_max": 66.7490687742251,
+          "spread_p95": 0.0,
+          "over_fold": 0,
+          "n_bent": 4035,
+          "n": 4035
+        },
+        "R knee": {
+          "flex_p50": 42.39097387179103,
+          "flex_p95": 42.39097387179103,
+          "flex_max": 42.39097387179103,
+          "spread_p95": 0.010104050339274482,
+          "over_fold": 0,
+          "n_bent": 4035,
+          "n": 4035
+        }
+      },
+      "temporal": {
+        "Hips": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Spine": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Chest": {
+          "p95": 0.12300175479129637,
+          "max": 0.12300175479129637,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "UpperChest": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Neck": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "Head": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightShoulder": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightLowerArm": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightHand": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftUpperLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "LeftFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightUpperLeg": {
+          "p95": 0.1493012468240546,
+          "max": 0.1493012468240546,
+          "snaps": 0,
+          "frozen": 0.0
+        },
+        "RightLowerLeg": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        },
+        "RightFoot": {
+          "p95": 0.0,
+          "max": 0.0,
+          "snaps": 0,
+          "frozen": 100.0
+        }
+      },
+      "worst_bone": "RightUpperLeg",
+      "worst_bone_p95": 0.1493012468240546,
+      "worst_bone_max": 0.1493012468240546,
+      "bone_snaps": 0,
+      "frozen_pct": 100.0,
+      "frozen_bone": "Hips",
+      "cross_frames": 0,
+      "cross_total": 4035,
+      "gate_held_pct": 0.0,
+      "gate_longest": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "gate_longest_s": 0.0
+    }
+  ],
+  "all": {
+    "block": "ALL",
+    "frames": 13410,
+    "fps": 222.76947577092898,
+    "yaw_min": 0.009421281652135235,
+    "yaw_max": 0.009421281652135235,
+    "yaw_step_p95": 0.0,
+    "yaw_step_max": 0.0,
+    "snaps": 0,
+    "bone_dev_pct": 0.0,
+    "bone_dev_chain": "",
+    "scale_dev": 9.999999999177334e-07,
+    "hinges": {
+      "L elbow": {
+        "flex_p50": 83.38966602554363,
+        "flex_p95": 83.38966602554363,
+        "flex_max": 83.38966602554363,
+        "spread_p95": 0.0,
+        "over_fold": 0,
+        "n_bent": 13410,
+        "n": 13410
+      },
+      "R elbow": {
+        "flex_p50": 90.28178786966063,
+        "flex_p95": 90.28178786966063,
+        "flex_max": 90.28178786966063,
+        "spread_p95": 0.0,
+        "over_fold": 0,
+        "n_bent": 13410,
+        "n": 13410
+      },
+      "L knee": {
+        "flex_p50": 66.7490687742251,
+        "flex_p95": 66.7490687742251,
+        "flex_max": 66.7490687742251,
+        "spread_p95": 0.0,
+        "over_fold": 0,
+        "n_bent": 13410,
+        "n": 13410
+      },
+      "R knee": {
+        "flex_p50": 42.39097387179103,
+        "flex_p95": 42.39097387179103,
+        "flex_max": 42.39097387179103,
+        "spread_p95": 0.010104050339274482,
+        "over_fold": 0,
+        "n_bent": 13410,
+        "n": 13410
+      }
+    },
+    "temporal": {
+      "Hips": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "Spine": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "Chest": {
+        "p95": 0.12300175479129637,
+        "max": 0.12300175479129637,
+        "snaps": 0,
+        "frozen": 0.0
+      },
+      "UpperChest": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "Neck": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "Head": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftShoulder": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftUpperArm": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftLowerArm": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftHand": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "RightShoulder": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "RightUpperArm": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "RightLowerArm": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "RightHand": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftUpperLeg": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftLowerLeg": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "LeftFoot": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "RightUpperLeg": {
+        "p95": 0.1493012468240546,
+        "max": 0.1493012468240546,
+        "snaps": 0,
+        "frozen": 0.0
+      },
+      "RightLowerLeg": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      },
+      "RightFoot": {
+        "p95": 0.0,
+        "max": 0.0,
+        "snaps": 0,
+        "frozen": 100.0
+      }
+    },
+    "worst_bone": "RightUpperLeg",
+    "worst_bone_p95": 0.1493012468240546,
+    "worst_bone_max": 0.1493012468240546,
+    "bone_snaps": 0,
+    "frozen_pct": 100.0,
+    "frozen_bone": "Hips",
+    "cross_frames": 0,
+    "cross_total": 13410,
+    "gate_held_pct": 0.0,
+    "gate_longest": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "gate_longest_s": 0.0
+  }
+}

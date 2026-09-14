@@ -1,0 +1,13 @@
+{"t": 1789371611.703, "event": "sidecar_spawn", "detail": "pid=16400 log=D:\\Unity\\viitorx-vrm-avtar-unity-base-project\\Assets\\Games\\viitorx-vrm-avtar-unity\\python-sidecar~\\oak_v4_evidence\\f20a\\log_usb\\stdout_1789371611.txt"}
+{"t": 1789371611.704, "phase": "USB_STARTING"}
+{"t": 1789371636.746, "phase": "USB_LIVE"}
+{"t": 1789371651.749, "phase": "USB_UNPLUG"}
+{"t": 1789371663.794, "event": "unplug_cue_ended", "detail": "sidecar alive=True rc=None"}
+{"t": 1789371663.794, "phase": "USB_GAP"}
+{"t": 1789371675.828, "event": "gap_ended", "detail": "sidecar alive=False rc=1"}
+{"t": 1789371675.828, "phase": "USB_REPLUG"}
+{"t": 1789371690.848, "event": "sidecar_died_on_unplug", "detail": "rc=1"}
+{"t": 1789371690.851, "event": "sidecar_spawn", "detail": "pid=28304 log=D:\\Unity\\viitorx-vrm-avtar-unity-base-project\\Assets\\Games\\viitorx-vrm-avtar-unity\\python-sidecar~\\oak_v4_evidence\\f20a\\log_usb\\stdout_1789371690.txt"}
+{"t": 1789371690.851, "phase": "USB_RESTART"}
+{"t": 1789371720.868, "phase": "USB_RECOVERED"}
+{"t": 1789371735.895, "phase": "DONE"}

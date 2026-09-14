@@ -1,0 +1,301 @@
+[wb] loading RTMW3D ...
+[wb] providers: ['DmlExecutionProvider', 'CPUExecutionProvider']
+[wb] rgb 640x400 depth 640x400 intr fx=284.6 fy=284.5 cx=319.2 cy=201.5  -> ('127.0.0.1', 8899)
+[wb] P1-1 joint tracker ON (predict<=6, reacquire=5)
+[wb] frames=54 sent=52 hip_z=2.87m measured_body=0/33 fps~26.8 age=42ms stale=7
+[wb] depthQuality mean=0.753 multiSurface=61.3% winSpread=505mm (surface-aware)
+[wb] frames=114 sent=112 hip_z=2.62m measured_body=0/33 fps~29.9 age=42ms stale=7
+[wb] depthQuality mean=0.806 multiSurface=52.6% winSpread=412mm (surface-aware)
+[wb] frames=175 sent=173 hip_z=2.71m measured_body=0/33 fps~30.1 age=41ms stale=7
+[wb] depthQuality mean=0.804 multiSurface=50.0% winSpread=400mm (surface-aware)
+[wb] frames=235 sent=233 hip_z=2.65m measured_body=0/33 fps~29.9 age=15ms stale=8
+[wb] depthQuality mean=0.788 multiSurface=58.5% winSpread=414mm (surface-aware)
+[wb] frames=296 sent=294 hip_z=2.89m measured_body=2/33 fps~30.1 age=15ms stale=8
+[wb] depthQuality mean=0.810 multiSurface=54.0% winSpread=422mm (surface-aware)
+[wb] frames=356 sent=354 hip_z=2.57m measured_body=0/33 fps~29.8 age=20ms stale=8
+[wb] depthQuality mean=0.794 multiSurface=54.0% winSpread=423mm (surface-aware)
+[wb] frames=417 sent=415 hip_z=2.61m measured_body=0/33 fps~30.1 age=16ms stale=8
+[wb] depthQuality mean=0.765 multiSurface=58.2% winSpread=417mm (surface-aware)
+[wb] frames=477 sent=475 hip_z=2.59m measured_body=0/33 fps~30.0 age=15ms stale=8
+[wb] depthQuality mean=0.787 multiSurface=54.4% winSpread=458mm (surface-aware)
+[wb] frames=538 sent=536 hip_z=2.68m measured_body=4/33 fps~30.0 age=15ms stale=8
+[wb] depthQuality mean=0.776 multiSurface=55.6% winSpread=404mm (surface-aware)
+[wb] frames=598 sent=596 hip_z=2.63m measured_body=2/33 fps~30.0 age=15ms stale=8
+[wb] depthQuality mean=0.806 multiSurface=50.7% winSpread=370mm (surface-aware)
+[wb] frames=658 sent=656 hip_z=2.51m measured_body=0/33 fps~30.0 age=15ms stale=8
+[wb] depthQuality mean=0.823 multiSurface=48.1% winSpread=310mm (surface-aware)
+[wb] frames=718 sent=716 hip_z=2.64m measured_body=1/33 fps~30.0 age=18ms stale=8
+[wb] depthQuality mean=0.786 multiSurface=58.6% winSpread=361mm (surface-aware)
+[wb] frames=779 sent=777 hip_z=2.40m measured_body=2/33 fps~30.1 age=15ms stale=8
+[wb] depthQuality mean=0.806 multiSurface=52.5% winSpread=323mm (surface-aware)
+[wb] frames=840 sent=838 hip_z=2.61m measured_body=0/33 fps~30.1 age=15ms stale=8
+[wb] depthQuality mean=0.794 multiSurface=56.7% winSpread=347mm (surface-aware)
+[wb] frames=900 sent=898 hip_z=2.44m measured_body=0/33 fps~29.9 age=15ms stale=8
+[wb] depthQuality mean=0.806 multiSurface=52.9% winSpread=347mm (surface-aware)
+[wb] frames=960 sent=958 hip_z=2.50m measured_body=0/33 fps~30.0 age=16ms stale=8
+[wb] depthQuality mean=0.821 multiSurface=52.9% winSpread=305mm (surface-aware)
+[wb] frames=1021 sent=1019 hip_z=2.51m measured_body=1/33 fps~30.0 age=15ms stale=8
+[wb] depthQuality mean=0.811 multiSurface=55.7% winSpread=331mm (surface-aware)
+[wb] frames=1081 sent=1079 hip_z=2.57m measured_body=1/33 fps~30.0 age=17ms stale=8
+[wb] depthQuality mean=0.803 multiSurface=53.5% winSpread=352mm (surface-aware)
+[wb] frames=1141 sent=1139 hip_z=2.59m measured_body=0/33 fps~29.6 age=41ms stale=8
+[wb] depthQuality mean=0.804 multiSurface=55.7% winSpread=355mm (surface-aware)
+[wb] frames=1202 sent=1200 hip_z=2.52m measured_body=1/33 fps~30.0 age=42ms stale=8
+[wb] depthQuality mean=0.825 multiSurface=52.0% winSpread=325mm (surface-aware)
+[wb] frames=1262 sent=1260 hip_z=2.70m measured_body=0/33 fps~29.8 age=19ms stale=9
+[wb] depthQuality mean=0.772 multiSurface=57.9% winSpread=365mm (surface-aware)
+[wb] frames=1323 sent=1321 hip_z=2.75m measured_body=1/33 fps~30.1 age=17ms stale=9
+[wb] depthQuality mean=0.823 multiSurface=50.4% winSpread=357mm (surface-aware)
+[wb] frames=1383 sent=1381 hip_z=2.88m measured_body=4/33 fps~30.0 age=17ms stale=9
+[wb] depthQuality mean=0.795 multiSurface=53.8% winSpread=379mm (surface-aware)
+[wb] frames=1444 sent=1442 hip_z=2.96m measured_body=0/33 fps~30.0 age=16ms stale=9
+[wb] depthQuality mean=0.796 multiSurface=54.6% winSpread=429mm (surface-aware)
+[wb] frames=1504 sent=1502 hip_z=2.69m measured_body=2/33 fps~30.0 age=17ms stale=9
+[wb] depthQuality mean=0.771 multiSurface=57.4% winSpread=454mm (surface-aware)
+[wb] frames=1565 sent=1563 hip_z=2.50m measured_body=0/33 fps~30.1 age=15ms stale=9
+[wb] depthQuality mean=0.759 multiSurface=59.4% winSpread=445mm (surface-aware)
+[wb] frames=1625 sent=1623 hip_z=2.61m measured_body=0/33 fps~30.0 age=15ms stale=9
+[wb] depthQuality mean=0.810 multiSurface=48.9% winSpread=380mm (surface-aware)
+[wb] frames=1685 sent=1683 hip_z=2.61m measured_body=0/33 fps~29.9 age=17ms stale=9
+[wb] depthQuality mean=0.787 multiSurface=54.9% winSpread=379mm (surface-aware)
+[wb] frames=1745 sent=1743 hip_z=2.65m measured_body=3/33 fps~30.0 age=17ms stale=9
+[wb] depthQuality mean=0.810 multiSurface=52.6% winSpread=391mm (surface-aware)
+[wb] frames=1806 sent=1804 hip_z=2.57m measured_body=0/33 fps~30.0 age=17ms stale=9
+[wb] depthQuality mean=0.796 multiSurface=54.9% winSpread=359mm (surface-aware)
+[wb] frames=1866 sent=1864 hip_z=2.52m measured_body=2/33 fps~29.9 age=27ms stale=9
+[wb] depthQuality mean=0.787 multiSurface=54.9% winSpread=318mm (surface-aware)
+[wb] frames=1927 sent=1925 hip_z=2.48m measured_body=0/33 fps~30.3 age=15ms stale=9
+[wb] depthQuality mean=0.805 multiSurface=54.1% winSpread=325mm (surface-aware)
+[wb] frames=1987 sent=1985 hip_z=2.64m measured_body=0/33 fps~29.9 age=15ms stale=9
+[wb] depthQuality mean=0.793 multiSurface=52.9% winSpread=295mm (surface-aware)
+[wb] frames=2046 sent=2044 hip_z=2.54m measured_body=2/33 fps~29.3 age=24ms stale=10
+[wb] depthQuality mean=0.834 multiSurface=48.9% winSpread=312mm (surface-aware)
+[wb] frames=2107 sent=2105 hip_z=2.49m measured_body=0/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.806 multiSurface=52.3% winSpread=325mm (surface-aware)
+[wb] frames=2167 sent=2165 hip_z=2.58m measured_body=0/33 fps~30.0 age=19ms stale=10
+[wb] depthQuality mean=0.825 multiSurface=48.9% winSpread=285mm (surface-aware)
+[wb] frames=2227 sent=2225 hip_z=2.65m measured_body=3/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.838 multiSurface=46.8% winSpread=306mm (surface-aware)
+[wb] frames=2287 sent=2285 hip_z=2.69m measured_body=5/33 fps~30.0 age=21ms stale=10
+[wb] depthQuality mean=0.804 multiSurface=55.3% winSpread=299mm (surface-aware)
+[wb] frames=2348 sent=2346 hip_z=2.54m measured_body=2/33 fps~30.0 age=16ms stale=10
+[wb] depthQuality mean=0.810 multiSurface=51.9% winSpread=359mm (surface-aware)
+[wb] frames=2409 sent=2407 hip_z=2.71m measured_body=2/33 fps~30.0 age=16ms stale=10
+[wb] depthQuality mean=0.823 multiSurface=51.1% winSpread=314mm (surface-aware)
+[wb] frames=2470 sent=2468 hip_z=2.59m measured_body=6/33 fps~30.0 age=16ms stale=10
+[wb] depthQuality mean=0.780 multiSurface=55.9% winSpread=358mm (surface-aware)
+[wb] frames=2531 sent=2529 hip_z=2.87m measured_body=0/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.819 multiSurface=53.6% winSpread=402mm (surface-aware)
+[wb] frames=2591 sent=2589 hip_z=2.54m measured_body=2/33 fps~30.0 age=19ms stale=10
+[wb] depthQuality mean=0.804 multiSurface=52.2% winSpread=474mm (surface-aware)
+[wb] frames=2652 sent=2650 hip_z=2.64m measured_body=0/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.794 multiSurface=54.6% winSpread=448mm (surface-aware)
+[wb] frames=2712 sent=2710 hip_z=2.70m measured_body=2/33 fps~29.9 age=18ms stale=10
+[wb] depthQuality mean=0.794 multiSurface=54.3% winSpread=401mm (surface-aware)
+[wb] frames=2773 sent=2771 hip_z=2.72m measured_body=0/33 fps~30.1 age=16ms stale=10
+[wb] depthQuality mean=0.794 multiSurface=54.1% winSpread=422mm (surface-aware)
+[wb] frames=2833 sent=2831 hip_z=2.51m measured_body=0/33 fps~29.8 age=29ms stale=10
+[wb] depthQuality mean=0.776 multiSurface=57.9% winSpread=389mm (surface-aware)
+[wb] frames=2894 sent=2892 hip_z=2.83m measured_body=1/33 fps~30.2 age=17ms stale=10
+[wb] depthQuality mean=0.774 multiSurface=56.8% winSpread=362mm (surface-aware)
+[wb] frames=2955 sent=2953 hip_z=2.97m measured_body=4/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.776 multiSurface=57.7% winSpread=376mm (surface-aware)
+[wb] frames=3015 sent=3013 hip_z=2.62m measured_body=0/33 fps~29.9 age=23ms stale=10
+[wb] depthQuality mean=0.833 multiSurface=47.9% winSpread=338mm (surface-aware)
+[wb] frames=3076 sent=3074 hip_z=2.55m measured_body=2/33 fps~30.2 age=15ms stale=10
+[wb] depthQuality mean=0.805 multiSurface=51.1% winSpread=333mm (surface-aware)
+[wb] frames=3136 sent=3134 hip_z=2.50m measured_body=0/33 fps~30.0 age=18ms stale=10
+[wb] depthQuality mean=0.806 multiSurface=52.1% winSpread=357mm (surface-aware)
+[wb] frames=3196 sent=3194 hip_z=2.54m measured_body=0/33 fps~29.9 age=17ms stale=10
+[wb] depthQuality mean=0.803 multiSurface=54.3% winSpread=309mm (surface-aware)
+[wb] frames=3257 sent=3255 hip_z=2.78m measured_body=6/33 fps~30.0 age=16ms stale=10
+[wb] depthQuality mean=0.810 multiSurface=54.1% winSpread=340mm (surface-aware)
+[wb] frames=3318 sent=3316 hip_z=2.41m measured_body=2/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.797 multiSurface=53.7% winSpread=315mm (surface-aware)
+[wb] frames=3378 sent=3376 hip_z=2.52m measured_body=4/33 fps~29.9 age=22ms stale=10
+[wb] depthQuality mean=0.827 multiSurface=46.5% winSpread=277mm (surface-aware)
+[wb] frames=3439 sent=3437 hip_z=2.49m measured_body=5/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.803 multiSurface=51.0% winSpread=336mm (surface-aware)
+[wb] frames=3499 sent=3497 hip_z=2.48m measured_body=3/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.790 multiSurface=53.6% winSpread=318mm (surface-aware)
+[wb] frames=3560 sent=3558 hip_z=2.50m measured_body=0/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.802 multiSurface=54.5% winSpread=331mm (surface-aware)
+[wb] frames=3620 sent=3618 hip_z=4.45m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.898 multiSurface=35.4% winSpread=388mm (surface-aware)
+[wb] frames=3680 sent=3678 hip_z=2.93m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.928 multiSurface=26.4% winSpread=184mm (surface-aware)
+[wb] frames=3740 sent=3738 hip_z=1.89m measured_body=21/33 fps~29.8 age=24ms stale=10
+[wb] depthQuality mean=0.852 multiSurface=40.4% winSpread=136mm (surface-aware)
+[wb] frames=3801 sent=3799 hip_z=1.92m measured_body=21/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.839 multiSurface=39.1% winSpread=238mm (surface-aware)
+[wb] frames=3862 sent=3860 hip_z=1.93m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.895 multiSurface=27.9% winSpread=114mm (surface-aware)
+[wb] frames=3923 sent=3921 hip_z=1.93m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.889 multiSurface=30.2% winSpread=68mm (surface-aware)
+[wb] frames=3983 sent=3981 hip_z=1.93m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.915 multiSurface=25.3% winSpread=75mm (surface-aware)
+[wb] frames=4044 sent=4042 hip_z=1.93m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.908 multiSurface=23.2% winSpread=58mm (surface-aware)
+[wb] frames=4104 sent=4102 hip_z=1.93m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.897 multiSurface=26.9% winSpread=82mm (surface-aware)
+[wb] frames=4164 sent=4162 hip_z=1.90m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.894 multiSurface=28.6% winSpread=125mm (surface-aware)
+[wb] frames=4224 sent=4222 hip_z=1.88m measured_body=20/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.873 multiSurface=35.1% winSpread=162mm (surface-aware)
+[wb] frames=4284 sent=4282 hip_z=1.81m measured_body=20/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.778 multiSurface=50.1% winSpread=180mm (surface-aware)
+[wb] frames=4345 sent=4343 hip_z=1.61m measured_body=19/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.746 multiSurface=51.5% winSpread=183mm (surface-aware)
+[wb] frames=4405 sent=4403 hip_z=1.84m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.749 multiSurface=48.6% winSpread=212mm (surface-aware)
+[wb] frames=4466 sent=4464 hip_z=2.02m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.896 multiSurface=34.3% winSpread=109mm (surface-aware)
+[wb] frames=4527 sent=4525 hip_z=1.13m measured_body=17/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.871 multiSurface=16.9% winSpread=62mm (surface-aware)
+[wb] frames=4588 sent=4586 hip_z=1.40m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.807 multiSurface=21.4% winSpread=61mm (surface-aware)
+[wb] frames=4649 sent=4647 hip_z=1.71m measured_body=21/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.789 multiSurface=42.1% winSpread=98mm (surface-aware)
+[wb] frames=4709 sent=4707 hip_z=1.72m measured_body=21/33 fps~29.9 age=15ms stale=10
+[wb] depthQuality mean=0.825 multiSurface=41.8% winSpread=87mm (surface-aware)
+[wb] frames=4769 sent=4767 hip_z=1.77m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.864 multiSurface=32.2% winSpread=63mm (surface-aware)
+[wb] frames=4830 sent=4828 hip_z=1.49m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.780 multiSurface=40.3% winSpread=90mm (surface-aware)
+[wb] frames=4891 sent=4889 hip_z=1.41m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.776 multiSurface=33.6% winSpread=73mm (surface-aware)
+[wb] frames=4951 sent=4949 hip_z=1.41m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.783 multiSurface=30.7% winSpread=55mm (surface-aware)
+[wb] frames=5011 sent=5009 hip_z=1.41m measured_body=21/33 fps~29.9 age=16ms stale=10
+[wb] depthQuality mean=0.799 multiSurface=28.1% winSpread=53mm (surface-aware)
+[wb] frames=5072 sent=5070 hip_z=1.41m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.776 multiSurface=31.0% winSpread=59mm (surface-aware)
+[wb] frames=5132 sent=5130 hip_z=1.42m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.799 multiSurface=28.2% winSpread=60mm (surface-aware)
+[wb] frames=5193 sent=5191 hip_z=1.42m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.797 multiSurface=27.7% winSpread=56mm (surface-aware)
+[wb] frames=5253 sent=5251 hip_z=1.41m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.781 multiSurface=28.8% winSpread=60mm (surface-aware)
+[wb] frames=5314 sent=5312 hip_z=1.41m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.795 multiSurface=28.6% winSpread=54mm (surface-aware)
+[wb] frames=5374 sent=5372 hip_z=1.42m measured_body=20/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.796 multiSurface=28.6% winSpread=53mm (surface-aware)
+[wb] frames=5435 sent=5433 hip_z=1.43m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.796 multiSurface=29.6% winSpread=59mm (surface-aware)
+[wb] frames=5496 sent=5494 hip_z=1.43m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.811 multiSurface=27.9% winSpread=54mm (surface-aware)
+[wb] frames=5557 sent=5555 hip_z=1.45m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.799 multiSurface=31.3% winSpread=55mm (surface-aware)
+[wb] frames=5617 sent=5615 hip_z=1.43m measured_body=20/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.804 multiSurface=30.0% winSpread=48mm (surface-aware)
+[wb] frames=5678 sent=5676 hip_z=1.45m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.788 multiSurface=32.8% winSpread=53mm (surface-aware)
+[wb] frames=5739 sent=5737 hip_z=1.46m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.774 multiSurface=35.1% winSpread=55mm (surface-aware)
+[wb] frames=5799 sent=5797 hip_z=1.47m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.746 multiSurface=38.5% winSpread=61mm (surface-aware)
+[wb] frames=5860 sent=5858 hip_z=1.46m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.765 multiSurface=35.9% winSpread=58mm (surface-aware)
+[wb] frames=5920 sent=5918 hip_z=1.47m measured_body=21/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.763 multiSurface=36.0% winSpread=57mm (surface-aware)
+[wb] frames=5980 sent=5978 hip_z=1.30m measured_body=20/33 fps~29.9 age=15ms stale=10
+[wb] depthQuality mean=0.775 multiSurface=31.8% winSpread=61mm (surface-aware)
+[wb] frames=6041 sent=6039 hip_z=0.98m measured_body=15/33 fps~30.1 age=15ms stale=10
+[wb] depthQuality mean=0.854 multiSurface=3.6% winSpread=45mm (surface-aware)
+[wb] frames=6102 sent=6100 hip_z=0.93m measured_body=16/33 fps~30.0 age=15ms stale=10
+[wb] depthQuality mean=0.921 multiSurface=1.6% winSpread=39mm (surface-aware)
+[wb] frames=6162 sent=6160 hip_z=0.94m measured_body=15/33 fps~29.5 age=15ms stale=11
+[wb] depthQuality mean=0.920 multiSurface=3.1% winSpread=44mm (surface-aware)
+[wb] frames=6223 sent=6221 hip_z=0.80m measured_body=13/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.838 multiSurface=3.1% winSpread=38mm (surface-aware)
+[wb] frames=6283 sent=6281 hip_z=0.69m measured_body=15/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.735 multiSurface=6.5% winSpread=37mm (surface-aware)
+[wb] frames=6344 sent=6342 hip_z=0.69m measured_body=13/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.742 multiSurface=7.1% winSpread=35mm (surface-aware)
+[wb] frames=6405 sent=6403 hip_z=0.70m measured_body=13/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.716 multiSurface=7.0% winSpread=32mm (surface-aware)
+[wb] frames=6466 sent=6464 hip_z=0.86m measured_body=15/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.738 multiSurface=7.0% winSpread=34mm (surface-aware)
+[wb] frames=6526 sent=6524 hip_z=0.98m measured_body=17/33 fps~29.9 age=16ms stale=11
+[wb] depthQuality mean=0.845 multiSurface=13.8% winSpread=47mm (surface-aware)
+[wb] frames=6587 sent=6585 hip_z=0.97m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.885 multiSurface=16.3% winSpread=31mm (surface-aware)
+[wb] frames=6647 sent=6645 hip_z=0.97m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.883 multiSurface=15.8% winSpread=31mm (surface-aware)
+[wb] frames=6708 sent=6706 hip_z=0.97m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.861 multiSurface=19.3% winSpread=39mm (surface-aware)
+[wb] frames=6768 sent=6766 hip_z=0.98m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.839 multiSurface=22.8% winSpread=41mm (surface-aware)
+[wb] frames=6828 sent=6826 hip_z=0.99m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.882 multiSurface=15.1% winSpread=33mm (surface-aware)
+[wb] frames=6889 sent=6887 hip_z=1.00m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.861 multiSurface=19.0% winSpread=73mm (surface-aware)
+[wb] frames=6949 sent=6947 hip_z=0.99m measured_body=15/33 fps~29.9 age=23ms stale=11
+[wb] depthQuality mean=0.860 multiSurface=17.4% winSpread=76mm (surface-aware)
+[wb] frames=7010 sent=7008 hip_z=0.85m measured_body=18/33 fps~30.1 age=15ms stale=11
+[wb] depthQuality mean=0.777 multiSurface=17.8% winSpread=105mm (surface-aware)
+[wb] frames=7071 sent=7069 hip_z=1.03m measured_body=18/33 fps~30.1 age=15ms stale=11
+[wb] depthQuality mean=0.859 multiSurface=14.9% winSpread=63mm (surface-aware)
+[wb] frames=7131 sent=7129 hip_z=1.04m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.901 multiSurface=16.2% winSpread=35mm (surface-aware)
+[wb] frames=7192 sent=7190 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.913 multiSurface=14.8% winSpread=33mm (surface-aware)
+[wb] frames=7253 sent=7251 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.911 multiSurface=13.9% winSpread=32mm (surface-aware)
+[wb] frames=7314 sent=7312 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.906 multiSurface=14.9% winSpread=33mm (surface-aware)
+[wb] frames=7375 sent=7373 hip_z=1.03m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.911 multiSurface=13.8% winSpread=32mm (surface-aware)
+[wb] frames=7435 sent=7433 hip_z=1.03m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.911 multiSurface=14.6% winSpread=32mm (surface-aware)
+[wb] frames=7496 sent=7494 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.908 multiSurface=13.5% winSpread=33mm (surface-aware)
+[wb] frames=7557 sent=7555 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.904 multiSurface=14.2% winSpread=34mm (surface-aware)
+[wb] frames=7617 sent=7615 hip_z=1.04m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.901 multiSurface=15.4% winSpread=37mm (surface-aware)
+[wb] frames=7678 sent=7676 hip_z=1.04m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.892 multiSurface=15.7% winSpread=35mm (surface-aware)
+[wb] frames=7739 sent=7737 hip_z=1.04m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.891 multiSurface=15.7% winSpread=36mm (surface-aware)
+[wb] frames=7799 sent=7797 hip_z=1.03m measured_body=16/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.900 multiSurface=14.9% winSpread=34mm (surface-aware)
+[wb] frames=7860 sent=7858 hip_z=1.04m measured_body=19/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.903 multiSurface=16.4% winSpread=41mm (surface-aware)
+[wb] frames=7921 sent=7919 hip_z=1.03m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.907 multiSurface=15.8% winSpread=38mm (surface-aware)
+[wb] frames=7981 sent=7979 hip_z=1.04m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.907 multiSurface=15.8% winSpread=38mm (surface-aware)
+[wb] frames=8041 sent=8039 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.906 multiSurface=14.3% winSpread=40mm (surface-aware)
+[wb] frames=8102 sent=8100 hip_z=1.04m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.915 multiSurface=13.7% winSpread=47mm (surface-aware)
+[wb] frames=8162 sent=8160 hip_z=1.03m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.913 multiSurface=12.5% winSpread=50mm (surface-aware)
+[wb] frames=8223 sent=8221 hip_z=1.03m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.913 multiSurface=13.9% winSpread=51mm (surface-aware)
+[wb] frames=8284 sent=8282 hip_z=1.03m measured_body=18/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.893 multiSurface=17.2% winSpread=48mm (surface-aware)
+[wb] frames=8344 sent=8342 hip_z=1.04m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.833 multiSurface=19.6% winSpread=58mm (surface-aware)
+[wb] frames=8405 sent=8403 hip_z=1.03m measured_body=15/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.862 multiSurface=15.8% winSpread=92mm (surface-aware)
+[wb] frames=8465 sent=8463 hip_z=1.04m measured_body=17/33 fps~30.0 age=16ms stale=11
+[wb] depthQuality mean=0.869 multiSurface=15.0% winSpread=109mm (surface-aware)
+[wb] frames=8526 sent=8524 hip_z=1.04m measured_body=15/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.879 multiSurface=14.5% winSpread=88mm (surface-aware)
+[wb] frames=8586 sent=8584 hip_z=1.04m measured_body=15/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.873 multiSurface=14.4% winSpread=125mm (surface-aware)
+[wb] frames=8646 sent=8644 hip_z=1.04m measured_body=15/33 fps~30.0 age=19ms stale=11
+[wb] depthQuality mean=0.850 multiSurface=16.2% winSpread=91mm (surface-aware)
+[wb] frames=8707 sent=8705 hip_z=1.04m measured_body=17/33 fps~30.0 age=15ms stale=11
+[wb] depthQuality mean=0.858 multiSurface=16.5% winSpread=79mm (surface-aware)
+[wb] frames=8767 sent=8765 hip_z=1.04m measured_body=17/33 fps~29.8 age=33ms stale=11
+[wb] depthQuality mean=0.854 multiSurface=18.6% winSpread=101mm (surface-aware)
+[wb] frames=8827 sent=8825 hip_z=1.04m measured_body=17/33 fps~29.6 age=26ms stale=12
+[wb] depthQuality mean=0.858 multiSurface=18.1% winSpread=124mm (surface-aware)
+[wb] frames=8888 sent=8886 hip_z=1.05m measured_body=17/33 fps~30.1 age=15ms stale=12
+[wb] depthQuality mean=0.840 multiSurface=18.0% winSpread=104mm (surface-aware)
+[wb] frames=8949 sent=8947 hip_z=1.04m measured_body=16/33 fps~30.0 age=15ms stale=12
+[wb] depthQuality mean=0.832 multiSurface=19.4% winSpread=101mm (surface-aware)
+[wb] stopped.

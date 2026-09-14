@@ -1,0 +1,17 @@
+﻿================================================================================================
+ F-10 BLOCK RECOVERY -- log spans 1200 s, protocol needs 326 s
+================================================================================================
+ best alignment: start offset 100.75 s into the log, stretch 1.000, contrast score 84.0
+
+ VALIDATION -- do the recovered static blocks reproduce the PUBLISHED F-10 medians?
+ block     published    recovered      delta
+ h_0             0.0          1.8        1.8
+ h_p45          45.0         48.8        3.8
+ h_p90          80.7         82.4        1.7
+ h_0b            4.2          3.8        0.4
+ h_m45          39.3         39.2        0.1
+ h_m90          88.5         87.3        1.2
+ h_0c            0.0          0.0        0.0
+
+ VERDICT: RECOVERY ACCEPTED
+ -> oak_v4_evidence\f10_gt_marks_near_RECOVERED.json

@@ -1,0 +1,107 @@
+================================================================================================================
+F-16 CONSOLIDATED FINDINGS
+================================================================================================================
+
+----------------------------------------------------------------------------------------------------------------
+1. IS THE SQUARE-STANCE ERROR QUANTISATION?   (all configs, same subject, same stance)
+----------------------------------------------------------------------------------------------------------------
+
+  AT 1.33 m
+  config             step_mm     dz_mm  med|yaw|  p95|yaw|  dyaw_p95   <=5deg  <=10deg  verdict
+  baseline             83.50      89.0     14.68     29.36     15.90     26.2     26.2     FAIL
+  sub3                 12.00      82.2     13.42     16.55      3.59      0.0      0.4     FAIL
+  sub5                  3.00      84.0     13.52     15.51      3.70      0.0      0.8     FAIL
+  mono800              47.50      95.0     15.24     15.35      7.64      0.0     27.9     FAIL
+  mono800_sub3          6.00      65.0     10.55     12.40      2.68      0.0     22.5     FAIL
+  rgb800               95.00     101.0     15.61     15.83     15.50      5.5      5.5     FAIL
+  best                  6.00      86.0     13.57     15.41      2.98      0.0      1.2     FAIL
+  sub3_rgb800          12.00      97.0     15.22     17.20      5.28      0.0      1.6     FAIL
+
+  AT 0.80 m
+  config             step_mm     dz_mm  med|yaw|  p95|yaw|  dyaw_p95   <=5deg  <=10deg  verdict
+  baseline             29.00       0.0      0.00      5.21      5.21     88.3    100.0     PASS
+  sub3                  4.00     -10.0      1.86      4.27      1.69     98.0    100.0     PASS
+  sub5                  1.00     -13.0      2.45      3.97      1.91    100.0    100.0     PASS
+  mono800_sub3          2.00     -20.0      3.83      5.20      1.90     92.6    100.0     PASS
+  best                  2.00     -27.0      5.10      5.91      1.36     45.2    100.0     FAIL
+
+  READ: at 1.33 m the ladder shrinks from ~83 mm to ~3 mm (28x) while the error stays ~13 deg.
+  Quantisation is therefore NOT what puts the torso at 13 deg. What sub-pixel DOES fix is
+  STABILITY (dyaw_p95 and the spread), which is a different defect.
+
+----------------------------------------------------------------------------------------------------------------
+2. WHAT IS THE RESIDUAL?  constant-disparity-error model:  dz = Z^2 * dd / (f*B)
+----------------------------------------------------------------------------------------------------------------
+  sub-pixel 1/8 distance sweep (quantisation <= 25 mm everywhere, so this is NOT the ladder)
+  block       zSh_mm     dz_mm       yaw    step_mm  implied_dd    dz/step
+  d080           792       0.0      0.00       4.00       0.000       0.00
+  d100           985      46.0      7.87       6.00       1.006       7.67
+  d120          1260      93.0     15.08      10.00       1.244       9.30
+  d133          1370      89.0     14.76      11.50       1.006       7.74
+  d150          1580      62.0     10.33      15.00       0.527       4.13
+  d180          1867     102.0     17.04      21.00       0.621       4.86
+  d200          2073     152.0     24.87      25.00       0.751       6.08
+
+  implied disparity error: p50 +0.751 px   mean +0.736 px   spread 0.379 px
+  A sub-pixel refinement cannot repair a match that is a WHOLE PIXEL wrong, which is why
+  every sub-pixel configuration reproduces the same offset.
+
+----------------------------------------------------------------------------------------------------------------
+3. SECTION 11 - DISTANCE TABLE  (production `baseline` vs `sub3`, square stance)
+----------------------------------------------------------------------------------------------------------------
+  target     span     step      b:dz     b:med     b:p95    s:step     s:med     s:p95  verdict
+  0.80      117.1     29.0      28.0      5.06      5.34      4.00      0.51      1.21     PASS
+  1.00       94.8     48.0       0.0      0.00      7.88      6.00      7.87      9.76     FAIL
+  1.20       79.4     69.0      69.0     11.62     11.69     10.00     15.08     16.62     FAIL
+  1.33       71.7     89.0      89.0     14.68     14.80     11.50     14.76     16.83     FAIL
+  1.50       63.4    116.0     116.0     18.74     19.02     15.00     10.33     14.47     FAIL
+  1.80       52.9    177.0     161.0     26.05     26.26     21.00     17.04     20.53     FAIL
+  2.00       47.1    236.0       0.0      0.00      0.00     25.00     24.87     28.90     FAIL
+
+----------------------------------------------------------------------------------------------------------------
+4. SECTION 11 - IS THAT DISTANCE COMPATIBLE WITH THE PRODUCT?
+----------------------------------------------------------------------------------------------------------------
+  measured FOV from this device's intrinsics: H 96.7 deg   V 70.2 deg
+  vertical coverage = 2*Z*tan(V/2):
+  Z (m)       coverage (m) fits 1.75 m body?
+  0.80                1.12               no
+  1.00                1.41               no
+  1.20                1.69               no
+  1.25                1.75              YES
+  1.33                1.87              YES
+  1.50                2.11              YES
+  1.80                2.53              YES
+  2.00                2.81              YES
+
+  FULL-BODY FRAMING REQUIRES Z >= 1.24 m.
+  TORSO-YAW ACCURACY REQUIRES Z <= ~0.80 m (from the table above).
+  These two windows DO NOT OVERLAP on this camera.
+
+----------------------------------------------------------------------------------------------------------------
+5. SECTION 6 - ROTATION SET at 1.33 m, sub-pixel (commanded heading is NOT exact truth)
+----------------------------------------------------------------------------------------------------------------
+  block     commanded   yaw_p50   yaw_std   span_px      |dx|        dz      sign
+  sq_a              0      5.73      1.30      71.4     348.6      35.0         -
+  sq_b              0     10.92      2.63      71.1     345.3      66.0         -
+  sq_c              0      7.49      1.52      71.2     343.6      45.0         -
+  left30          -30     40.23      2.41      71.5     273.3     231.0        ok
+  right30          30    -25.27      0.93      71.6     291.3    -138.0        ok
+  left45          -45     40.16      4.18      67.6     277.3     225.0        ok
+  right45          45    -39.99      2.71      71.1     229.3    -193.0        ok
+  left60          -60     48.05      1.93      70.5     245.6     273.0        ok
+  right60          60    -40.39      3.43      72.0     225.9    -189.5        ok
+  left90          -90     28.55     50.64      16.9      55.8      33.0        ok
+  right90          90      7.54      8.18      13.8      48.7       6.0     WRONG
+  back            180    174.40     91.37      76.6     260.9      19.0         -
+
+----------------------------------------------------------------------------------------------------------------
+6. SECTION 12 - REPEATABILITY of the square stance (independent standing attempts)
+----------------------------------------------------------------------------------------------------------------
+  sub-pixel 1/8, 1.33 m, five independent standing attempts:
+  attempt              yaw_p50     dz_mm      |dx|
+  pose sq_a               5.73      35.0     348.6
+  pose sq_b              10.92      66.0     345.3
+  pose sq_c               7.49      45.0     343.6
+  cfgsweep sub3          13.42      82.2     345.3
+  autosweep d133         14.76      89.0     338.0
+  spread: min 5.73  max 14.76  mean 10.47  std 3.43  -- all the SAME SIGN

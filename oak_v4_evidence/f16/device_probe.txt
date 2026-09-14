@@ -1,0 +1,114 @@
+
+==============================================================================
+F-16 DEVICE / CALIBRATION PROBE
+==============================================================================
+depthai runtime : 2.32.0.0
+python          : 3.10.0
+
+==============================================================================
+1. SDK capability enumeration (what this depthai build exposes)
+==============================================================================
+MonoCamera resolutions : THE_1200_P, THE_400_P, THE_480_P, THE_720_P, THE_800_P
+ColorCamera resolutions: THE_1080_P, THE_1200_P, THE_12_MP, THE_1352X1012, THE_13_MP, THE_1440X1080, THE_2024X1520, THE_4000X3000, THE_48_MP, THE_4_K, THE_5312X6000, THE_5_MP, THE_720_P, THE_800_P
+StereoDepth presets    : DEFAULT, FACE, HIGH_ACCURACY, HIGH_DENSITY, HIGH_DETAIL, ROBOTICS, name, value
+Median filters         : KERNEL_3x3, KERNEL_5x5, KERNEL_7x7, MEDIAN_OFF, name, value
+StereoDepth setters    : setAlphaScaling, setBaseline, setConfidenceThreshold, setDefaultProfilePreset, setDepthAlign, setDepthAlignmentUseSpecTranslation, setDisparityToDepthUseSpecTranslation, setEmptyCalibration, setExtendedDisparity, setFocalLength, setFocalLengthFromCalibration, setInputResolution, setLeftRightCheck, setMedianFilter, setMeshStep, setNumFramesPool, setOutputDepth, setOutputKeepAspectRatio, setOutputRectified, setOutputSize, setPostProcessingHardwareResources, setRectification, setRectificationUseSpecTranslation, setRectifyEdgeFillColor, setRectifyMirrorFrame, setRuntimeModeSwitch, setSubpixel, setSubpixelFractionalBits
+
+==============================================================================
+2. Device
+==============================================================================
+found: name=2.3.1 mxid=14442C10F143D3D200 state=XLinkDeviceState.X_LINK_UNBOOTED protocol=XLinkProtocol.X_LINK_USB_VSC
+device name      : OAK-D-PRO-W
+board name       : DM9098
+board rev        : R8M2E8
+product name     : OAK-D-PRO-W-97
+connected cameras: CameraBoardSocket.CAM_A, CameraBoardSocket.CAM_B, CameraBoardSocket.CAM_C
+  socket=CameraBoardSocket.CAM_A sensor=OV9782     width=1280  height=800   supported=1280x720,1280x800,640x400,1280x720,1280x800,640x400
+  socket=CameraBoardSocket.CAM_B sensor=OV9282     width=1280  height=800   supported=1280x720,1280x800,640x400
+  socket=CameraBoardSocket.CAM_C sensor=OV9282     width=1280  height=800   supported=1280x720,1280x800,640x400
+
+==============================================================================
+3. Stereo geometry (from on-device calibration EEPROM)
+==============================================================================
+getBaselineDistance()            : 7.500000 cm  = 75.0000 mm
+stereo left  socket             : CameraBoardSocket.CAM_B
+stereo right socket             : CameraBoardSocket.CAM_C
+
+==============================================================================
+4. Intrinsics (fx in PIXELS at the given output size)
+==============================================================================
+socket   size             fx        fy        cx        cy
+CAM_A    640x400     284.627   284.454   319.211   201.530
+CAM_A    640x480     284.627   284.454   319.211   241.530
+CAM_A    1280x720    569.254   568.908   638.422   363.061
+CAM_A    1280x800    569.254   568.908   638.422   403.061
+CAM_B    640x400     287.157   287.147   316.380   204.812
+CAM_B    640x480     287.157   287.147   316.380   244.812
+CAM_B    1280x720    574.314   574.294   632.760   369.624
+CAM_B    1280x800    574.314   574.294   632.760   409.624
+CAM_C    640x400     282.995   282.912   319.364   205.056
+CAM_C    640x480     282.995   282.912   319.364   245.056
+CAM_C    1280x720    565.990   565.824   638.728   370.111
+CAM_C    1280x800    565.990   565.824   638.728   410.111
+
+==============================================================================
+5. f x B products  (depth_mm = f_px * B_mm / disparity)
+==============================================================================
+baseline B = 75.0000 mm
+
+socket   size             fx_px      f*B (mm*px)
+CAM_A    640x400       284.6272          21347.0
+CAM_A    640x480       284.6272          21347.0
+CAM_A    1280x720      569.2543          42694.1
+CAM_A    1280x800      569.2543          42694.1
+CAM_B    640x400       287.1571          21536.8
+CAM_B    640x480       287.1571          21536.8
+CAM_B    1280x720      574.3143          43073.6
+CAM_B    1280x800      574.3143          43073.6
+CAM_C    640x400       282.9949          21224.6
+CAM_C    640x480       282.9949          21224.6
+CAM_C    1280x720      565.9898          42449.2
+CAM_C    1280x800      565.9898          42449.2
+
+F-09..F-15 used an EMPIRICALLY FITTED f*B = 21216 mm*px (from observed depth quantisation).
+CAM_C @ 640x400 gives f*B = 21224.6  -> ratio to empirical = 1.0004
+CAM_A @ 640x400 gives f*B = 21347.0  -> ratio to empirical = 1.0062
+
+==============================================================================
+6. THEORETICAL depth quantisation, integer disparity, mono 400P
+==============================================================================
+using f*B = 21224.6 mm*px
+
+Z (mm)       d (px)    d_round      Z_quant      step @Z
+800          26.531         27        786.1         28.1
+1000         21.225         21       1010.7         45.9
+1200         17.687         18       1179.1         62.1
+1330         15.958         16       1326.5         78.0
+1500         14.150         14       1516.0        101.1
+1800         11.791         12       1768.7        136.1
+2000         10.612         11       1929.5        160.8
+2500          8.490          8       2653.1        294.8
+3000          7.075          7       3032.1        379.0
+
+==============================================================================
+7. Sub-pixel disparity availability
+==============================================================================
+setSubpixel present            : True
+setSubpixelFractionalBits       : True
+initialConfig.algorithmControl fields:
+   DepthAlign                                 = <class 'depthai.RawStereoDepthConfig.AlgorithmControl.DepthAlign'>
+   DepthUnit                                  = <class 'depthai.RawStereoDepthConfig.AlgorithmControl.DepthUnit'>
+   centerAlignmentShiftFactor                 = None
+   customDepthUnitMultiplier                  = 1000.0
+   depthAlign                                 = DepthAlign.RECTIFIED_RIGHT
+   depthUnit                                  = DepthUnit.MILLIMETER
+   disparityShift                             = 0
+   enableExtended                             = False
+   enableLeftRightCheck                       = True
+   enableSubpixel                             = False
+   leftRightCheckThreshold                    = 10
+   numInvalidateEdgePixels                    = 0
+   subpixelFractionalBits                     = 3
+
+costMatching.enableCompanding   = False
+costMatching.confidenceThreshold= 245

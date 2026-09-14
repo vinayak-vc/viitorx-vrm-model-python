@@ -1,0 +1,34 @@
+﻿================================================================================================================
+ F-09 TORSO YAW QUALITY AUDIT -- candidate predictors, 5 captures with depth diagnostics
+================================================================================================================
+ pipeline_logs            n= 4043  no-depth-window skipped=   0   BAD (3D claims a turn the image denies) =    24 ( 0.59%)
+ pipeline_logs_ab_legacy  n= 3838  no-depth-window skipped=   0   BAD (3D claims a turn the image denies) =   145 ( 3.78%)
+ pipeline_logs_ab_surface n= 4043  no-depth-window skipped=   0   BAD (3D claims a turn the image denies) =    24 ( 0.59%)
+ pipeline_logs_f08        n= 5658  no-depth-window skipped= 122   BAD (3D claims a turn the image denies) =   279 ( 4.93%)
+ pipeline_logs_surface    n= 5145  no-depth-window skipped=   0   BAD (3D claims a turn the image denies) =    81 ( 1.57%)
+
+ POOLED: 22727 frames, 553 BAD (2.43%)
+
+ DEPTH QUANTISATION (distinct p30 sums -> step size, mm): n=99  p50=42.0  p90=155.9
+ |raw shoulder depth difference| mm: p50=0.0 p90=193.0 p95=217.0  -- compare to the step above
+
+----------------------------------------------------------------------------------------------------------------
+ CANDIDATE PREDICTOR SEPARATION (AUC 0.5 = useless, 1.0 = perfect; direction normalised)
+ feature           AUC |   good p50   good p95 |    bad p50    bad p95 | meaning
+ hipLenErr       0.896 |     0.0339     0.2396 |     0.4322     2.5958 | 3-D hip segment length error
+ shLenErr        0.863 |     0.0320     0.4547 |     0.4034     3.6107 | 3-D shoulder segment length error (rigid-length violation)
+ dYaw            0.820 |     0.4062     2.6243 |     2.8207    53.7422 | frame-to-frame |yaw| step (deg)
+ dYawRate        0.819 |     8.4953    55.0446 |    59.9613   984.8385 | frame-to-frame yaw rate (deg/s)
+ confMin         0.770 |     0.6116     0.6772 |     0.5785     0.6270 | min model confidence over the 4 torso joints
+ uSpanSh         0.762 |    52.6700    60.1400 |    36.8600    65.6300 | shoulder pixel span (2-D)
+ hipSpan3D       0.279 |     0.2078     0.2438 |     0.1466     0.7396 | 3-D hip span (m)
+ shSpan3D        0.333 |     0.3500     0.3738 |     0.2709     1.6156 | 3-D shoulder span (m)
+ dsdShMax        0.600 |     0.0000   103.9000 |    37.7000   842.2000 | worst shoulder depth-window stdev (mm)
+ dsdMax          0.596 |    49.9000   167.4000 |    55.7000   867.3000 | worst torso depth-window stdev (mm)
+ rangeShMax      0.591 |     0.0000   295.0000 |   101.0000  2315.0000 | worst shoulder window depth range (mm)
+ rangeMax        0.586 |   136.0000   442.0000 |   136.0000  2612.0000 | worst torso window depth range (mm)
+ trunkDz         0.416 |   136.0000   297.0000 |   118.0000   589.5000 | |midShoulder - midHip| raw depth (mm), trunk should be vertical
+ surfCrossSh     0.537 |     0.0000     1.0000 |     1.0000     1.0000 | shoulder window crosses a >100 mm discontinuity (0/1)
+ validFracMin    0.526 |     1.0000     1.0000 |     1.0000     1.0000 | min valid-pixel fraction over the 4 torso joints
+
+ features -> D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\oak_v4_evidence\f09_features.jsonl (22727 rows)

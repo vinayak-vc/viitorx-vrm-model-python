@@ -1,0 +1,41 @@
+﻿================================================================================================
+ TRUNK GATE THRESHOLDS -- from 111546 recorded frames across 12 captures
+================================================================================================
+
+ SHOULDER SPAN |lm[11].x - lm[12].x|  (metres, landmark space)
+   plausible-torso frames (n=52280):  p01=0.1557 p05=0.2183 p50=0.3353 p95=0.3655 max=3.2123
+   degenerate frames      (n=59266):  p50=0.0000 p95=0.0544 max=4.1296
+
+ HIP SPAN |lm[23].x - lm[24].x|
+   plausible-torso frames:  p01=0.1228 p05=0.1590 p50=0.2068 p95=0.2250 max=2.9318
+   degenerate frames:       p50=0.0000 p95=0.0910 max=2.8942
+
+ cost of each candidate SPAN floor (fraction of plausible frames it would reject):
+   floor (m)      shoulder          hip
+   0.02             0.000%       0.000%
+   0.04             0.000%       0.000%
+   0.05             0.000%       0.000%
+   0.06             0.000%       0.000%
+   0.08             0.000%       0.000%
+   0.10             0.000%       0.195%
+   0.12             0.000%       0.824%
+   0.15             0.000%       3.520%
+
+ SHOULDER-YAW FRAME STEP, valid->valid only (n=55250)
+   deg   : p50=0.32 p90=1.77 p95=2.55 p99=6.03 p99.9=20.11 max=171.99
+   deg/s : p50=7.0 p90=38.4 p95=55.9 p99=129.0 p99.9=435.5 max=3659.4
+
+ cost of each candidate JUMP ceiling (fraction of valid transitions it would reject):
+   ceiling (deg/s)     rejected
+   140                  0.838%
+   200                  0.398%
+   300                  0.168%
+   400                  0.112%
+   500                  0.078%
+   600                  0.067%
+   800                  0.054%
+   1000                 0.043%
+
+ NOTE: the conditioner already rate-limits at 140 deg/s. The GATE's ceiling is a different
+       job -- it rejects the physically IMPOSSIBLE so it never enters the filter state at
+       all, so it must sit well ABOVE the conditioner's slew or it would fight it.

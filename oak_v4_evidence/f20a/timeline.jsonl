@@ -1,0 +1,21 @@
+{"t": 1789371034.85, "phase": "STARTING"}
+{"t": 1789371034.857, "event": "sidecar_spawn", "detail": "pid=15484"}
+{"t": 1789371042.019, "event": "sidecar_live", "detail": "sid=269bb9cac08f after 7.2s"}
+{"t": 1789371042.019, "phase": "LIVE_BASELINE"}
+{"t": 1789371057.021, "event": "kill_forced", "detail": "taskkill /F /PID 15484"}
+{"t": 1789371057.194, "phase": "KILL_FORCED"}
+{"t": 1789371057.708, "phase": "GAP_FORCED"}
+{"t": 1789371065.712, "phase": "RESTART_1"}
+{"t": 1789371065.718, "event": "sidecar_spawn", "detail": "pid=31824"}
+{"t": 1789371071.852, "event": "sidecar_live", "detail": "sid=eaae3d413ea9 after 6.1s"}
+{"t": 1789371071.852, "event": "session_ids", "detail": "run1=269bb9cac08f run2=eaae3d413ea9 distinct=True"}
+{"t": 1789371071.853, "phase": "LIVE_AFTER_1"}
+{"t": 1789371086.868, "event": "kill_clean", "detail": "terminate() pid=31824"}
+{"t": 1789371086.869, "phase": "KILL_CLEAN"}
+{"t": 1789371087.38, "phase": "GAP_CLEAN"}
+{"t": 1789371095.38, "phase": "RESTART_2"}
+{"t": 1789371095.388, "event": "sidecar_spawn", "detail": "pid=12028"}
+{"t": 1789371101.527, "event": "sidecar_live", "detail": "sid=5877ec27feaa after 6.1s"}
+{"t": 1789371101.527, "event": "session_ids", "detail": "run3=5877ec27feaa distinct_from_run2=True"}
+{"t": 1789371101.527, "phase": "LIVE_AFTER_2"}
+{"t": 1789371116.543, "phase": "DONE"}

@@ -1,0 +1,13 @@
+﻿PARAMETER STABILITY -- algorithm C, static sign accuracy (%) as N goes 1..6
+Z        N=1     2     3     4     5     6 |    range worst 1-step jump
+3.0     62.44  38.23  62.80   0.00  62.44  38.23 |     62.8     62.8
+5.0     75.42  56.75  62.80  38.01  43.25  19.34 |     56.1     24.8
+8.0     60.96   4.13  79.48  96.01  57.86  59.93 |     91.9     75.4
+10.0    60.96  23.32  58.08  41.25  58.23  60.22 |     37.6     37.6
+15.0    42.29  79.41  41.11  41.03  40.96  40.89 |     38.5     38.3
+
+Worst accuracy change from a SINGLE +-1 step in N: 75.4 percentage points.
+A method whose score swings that far on an adjacent integer parameter is not measuring
+the signal; the parameters are accidentally aligning the FLIP COUNT with the protocol's
+own alternation. The 96.01%% peak at (Z=8, N=4) is a coincidence, not a configuration:
+its immediate neighbours read 79.48%% (N=3) and 57.86%% (N=5).
