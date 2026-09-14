@@ -40,6 +40,8 @@ import f18_portrait as PORTRAIT   # F-19: the transform VERIFIED in F-18, import
 import smoothing
 import joint_tracker as JT   # P1-1 per-joint temporal tracking + plausibility
 import kinematic_recovery as KR   # P1-4 skeleton constraints + long-horizon recovery
+import target_ownership as TO   # F-21 single-person target ownership
+import pose_validation as PV    # F-22 human pose / biomechanical validation
 
 NUM_BODY = 33
 
@@ -311,6 +313,40 @@ def main():
                         help="F-19: -1 (default) = production stereo settings untouched. "
                              "0 = sub-pixel off, 3 = 1/8 px (the configuration F-18 validated).")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
+    # ---- F-21 TARGET OWNERSHIP ---------------------------------------------------------------
+    # Default ON: an unattended installation must not silently switch to a second person (F-19's
+    # failure mode). --no-ownership restores the exact pre-F-21 M15 behaviour for A/B comparison.
+    # See target_ownership.py's module docstring + docs/F21_SINGLE_PERSON_TARGET_OWNERSHIP_*.md for
+    # what each threshold is derived from - none of these are arbitrary round numbers.
+    parser.add_argument("--ownership", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--ownership-min-confidence", type=float, default=0.3,
+                        help="reuses --conf's value by default; kept separate so it can be tuned "
+                             "independently if evidence ever calls for it")
+    parser.add_argument("--ownership-acquire-frames", type=int, default=5,
+                        help="mirrors P1-1's own --tracker-reacquire-frames default")
+    parser.add_argument("--ownership-reacquire-frames", type=int, default=5)
+    parser.add_argument("--ownership-switch-margin", type=float, default=0.35,
+                        help="max plausible per-frame RAW (pre-smoothing) hip displacement, metres")
+    parser.add_argument("--ownership-scale-margin", type=float, default=0.45,
+                        help="corroborating torso-span tolerance ratio, not a primary discriminator")
+    parser.add_argument("--ownership-reacquire-window", type=float, default=2.0,
+                        help="seconds a temporarily-lost owner can still fast-reacquire")
+    parser.add_argument("--ownership-release-timeout", type=float, default=4.0,
+                        help="seconds of no matching observation before RELEASED")
+    parser.add_argument("--ownership-log-dir", default="oak_v4_evidence/f21",
+                        help="target_events.jsonl written here; empty = no file (console log only)")
+    # ---- F-22 HUMAN POSE VALIDATION ----------------------------------------------------------
+    # Default ON: F-19 found an anatomically-impossible elbow travelling the full path un-gated
+    # (LimbGate held 0.00% of that block - confidence was high, the angle was not). --no-pose-
+    # validation restores the exact pre-F-22 path for A/B comparison. Thresholds are cited in
+    # pose_validation.py's own module docstring + docs/F22_HUMAN_POSE_VALIDATION_*.md - none is a
+    # visual guess.
+    parser.add_argument("--pose-validation", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--pose-validation-log-dir", default="oak_v4_evidence/f22",
+                        help="pose_events.jsonl written here; empty = no file (console log only)")
+    parser.add_argument("--cue-file", default="",
+                        help="live-protocol phase cue (JSON: title/instruction/seconds_left), drawn "
+                             "as a banner on the --show preview - see f21_live_protocol.py. Empty = off.")
     args = parser.parse_args()
 
     if args.subpixel_bits >= 0:
@@ -421,6 +457,48 @@ def main():
                   % (args.recovery_max_frames, args.recovery_blend_frames))
             print("[wb] *** P1-4 is REJECTED for production -- research use only.")
             print("[wb] *** See docs/P1_4_CLOSEOUT_2026-09-08.md")
+        # F-21: single-person target ownership. Sits between the raw depth-backprojected keypoints
+        # and P0 smoothing/P1-1/the UDP build - see target_ownership.py's module docstring for why
+        # RAW (pre-smoothing) data is what it evaluates.
+        ownership = None
+        target_log_f = None
+        if args.ownership:
+            ownership = TO.TargetOwnership(TO.OwnershipConfig(
+                min_confidence=args.ownership_min_confidence,
+                acquire_confirm_frames=args.ownership_acquire_frames,
+                reacquire_confirm_frames=args.ownership_reacquire_frames,
+                switch_margin_m=args.ownership_switch_margin,
+                scale_margin_ratio=args.ownership_scale_margin,
+                reacquire_window_s=args.ownership_reacquire_window,
+                release_timeout_s=args.ownership_release_timeout))
+            if args.ownership_log_dir:
+                os.makedirs(args.ownership_log_dir, exist_ok=True)
+                target_log_f = open(os.path.join(args.ownership_log_dir, "target_events.jsonl"),
+                                    "a", buffering=1)
+            print("[wb] F-21 target ownership ON (confirm=%d/%d switch_margin=%.2fm "
+                  "reacquire_window=%.1fs release_timeout=%.1fs)"
+                  % (args.ownership_acquire_frames, args.ownership_reacquire_frames,
+                     args.ownership_switch_margin, args.ownership_reacquire_window,
+                     args.ownership_release_timeout))
+        else:
+            print("[wb] *** F-21 target ownership OFF (--no-ownership) - pre-F-21 M15 behaviour; "
+                  "a second person CAN silently take over tracking. Diagnostic/A-B use only.")
+
+        # F-22: elbow/knee biomechanical validation - see pose_validation.py's module docstring.
+        pose_validator = None
+        pose_log_f = None
+        if args.pose_validation:
+            pose_validator = PV.PoseValidator()
+            if args.pose_validation_log_dir:
+                os.makedirs(args.pose_validation_log_dir, exist_ok=True)
+                pose_log_f = open(os.path.join(args.pose_validation_log_dir, "pose_events.jsonl"),
+                                  "a", buffering=1)
+            print("[wb] F-22 pose validation ON (elbow reject=%.0fdeg knee reject=%.0fdeg)"
+                  % (PV.ELBOW_CONFIG.reject_deg, PV.KNEE_CONFIG.reject_deg))
+        else:
+            print("[wb] *** F-22 pose validation OFF (--no-pose-validation) - pre-F-22 behaviour; "
+                  "an anatomically impossible elbow/knee CAN reach the avatar un-gated (F-19). "
+                  "Diagnostic/A-B use only.")
         stale_rgb = 0         # P1-2: RGB frames discarded as stale (never inferred on)
         stale_depth = 0       # P1-2: depth frames discarded as stale
         frames = 0            # monotonic total frame count (never reset)
@@ -437,6 +515,7 @@ def main():
         while True:
             if args.seconds > 0.0 and (time.time() - t_start) > args.seconds:
                 break
+            _cue = _read_cue(args.cue_file) if args.cue_file else None
             # DIAG-ONLY (P0 acceptance S16): stage timestamps so camera->pose->depth->send is MEASURED,
             # not estimated. `getTimestamp()` is the OAK device clock (synchronised to the host by
             # depthai), so `dai.Clock.now() - ts` is the true sensor->host latency. Read-only.
@@ -495,21 +574,13 @@ def main():
                 while time.perf_counter() < _busy_until:
                     pass
             t_pose = time.time()
-            # Person-box tracking WITH recovery (M15): follow the person from the previous frame's
-            # confident keypoints; if detection is lost OR the box wedges (body confidence stays low for a
-            # sustained run, e.g. it locked onto a false detection), re-acquire from the full-frame centre.
+            # Person-box tracking (M15): candidate box from THIS frame's confident keypoints. Whether
+            # it is actually ACCEPTED as the new crop centre is decided after backprojection, below -
+            # F-21 gates it by identity when ownership is on (SS9 of the report: without this, the
+            # crop would keep following whoever is currently most confident regardless of who F-21
+            # has decided is the owner, and a reacquire of the true owner would become impossible).
             refined = R.bbox_from_keypoints(uv, conf, rgb_w, rgb_h, thr=args.conf)
             body_conf_mean = float(np.mean(conf[0:17]))
-            if refined is not None and body_conf_mean >= args.conf:
-                lowconf_streak = 0
-                bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
-            else:
-                lowconf_streak = lowconf_streak + 1
-                if refined is None or lowconf_streak >= 20:
-                    bbox = R.center_bbox(rgb_w, rgb_h)
-                    lowconf_streak = 0
-                else:
-                    bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
 
             # F-08: quality + per-window diagnostics come back alongside the SAME xyz/measured
             # contract. depthQuality is ADVISORY in this change -- nothing consumes it to gate,
@@ -588,6 +659,79 @@ def main():
 
             t_backproj = time.time()   # DIAG-ONLY (S16)
 
+            # ---- F-21: raw (pre-smoothing) identity check --------------------------------------
+            # Read RIGHT HERE, before body_smoother.filter() below mutates xyz_cam - by the time the
+            # EXISTING M11 mid_hip (further down) exists it has already been rate-limited to
+            # --max-jump (1.5 m/frame default), which would blur a genuine person-swap into what
+            # looks like fast continuous motion over a couple of frames instead of a jump. See
+            # target_ownership.py's module docstring.
+            raw_hip = None
+            raw_hip_valid = False
+            raw_scale = None
+            if bool(measured[11]) and bool(measured[12]):
+                raw_hip = (xyz_cam[11] + xyz_cam[12]) / 2.0
+                raw_hip_valid = True
+            elif bool(measured[11]):
+                raw_hip = xyz_cam[11].copy()
+                raw_hip_valid = True
+            elif bool(measured[12]):
+                raw_hip = xyz_cam[12].copy()
+                raw_hip_valid = True
+            if raw_hip_valid and bool(measured[5]) and bool(measured[6]):
+                raw_scale = float(np.linalg.norm((xyz_cam[5] + xyz_cam[6]) / 2.0 - raw_hip))
+
+            should_emit = True
+            _own_state = None
+            _own_snap = None
+            if ownership is not None:
+                _obs = TO.Observation(
+                    valid=raw_hip_valid,
+                    pos=(tuple(float(v) for v in raw_hip) if raw_hip_valid else None),
+                    conf=body_conf_mean, scale=raw_scale)
+                _own_state, should_emit = ownership.update(_obs, time.time())
+                for _e in ownership.drain_events():
+                    print("[wb] TARGET %s state=%s target_id=%s%s" % (
+                        _e["event"], _e["state"], _e.get("target_id"),
+                        (" reason=%s" % _e["reason"]) if "reason" in _e else ""), flush=True)
+                    if target_log_f is not None:
+                        _e["seq"] = frames
+                        _e["sid"] = SESSION_ID
+                        _e["t"] = round(time.time(), 4)
+                        target_log_f.write(json.dumps(_e) + "\n")
+                _own_snap = ownership.snapshot(time.time())
+
+                # M15 acceptance, identity-gated: only refine the crop toward an observation that is
+                # currently plausibly the owner (or, pre-lock, whatever ACQUIRING is converging on).
+                # TEMPORARILY_LOST holds the box where it last was — it must NOT drift toward a
+                # rejected candidate. Only a real RELEASED/NO_TARGET re-opens full-frame search.
+                if (refined is not None and body_conf_mean >= args.conf
+                        and _own_state in (TO.ACQUIRING, TO.LOCKED, TO.REACQUIRING)):
+                    bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
+                elif _own_state in (TO.NO_TARGET, TO.RELEASED):
+                    bbox = R.center_bbox(rgb_w, rgb_h)
+                # else: TEMPORARILY_LOST — hold bbox unchanged.
+
+                if not should_emit:
+                    if args.show:
+                        _preview(frame, uv, conf, args.conf, frames, sent,
+                                 "F21 %s" % _own_state, ownership=_own_snap,
+                                 candidate_count=int(raw_hip_valid), cue=_cue)
+                        if cv2.waitKey(1) in (27, ord("q")):
+                            break
+                    continue
+            else:
+                # Pre-F-21 M15 behaviour, unchanged, for --no-ownership A/B comparison only.
+                if refined is not None and body_conf_mean >= args.conf:
+                    lowconf_streak = 0
+                    bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
+                else:
+                    lowconf_streak = lowconf_streak + 1
+                    if refined is None or lowconf_streak >= 20:
+                        bbox = R.center_bbox(rgb_w, rgb_h)
+                        lowconf_streak = 0
+                    else:
+                        bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
+
             # Smooth the metric keypoints at the source (One-Euro + depth-outlier gate) to kill jitter,
             # before hip-centring / building the message. Unmeasured points reset their filter.
             if body_smoother is not None:
@@ -627,7 +771,8 @@ def main():
                 mid_hip = last_mid_hip
             else:
                 if args.show:
-                    _preview(frame, uv, conf, args.conf, frames, sent, "no hip depth")
+                    _preview(frame, uv, conf, args.conf, frames, sent, "no hip depth",
+                             ownership=_own_snap, candidate_count=int(raw_hip_valid), cue=_cue)
                     if cv2.waitKey(1) in (27, ord("q")):
                         break
                 continue
@@ -725,6 +870,24 @@ def main():
                         holds_f.write(json.dumps(_t) + chr(10))
             else:
                 track_ms = 0.0
+
+            # ---- F-22: elbow/knee biomechanical validation --------------------------------------
+            # Runs on the FINAL post-P1-1/P1-4 geometry (whatever is about to be sent), evaluating
+            # the angular dimension P1-1 never touches. A REJECTED/HELD chain zeros ONLY that
+            # chain's own elbow/knee conf_emit slot - reusing P1-1's own established contract
+            # ("LOST -> drop -> P0 LimbGate holds", identical comment two lines up) - so a bad elbow
+            # never suppresses the wrist, the other arm, the torso, or the legs.
+            if pose_validator is not None:
+                pv_out = pose_validator.update(xyz_cam, measured, conf_emit, time.time())
+                for _j, (_state, _reason, _bend, _rate) in pv_out.items():
+                    if _state != PV.VALID:
+                        conf_emit[_j] = 0.0
+                for _e in pose_validator.drain_events():
+                    if pose_log_f is not None:
+                        _e["seq"] = frames
+                        _e["sid"] = SESSION_ID
+                        _e["t"] = round(time.time(), 4)
+                        pose_log_f.write(json.dumps(_e) + "\n")
 
             lm, src = build_body_landmarks(uv, xyz_cam, measured, conf_emit, zrel, zrel_hip, mid_hip, hip_z,
                                            intr, args.conf, args.flatten_trunk, args.zrel_fallback)
@@ -837,7 +1000,8 @@ def main():
                 t_log = time.time()
 
             if args.show:
-                _preview(frame, uv, conf, args.conf, frames, sent, "hip %.2fm" % hip_z)
+                _preview(frame, uv, conf, args.conf, frames, sent, "hip %.2fm" % hip_z,
+                         ownership=_own_snap, candidate_count=int(raw_hip_valid), cue=_cue)
                 if cv2.waitKey(1) in (27, ord("q")):
                     break
 
@@ -848,16 +1012,106 @@ def main():
         holds_f.close()
     if audit_f is not None:
         audit_f.close()
+    if target_log_f is not None:
+        target_log_f.close()
+    if pose_log_f is not None:
+        pose_log_f.close()
     print("[wb] stopped.")
 
 
-def _preview(frame, uv, conf, thr, frames, sent, status):
+_OWNERSHIP_COLOURS = {
+    TO.NO_TARGET: (150, 150, 150), TO.ACQUIRING: (0, 190, 255), TO.LOCKED: (90, 230, 90),
+    TO.TEMPORARILY_LOST: (0, 140, 255), TO.REACQUIRING: (0, 190, 255), TO.RELEASED: (60, 60, 255),
+}
+
+
+def _read_cue(path):
+    """Live-protocol phase cue, written by f21_live_protocol.py. Read fresh every preview frame (a
+    few hundred bytes - cheap) so instructions stay in sync with the countdown. The writer does an
+    atomic replace, but a read can still race a rare partial write; any failure here just means the
+    banner keeps showing the last cue for one more frame, never a crash."""
+    try:
+        with io.open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _wrap_text(text, font, scale, thickness, max_w):
+    words = text.split()
+    lines = []
+    cur = ""
+    for word in words:
+        trial = (cur + " " + word).strip()
+        (tw, _), _ = cv2.getTextSize(trial, font, scale, thickness)
+        if tw > max_w and cur:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def _draw_cue(view, cue):
+    """Large, high-contrast phase banner across the TOP of the same window the F-21 HUD draws on -
+    so instructions and live ownership state are in exactly one place. Lesson from the first live
+    F-21 session: printed console instructions are unreadable while physically coordinating two
+    people and watching a camera preview at the same time (same class of issue the
+    live-capture-subject-needs-visible-feedback memory already flagged for a single subject - worse
+    with two). Returns the y-pixel below the banner, so the HUD below can avoid overlapping it."""
+    if not cue:
+        return 0
+    h, w = view.shape[:2]
+    lines = _wrap_text(cue.get("instruction", ""), cv2.FONT_HERSHEY_SIMPLEX, 0.55, 1, w - 20)[:3]
+    banner_h = 46 + 22 * len(lines)
+    overlay = view.copy()
+    cv2.rectangle(overlay, (0, 0), (w, banner_h), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.65, view, 0.35, 0, view)
+    cv2.putText(view, cue.get("title", ""), (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+                (0, 255, 255), 2, cv2.LINE_AA)
+    secs = cue.get("seconds_left")
+    if secs is not None:
+        txt = "%.0fs" % max(0.0, secs)
+        (tw, _), _ = cv2.getTextSize(txt, cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)
+        cv2.putText(view, txt, (w - tw - 10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+                    (0, 220, 255), 2, cv2.LINE_AA)
+    y = 46
+    for line in lines:
+        cv2.putText(view, line, (10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1, cv2.LINE_AA)
+        y += 22
+    return banner_h + 4
+
+
+def _preview(frame, uv, conf, thr, frames, sent, status, ownership=None, candidate_count=None,
+             cue=None):
     view = frame.copy()
     for i in range(uv.shape[0]):
         if conf[i] > thr:
             cv2.circle(view, (int(uv[i, 0]), int(uv[i, 1])), 2,
                        (0, 255, 0) if i < 91 else (255, 0, 255), -1)
-    cv2.putText(view, "sent=%d %s" % (sent, status), (8, 20), cv2.FONT_HERSHEY_PLAIN, 1.2, (0, 255, 255), 1)
+    y0 = _draw_cue(view, cue)
+    cv2.putText(view, "sent=%d %s" % (sent, status), (8, y0 + 16), cv2.FONT_HERSHEY_PLAIN, 1.2,
+                (0, 255, 255), 1)
+    # ---- F-21 HUD (SS17) - diagnostic only, drawn from ownership.snapshot(); never fed back into
+    # tracking behaviour. STATE / OWNER / CANDIDATE COUNT / OWNER CONFIDENCE / OWNER AGE / LOSS
+    # TIMER / RELEASE TIMER / ACQUISITION TIMER / SWITCH COUNT, exactly the required field list.
+    # CANDIDATE COUNT is honestly 0 or 1 here, never more - see target_ownership.py's module doc.
+    if ownership is not None:
+        colour = _OWNERSHIP_COLOURS.get(ownership["state"], (255, 255, 255))
+        cv2.putText(view, "F21 %s  owner=%s  switches=%d"
+                    % (ownership["state"], ownership["target_id"], ownership["switch_count"]),
+                    (8, y0 + 38), cv2.FONT_HERSHEY_PLAIN, 1.2, colour, 1)
+        line2 = "cand=%s conf=%.2f" % (candidate_count, ownership["owner_confidence"])
+        if ownership["owner_age_s"] is not None:
+            line2 += "  age=%.1fs" % ownership["owner_age_s"]
+        if ownership["loss_duration_s"] is not None:
+            line2 += "  lost=%.1fs release_in=%.1fs" % (ownership["loss_duration_s"],
+                                                          ownership["release_remaining_s"])
+        if ownership["acquire_needed"] is not None:
+            line2 += "  acquire=%d/%d" % (ownership["acquire_progress"], ownership["acquire_needed"])
+        cv2.putText(view, line2, (8, y0 + 58), cv2.FONT_HERSHEY_PLAIN, 1.1, colour, 1)
     cv2.imshow("whole-body OAK sidecar", view)
 
 

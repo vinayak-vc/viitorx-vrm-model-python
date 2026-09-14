@@ -293,3 +293,29 @@ oak_v4_evidence/f19/live_log*/
 !oak_v4_evidence/f20a/log_*/*.jsonl
 !oak_v4_evidence/f20a/log_*/*.txt
 oak_v4_evidence/f20a/bones_*.jsonl
+
+# ---- F-20B evidence -------------------------------------------------------------------
+# Same policy as F-19/F-20A: the supervisor's own logs/events/timelines are small and are what the
+# report cites; each run's raw sidecar stdout capture (logs/run_*.txt, harness/supervisor stdout
+# dumps) is regenerable and not tracked.
+!oak_v4_evidence/f20b/
+!oak_v4_evidence/f20b/*.json
+!oak_v4_evidence/f20b/*.jsonl
+!oak_v4_evidence/f20b/*.log
+!oak_v4_evidence/f20b/*.txt
+!oak_v4_evidence/f20b/*.md
+!oak_v4_evidence/f20b/tests/
+!oak_v4_evidence/f20b/tests/*.json
+!oak_v4_evidence/f20b/tests/*/
+!oak_v4_evidence/f20b/tests/*/*.json
+!oak_v4_evidence/f20b/tests/*/*.jsonl
+!oak_v4_evidence/f20b/tests/*/*.log
+!oak_v4_evidence/f20b/live/
+!oak_v4_evidence/f20b/live/*.json
+!oak_v4_evidence/f20b/live/*.jsonl
+!oak_v4_evidence/f20b/live/*.log
+oak_v4_evidence/f20b/logs/
+oak_v4_evidence/f20b/tests/*/logs/
+oak_v4_evidence/f20b/tests/*/harness_stdout.txt
+oak_v4_evidence/f20b/live/logs/
+oak_v4_evidence/f20b/live/supervisor_stdout.txt
