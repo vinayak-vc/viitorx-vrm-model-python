@@ -35,6 +35,7 @@ import depthai as dai
 
 import rtmw3d_pose as R
 import oak_depth as D
+import f18_portrait as PORTRAIT   # F-19: the transform VERIFIED in F-18, imported, not re-derived
 import smoothing
 import joint_tracker as JT   # P1-1 per-joint temporal tracking + plausibility
 import kinematic_recovery as KR   # P1-4 skeleton constraints + long-horizon recovery
@@ -272,6 +273,17 @@ def main():
                              "geometrically reconstructed before it goes LOST.")
     parser.add_argument("--recovery-blend-frames", type=int, default=8,
                         help="RESEARCH ONLY (P1-4 rejected): frames to blend a recovered joint back.")
+    # ---- F-19 PORTRAIT CAMERA ORIENTATION -----------------------------------------------
+    # Portrait is a CAMERA/INPUT transformation, not a new pose protocol: the RGB, the depth
+    # and the INTRINSICS are rotated together, so back-projection still yields the same
+    # (X right, Y down, Z forward) camera-space convention every downstream stage already
+    # expects. The UDP payload is byte-for-byte unchanged and Unity cannot tell the
+    # difference. Default OFF: landscape stays the rollback path until F-19 passes.
+    parser.add_argument("--portrait", action=argparse.BooleanOptionalAction, default=False,
+                        help="F-19: rotate RGB+depth+intrinsics 90 deg so the camera can be "
+                             "mounted in portrait. OFF = landscape (default, rollback path).")
+    parser.add_argument("--portrait-dir", default="ccw", choices=["ccw", "cw"],
+                        help="F-19: rotation direction. F-18 measured CCW on this mount.")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     args = parser.parse_args()
 
@@ -304,8 +316,31 @@ def main():
         depth0 = q_depth.get().getFrame()
         dh, dw = depth0.shape
         intr = D.read_rgb_intrinsics(device, dw, dh)
-        print("[wb] rgb %dx%d depth %dx%d intr fx=%.1f fy=%.1f cx=%.1f cy=%.1f  -> %s"
-              % (rgb_w, rgb_h, dw, dh, intr[0], intr[1], intr[2], intr[3], str(addr)))
+        # ---- F-19 PORTRAIT ---------------------------------------------------------------------
+        # read_rgb_intrinsics returns intrinsics in DEPTH-frame pixels (backproject scales uv into
+        # that frame), so the intrinsics must be rotated against (dw, dh) and NOT against the RGB
+        # dimensions. They are the same 640x400 here, but rotating against the wrong frame would
+        # silently corrupt every back-projected X, so it is done explicitly.
+        intr_landscape = intr
+        if args.portrait:
+            intr = PORTRAIT.rotate_intrinsics(intr, dw, dh, args.portrait_dir)
+            rgb_w, rgb_h = rgb_h, rgb_w
+            dw, dh = dh, dw
+        _orient = ("PORTRAIT_" + args.portrait_dir.upper()) if args.portrait else "LANDSCAPE"
+        print("[wb] ======================================================================")
+        print("[wb] CameraOrientation = %s" % _orient)
+        print("[wb]   rgb %dx%d   depth %dx%d" % (rgb_w, rgb_h, dw, dh))
+        print("[wb]   intrinsics  fx=%.3f fy=%.3f cx=%.3f cy=%.3f" % intr)
+        if args.portrait:
+            print("[wb]   intrinsics(landscape, pre-rotation)  fx=%.3f fy=%.3f cx=%.3f cy=%.3f"
+                  % intr_landscape)
+        print("[wb]   FOV  H %.2f deg  V %.2f deg"
+              % (PORTRAIT.fov_deg(intr[0], dw), PORTRAIT.fov_deg(intr[1], dh)))
+        print("[wb]   stereo: subpixel=on(1/8) LR-check=on align=CAM_A  surfaceDepth=%s kwin=%d"
+              % (args.surface_depth, args.kwin))
+        print("[wb]   working-distance target: 0.90 m (F-18 preferred)")
+        print("[wb]   udp -> %s" % str(addr))
+        print("[wb] ======================================================================")
 
         bbox = R.center_bbox(rgb_w, rgb_h)
         body_smoother = None
@@ -408,6 +443,11 @@ def main():
                 _sync_ms = -1.0
             frame = _rgb_pkt.getCvFrame()
             depth = _depth_pkt.getFrame()
+            if args.portrait:
+                # BOTH must rotate, identically: depth is aligned to CAM_A, so any mismatch would
+                # sample the wrong surface for every keypoint.
+                frame = PORTRAIT.rotate_image(frame, args.portrait_dir)
+                depth = PORTRAIT.rotate_image(depth, args.portrait_dir)
             t_depth_ready = time.time()
             stale_rgb += _rgb_dropped
             stale_depth += _depth_dropped
