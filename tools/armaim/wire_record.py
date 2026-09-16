@@ -9,12 +9,12 @@ except for `seq`/`t`, which MUST be re-stamped (P1-3's PoseBuffer drops any pack
 the newest it already holds, so a replay starting at an old seq would be silently ignored).
 
     # 1. capture (in one shell)
-    python wire_record.py record --out wire.jsonl --port 9999
+    python tools/armaim/wire_record.py record --out wire.jsonl --port 9999
     #    (in another) python video_udp_sender.py --video ... --port 9999
     # 2. inspect
-    python wire_record.py list --dump wire.jsonl
+    python tools/armaim/wire_record.py list --dump wire.jsonl
     # 3. hold one frame on the real wire
-    python wire_record.py hold --dump wire.jsonl --index 137 --seconds 20
+    python tools/armaim/wire_record.py hold --dump wire.jsonl --index 137 --seconds 20
 """
 import argparse
 import json

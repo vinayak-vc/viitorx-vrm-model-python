@@ -23,7 +23,7 @@ Three checks, run offline (no camera / no Unity needed):
      scenarios (dropout hold, >8-frame hold, re-acquire, invalid-never-zero). The C# itself is unit-tested
      in Unity (Tests/EditMode/LimbGateTests.cs); this mirrors the same logic for an offline record.
 
-Run:  blender --background --python validate_p0.py    (or any Python 3 with this dir on sys.path)
+Run:  blender --background --python tools/diagnostics/validate_p0.py    (or any Python 3 with this dir on sys.path)
 """
 
 import json

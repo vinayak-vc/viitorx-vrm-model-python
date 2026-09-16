@@ -18,7 +18,7 @@ that wanders over the sphere. The spread of that normal is therefore the impossi
 it is signed-convention-free. Flexion magnitude is reported too, because folding past ~160 deg is
 independently impossible.
 
-    python f19_analyze_bones.py f19_evidence/<label>.jsonl
+    python tools/capture/f19_analyze_bones.py f19_evidence/<label>.jsonl
 """
 import json
 import math

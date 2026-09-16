@@ -6,7 +6,7 @@ The frame's landmark payload is replayed byte-for-byte from what video_udp_sende
 not by a re-derivation of it. Because the frame is HELD static, the per-frame slerp fully converges and
 the capture is not a moving target: measurement and render describe the same pose.
 
-    python run_frames.py 279 359 273 177 24
+    python tools/armaim/run_frames.py 279 359 273 177 24
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

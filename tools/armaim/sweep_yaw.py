@@ -9,8 +9,8 @@ Each (scale, frame) cell: set the scale, call Recalibrate() so the ADR-027 yaw c
 (rate limiter, low-pass, dead zone) re-seed and the cell does not inherit the previous cell's slew
 state, hold the recorded frame on the real UDP wire, let it settle, then snapshot every layer.
 
-    python sweep_yaw.py                    # default scales, all five frames
-    python sweep_yaw.py 0.7 0.714 0.75     # extra scales
+    python tools/armaim/sweep_yaw.py                    # default scales, all five frames
+    python tools/armaim/sweep_yaw.py 0.7 0.714 0.75     # extra scales
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

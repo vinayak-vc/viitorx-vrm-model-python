@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "virtual-mirror-sidecar"
+version = "0.1.0"
+description = "Whole-body 3D pose tracking sidecar for the Virtual Mirror Unity SDK. Reads an OAK-D depth camera, runs RTMW3D on the GPU via DirectML, and streams poses to Unity over UDP."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "ViitorCloud", email = "vinayak.lakhani@viitor.cloud" }]
+keywords = ["pose-estimation", "oak-d", "depthai", "rtmw3d", "motion-capture", "unity"]
+
+# 3.10 exactly, not ">=3.10": depthai publishes cp310 wheels only, and on 3.11+ pip cannot resolve
+# it at all - with an error that never mentions the Python version.
+requires-python = "==3.10.*"
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: GPU",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Multimedia :: Video :: Capture",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+
+# Kept in step with requirements.lock.txt, which is what setup_sidecar.ps1 actually installs.
+# onnxruntime-directml is load-bearing: the plain onnxruntime package has no DirectML provider,
+# falls back to CPU without raising, and turns ~31 ms/frame into ~183 ms.
+dependencies = [
+    "depthai==2.32.0.0",
+    "numpy==1.26.4",
+    "onnxruntime-directml==1.23.0",
+    "opencv-python==4.11.0.86",
+]
+
+[project.urls]
+Homepage = "https://github.com/vinayak-vc/viitorx-vrm-model-python"
+"Unity SDK" = "https://github.com/vinayak-vc/viitorx-vrm-avtar-unity"
+Issues = "https://github.com/vinayak-vc/viitorx-vrm-model-python/issues"
+
+[project.scripts]
+virtual-mirror-sidecar = "wholebody_udp_sender:main"
+virtual-mirror-supervisor = "sidecar_supervisor:main"
+
+[tool.setuptools]
+# Flat modules, not a package: the repository root IS the production path (ADR-065). Listed
+# explicitly so that adding a harness under tools/ can never accidentally ship as a module.
+py-modules = [
+    "wholebody_udp_sender",
+    "sidecar_supervisor",
+    "rtmw3d_pose",
+    "oak_depth",
+    "f18_portrait",
+    "smoothing",
+    "joint_tracker",
+    "kinematic_recovery",
+    "target_ownership",
+    "pose_validation",
+    "f21_cue_display",
+    "evidence_paths",
+    "_sidecar_path",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+exclude = [".venv", "depthai_blazepose", "evidence", "__pycache__"]
+
+[tool.ruff.lint]
+# Deliberately modest. This codebase predates the linter and the goal is to catch real defects -
+# undefined names, unused imports, obvious bugs - not to reformat measured, working code.
+select = ["E4", "E7", "E9", "F", "B", "UP"]
+ignore = [
+    "E501",  # line length is enforced by the formatter, not the linter
+    "B008",  # function call in argument default - used intentionally for argparse defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+# The two-line sys.path prelude has to run before the project imports it enables, which is exactly
+# what E402 flags.
+"tools/**" = ["E402"]
+"tests/**" = ["E402"]
+
+[tool.black]
+line-length = 110
+target-version = ["py310"]
+extend-exclude = "(depthai_blazepose|evidence|\\.venv)"

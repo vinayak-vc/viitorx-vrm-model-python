@@ -8,7 +8,7 @@ what was actually sent. The sidecar must not be running: this script owns the st
 Each case is announced by writing a phase name into the block file, so the Unity-side telemetry can
 be segmented the same way the failure-injection run is.
 
-    python f20a_packet_injection.py --port 8899
+    python tools/deployment/f20a_packet_injection.py --port 8899
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

@@ -28,8 +28,8 @@ REV 3 (F-21 S31), both changes required before the next live session:
                      reported at the end, because a phase that straddles a restart was observed
                      across an ownership epoch reset and must not be read as continuous.
 
-    python f21_live_protocol.py                  # direct, as before
-    python f21_live_protocol.py --supervised     # under the F-20B watchdog
+    python tools/ownership/f21_live_protocol.py                  # direct, as before
+    python tools/ownership/f21_live_protocol.py --supervised     # under the F-20B watchdog
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

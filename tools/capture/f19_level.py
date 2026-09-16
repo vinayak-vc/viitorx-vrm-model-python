@@ -27,7 +27,7 @@ Consequently:
 
 Height is the one item the device cannot supply; it is passed in with --height-m and recorded.
 
-    python f19_level.py --height-m 0.80
+    python tools/capture/f19_level.py --height-m 0.80
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

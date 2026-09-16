@@ -14,7 +14,7 @@ RTMW3D session stays loaded. The subject stands SQUARE at the target distance th
 guides them there once and then tells them to hold through each configuration.
 
 Usage:
-  python f16_sweep_configs.py --distance 1.33 --seconds 12 --configs baseline,sub3,...
+  python tools/capture/f16_sweep_configs.py --distance 1.33 --seconds 12 --configs baseline,sub3,...
 """
 import argparse
 import io

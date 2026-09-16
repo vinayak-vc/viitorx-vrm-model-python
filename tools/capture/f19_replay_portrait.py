@@ -26,8 +26,8 @@ WHAT IS REAL HERE AND WHAT IS NOT — read this before trusting any number downs
 The wire payload is the production contract, byte-identical in shape to what
 `wholebody_udp_sender` emits: {"lm": [[x,y,z,vis] x33], "xyz": [...], "src": [...], "seq", "t"}.
 
-    python f19_replay_portrait.py --capture evidence/oak_v4/f18/f18_move_090.jsonl --block natural@090
-    python f19_replay_portrait.py --capture ... --list
+    python tools/capture/f19_replay_portrait.py --capture evidence/oak_v4/f18/f18_move_090.jsonl --block natural@090
+    python tools/capture/f19_replay_portrait.py --capture ... --list
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

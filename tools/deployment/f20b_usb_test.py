@@ -10,8 +10,8 @@ F-20A's live protocol didn't need.
   --mode absent   the camera is unplugged BEFORE this script even starts (F) - confirms the
                   supervisor retries with backoff instead of giving up, then recovers once plugged in.
 
-    python f20b_usb_test.py --mode live
-    python f20b_usb_test.py --mode absent    (unplug the OAK-D first, THEN run this)
+    python tools/deployment/f20b_usb_test.py --mode live
+    python tools/deployment/f20b_usb_test.py --mode absent    (unplug the OAK-D first, THEN run this)
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

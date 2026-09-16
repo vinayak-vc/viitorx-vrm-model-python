@@ -31,7 +31,7 @@ can have TARGET_SWITCH == 0 and still be silently emitting the wrong person; thi
 the two and reports both.
 
     python f21_adversarial.py
-    python f21_adversarial.py --out-dir evidence/oak_v4/f21/adversarial
+    python tools/ownership/f21_adversarial.py --out-dir evidence/oak_v4/f21/adversarial
 """
 import argparse
 import io

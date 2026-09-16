@@ -19,7 +19,7 @@ That separation is also the honest one: re-running the whole replay after every 
 make it impossible to tell whether a number moved because the FIX changed or because the RULER did.
 Here the pipeline output is fixed input, read from disk.
 
-    python f21_relabel.py --video ...\\123.webm
+    python tools/ownership/f21_relabel.py --video ...\\123.webm
 """
 import argparse
 import io

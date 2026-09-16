@@ -33,7 +33,7 @@ about a nominal hip plane; production instead measures depth with real stereo. S
 Each flagged frame is written out with its skeleton drawn on it, so the classification can be
 checked by eye rather than taken on trust.
 
-    python f22_inspect_rejections.py --video "D:\\...\\video\\123.webm"
+    python tools/validation/f22_inspect_rejections.py --video "../../video/123.webm"
 """
 import argparse
 import io

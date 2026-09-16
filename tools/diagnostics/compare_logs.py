@@ -11,7 +11,7 @@ Key idea: the 2D Python preview shows only the image plane (x,y). What Unity app
 (z), which the preview can't show. Splitting jitter into x / y / z reveals that limb DEPTH is the noisy
 axis. Model orientation is logged as a gimbal-free FORWARD vector (euler-deltas explode near gimbal lock).
 
-Usage:  python compare_logs.py [--dir pipeline_logs]
+Usage:  python tools/diagnostics/compare_logs.py [--dir pipeline_logs]
 """
 
 import argparse

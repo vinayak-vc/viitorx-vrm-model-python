@@ -34,7 +34,7 @@ There is no depth channel in an arbitrary video, so the margin is a fraction of 
 rather than production's calibrated 0.35 m - the same scope limitation f21_video_replay.py already
 documents, restated rather than quietly reused.
 
-    python f21_multiperson_replay.py --video "D:\\...\\video\\456.webm"
+    python tools/ownership/f21_multiperson_replay.py --video "../../video/456.webm"
 """
 import argparse
 import io

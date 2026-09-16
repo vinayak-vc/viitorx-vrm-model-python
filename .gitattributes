@@ -1,0 +1,91 @@
+# Virtual Mirror sidecar — Git attributes
+#
+# Two jobs: keep line endings consistent for contributors on different platforms, and stop Git from
+# treating binary assets as text (which corrupts them on checkout and produces useless diffs).
+
+# ---- default -----------------------------------------------------------------------------------
+# Normalise to LF in the repository; Git checks out the platform's native endings. This is already
+# how the history is stored, so it records existing behaviour rather than changing it.
+* text=auto
+
+# ---- source ------------------------------------------------------------------------------------
+*.cs        text diff=csharp
+*.py        text diff=python
+*.md        text diff=markdown
+*.json      text
+*.txt       text
+*.yml       text
+*.yaml      text
+*.toml      text
+*.asmdef    text
+*.asmref    text
+*.uss       text
+*.uxml      text
+*.shader    text
+*.hlsl      text
+*.cginc     text
+
+# Windows-only launchers: CRLF is required, cmd.exe mis-parses LF-only .bat files.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Shell scripts must stay LF or they will not run.
+*.sh        text eol=lf
+
+# ---- binaries ------------------------------------------------------------------------------------
+# Never diffed, never line-ending-converted.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.bmp    binary
+*.tga    binary
+*.tif    binary
+*.tiff   binary
+*.psd    binary
+*.exr    binary
+*.hdr    binary
+*.ico    binary
+
+*.fbx    binary
+*.obj    binary
+*.blend  binary
+*.dae    binary
+*.3ds    binary
+*.vrm    binary
+*.glb    binary
+*.gltf   binary
+
+*.mp3    binary
+*.wav    binary
+*.ogg    binary
+*.aif    binary
+*.mp4    binary
+*.mov    binary
+*.webm   binary
+*.mkv    binary
+
+*.dll    binary
+*.so     binary
+*.dylib  binary
+*.pdb    binary
+*.exe    binary
+*.a      binary
+*.lib    binary
+*.bytes  binary
+*.unitypackage binary
+*.cubemap      binary
+
+# Model weights: ONNX graphs and OAK-D device blobs.
+*.onnx   binary
+*.blob   binary
+*.pt     binary
+*.pth    binary
+*.tflite binary
+
+# ---- GitHub language stats -----------------------------------------------------------------------
+# Vendored and generated material should not colour the repository's language bar, and captured
+# evidence is data rather than source.
+depthai_blazepose/** linguist-vendored
+evidence/**            linguist-generated

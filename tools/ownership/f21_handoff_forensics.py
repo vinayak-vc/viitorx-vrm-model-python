@@ -27,7 +27,7 @@ emitted skeleton is in the image over time and how the body's apparent size chan
   - annotated frames are written either side of every candidate so the conclusion is checkable by
     eye rather than asserted from a number.
 
-    python f21_handoff_forensics.py --video "D:\\...\\video\\123.webm"
+    python tools/ownership/f21_handoff_forensics.py --video "../../video/123.webm"
 """
 import argparse
 import io

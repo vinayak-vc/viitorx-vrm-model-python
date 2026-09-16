@@ -30,7 +30,7 @@ OAK-D capture path (a real sensor timestamp and a real socket send), and neither
 replay. What measurement 1 DOES bound is how much F-22 can possibly add to capture-to-send latency
 once that path is live, which is the part a replay can honestly speak to.
 
-    python f22_perf_ab.py --video "D:\\...\\video\\video.webm"
+    python tools/validation/f22_perf_ab.py --video "../../video/video.webm"
 """
 import argparse
 import io

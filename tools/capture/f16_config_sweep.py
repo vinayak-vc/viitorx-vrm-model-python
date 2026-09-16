@@ -17,7 +17,7 @@ produces, per range band, and compares it against the analytic prediction Z^2*dd
 This isolates the sensor question from the pose question: whatever the room contains, surfaces at
 range Z expose the quantisation ladder at Z directly.
 
-Usage:  python f16_config_sweep.py [--seconds 10] [--configs a,b,c] [--tag free]
+Usage:  python tools/capture/f16_config_sweep.py [--seconds 10] [--configs a,b,c] [--tag free]
 Output: evidence/oak_v4/f16/config_sweep_<tag>.txt  and  .json
 """
 import argparse

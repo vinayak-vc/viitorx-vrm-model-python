@@ -32,7 +32,7 @@ comparable to the shipped thresholds. Both sets of numbers are reported in the F
 supersedes the other for threshold reasoning, and the reason is stated rather than the old table
 being quietly replaced.
 
-    python f22_threshold_analysis.py --videos a.webm,b.webm,c.webm
+    python tools/validation/f22_threshold_analysis.py --videos a.webm,b.webm,c.webm
 """
 import argparse
 import io

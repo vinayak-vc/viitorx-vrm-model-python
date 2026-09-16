@@ -24,7 +24,7 @@ Produces, per the brief's SS22/SS23:
     impossible angle un-gated, vs how many F-22 actually suppressed),
   - a false-reject count on this (entirely legitimate, no "hands near face") footage.
 
-    python f22_video_replay.py --video "path\to\video.webm"
+    python tools/validation/f22_video_replay.py --video "path\to\video.webm"
 """
 import argparse
 import io

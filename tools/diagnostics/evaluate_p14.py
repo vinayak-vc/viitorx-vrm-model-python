@@ -21,7 +21,7 @@ That makes this replay a test of the GEOMETRIC path specifically -- which is the
 P1-4 -- but it cannot exercise confidence-driven behaviour. The confidence path is covered by
 `test_joint_tracker.py` and by the live captures in the P0/P1-1 reports.
 
-    python evaluate_p14.py --dir p12h_latest
+    python tools/diagnostics/evaluate_p14.py --dir p12h_latest
 """
 import argparse
 import json

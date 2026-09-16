@@ -13,7 +13,7 @@ F-16 analysis - turns f16_capture JSONL into the per-block metric tables the bri
 (sections 4, 6, 7, 11, 12). Offline only; reads nothing from production.
 
 Usage:
-    python f16_analyze.py evidence/oak_v4/f16/cap_*.jsonl --out <name> [--sq-blocks d080,d100]
+    python tools/capture/f16_analyze.py evidence/oak_v4/f16/cap_*.jsonl --out <name> [--sq-blocks d080,d100]
 """
 import argparse
 import glob

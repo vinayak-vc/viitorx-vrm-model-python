@@ -366,5 +366,5 @@ Design detail: Unity project's `docs/26_OakDDepthPhase2.md` + ADR-015/016/018.
 
 ## Licenses
 
-- This project: see repository license.
+- This project: MIT - see [`LICENSE`](LICENSE).
 - `depthai_blazepose/`: MIT © geaxgx (`depthai_blazepose/LICENSE.txt`).

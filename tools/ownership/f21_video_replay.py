@@ -23,7 +23,7 @@ Position signal here is IMAGE-PLANE (pixel) continuity only - no depth is availa
 a fraction of the frame diagonal, not the production metric value; this is stated plainly rather than
 implied to be equivalent.
 
-    python f21_video_replay.py --video "path\to\video.webm"
+    python tools/ownership/f21_video_replay.py --video "path\to\video.webm"
 """
 import argparse
 import io

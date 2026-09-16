@@ -26,7 +26,7 @@ run, which is what makes accumulating state visible.
 Measured: exceptions, resident-memory growth, state-machine oscillation, ownership changes,
 validator suppression rate, recovery behaviour, and processing throughput.
 
-    python f2x_replay_soak.py --minutes 15
+    python tools/validation/f2x_replay_soak.py --minutes 15
 """
 import argparse
 import ctypes

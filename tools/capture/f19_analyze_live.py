@@ -22,7 +22,7 @@ Two measures that are easy to get wrong, handled the same way as the replay anal
   only frames bent past BEND_MIN_DEG contribute - without that guard a perfectly normal relaxed arm
   reports tens of degrees of "impossibility".
 
-    python f19_analyze_live.py evidence/oak_v4/f19/bones_motion.jsonl
+    python tools/capture/f19_analyze_live.py evidence/oak_v4/f19/bones_motion.jsonl
 """
 import io
 import json

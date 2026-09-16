@@ -23,7 +23,7 @@ RGB-depth-sync / UDP-rate half is covered by f19_udp_probe.py, which runs the re
 The subject stands ~0.9 m from the machine and cannot read a console (F-16 learned this the hard
 way), so every instruction goes on a fullscreen HUD.
 
-    python f19_preflight.py --seconds 12
+    python tools/capture/f19_preflight.py --seconds 12
 """
 import argparse
 import io

@@ -6,7 +6,7 @@ then in one editor call capture source + control + skinned bone + skinned-vertex
 and separately render the production camera. The render and the measurement are taken in consecutive
 editor calls with the pose still streaming and static, so they describe the same pose.
 
-Usage: python run_poses.py [pose ...]     (default: all six, in the brief's order)
+Usage: python tools/armaim/run_poses.py [pose ...]     (default: all six, in the brief's order)
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))

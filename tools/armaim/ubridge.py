@@ -14,9 +14,9 @@ StdioBridgeHost.cs (WriteFrameAsync / ReadFrameAsUtf8Async / handshake) and
 Editor/Services/Transport/TransportCommandDispatcher.cs (command.type / command.params).
 
 Usage:
-    python ubridge.py ping
-    python ubridge.py exec <file.cs.txt>          # execute_code, body is a METHOD BODY (no usings)
-    python ubridge.py call <tool> <json-params>
+    python tools/armaim/ubridge.py ping
+    python tools/armaim/ubridge.py exec <file.cs.txt>          # execute_code, body is a METHOD BODY (no usings)
+    python tools/armaim/ubridge.py call <tool> <json-params>
 
 NOTE: execute_code runs the file contents as the body of a generated method, so top-level `using`
 directives are a compile error — fully qualify every type.

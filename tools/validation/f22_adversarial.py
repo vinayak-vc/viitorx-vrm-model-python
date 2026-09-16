@@ -40,7 +40,7 @@ PERTURBATION preserves the real limb: the distal joint is rotated about the hing
 existing bend plane, keeping the REAL forearm/shin length measured from that frame. Only the angle
 changes.
 
-    python f22_adversarial.py --video "D:\\...\\video\\video.webm"
+    python tools/validation/f22_adversarial.py --video "../../video/video.webm"
 """
 import argparse
 import io

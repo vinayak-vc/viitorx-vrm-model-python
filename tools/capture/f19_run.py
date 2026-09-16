@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """F-19 — arm the Unity rendered-bone recorder, replay a recorded portrait block, stop, analyse.
 
-    python f19_run.py <label> <capture> [block] [loops]
+    python tools/capture/f19_run.py <label> <capture> [block] [loops]
 """
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
