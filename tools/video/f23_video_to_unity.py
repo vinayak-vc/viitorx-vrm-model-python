@@ -57,6 +57,8 @@ import numpy as np
 import rtmw3d_pose as R
 import smoothing
 import wholebody_udp_sender as W
+import joint_tracker as JT      # F-29: real P1-1 states on this path, not a stub
+import target_ownership as TO   # F-29: real F-21 lock state
 
 # F-20A treats a new sid as a new producer session; the real sender always stamps one.
 SID = "vid%08x" % (int(time.time()) & 0xFFFFFFFF)
@@ -134,6 +136,27 @@ def main():
     # depth-min-cutoff/depth-beta pair is documented as arms+hands only.
     zfilt = [smoothing.OneEuro(freq=src_fps, min_cutoff=0.5, beta=0.4) for _ in range(133)]
 
+    # ---- F-29 TRUST CHANNEL ON THE VIDEO PATH --------------------------------------------------
+    # The production trackers, run here for their STATES ONLY. Two deliberate limits, because this
+    # harness has no stereo and pretending otherwise is exactly the failure mode this file's header
+    # warns about:
+    #
+    #  1. GEOMETRY IS NOT WRITTEN BACK. Production feeds P1-1's corrected position into xyz_cam and
+    #     sets measured=True. Doing that here would flip every `src` flag to 1 and claim a stereo
+    #     measurement that does not exist. States only keeps this harness's emitted geometry
+    #     BYTE-IDENTICAL to before this change, so nothing measured from it previously is invalidated.
+    #  2. depth_valid=True IS PASSED even though no depth was measured. depth_valid is P1-1's
+    #     "was this position sensed or inferred" input and feeds only its suspicion score. Passing
+    #     False for all 133 keypoints would drive every joint permanently WEAK - a HUD that reads
+    #     "nothing is trustworthy" at all times conveys less than no information. The honest signal
+    #     that this is not stereo is `src`, which stays 0 everywhere, and the HUD shows it.
+    #
+    # So: this exercises P1-1's TEMPORAL/GEOMETRIC validation (spike, hold, predict, recover) and
+    # F-21's ownership machine for real. It does NOT exercise the depth-hole path.
+    skel = JT.SkeletonTracker()
+    ownership = TO.TargetOwnership(TO.OwnershipConfig())
+    xyz_cam_track = np.zeros((133, 3), dtype=np.float32)
+
     seq = int((time.time() - 1788900000.0) * 100.0)
     sent = skipped = 0
     t_start = time.time()
@@ -175,6 +198,40 @@ def main():
             mid_hip = np.array([(hip_uv[0] - intr[2]) * hip_z / fx,
                                 (hip_uv[1] - intr[3]) * hip_z / fy, hip_z], dtype=np.float32)
 
+            # ---- F-29: run the real trackers for their states (see the block above for limits) ----
+            # Camera-space positions for the tracked joints, reconstructed through the SAME
+            # _fallback_point production uses for a depth hole, then un-centred back to camera space
+            # (it returns hip-relative). The tracker reasons about absolute motion, so feeding it
+            # hip-relative points would hide every translation of the body as joint stillness.
+            pos_in, cnf_in, dv_in = {}, {}, {}
+            for _j in skel.indices:
+                _p = W._fallback_point(_j, uv, zrel, zrel_hip, mid_hip, hip_z, intr, True) + mid_hip
+                xyz_cam_track[_j] = _p
+                pos_in[_j] = (float(_p[0]), float(_p[1]), float(_p[2]))
+                cnf_in[_j] = float(conf[_j])
+                dv_in[_j] = True
+            _now = time.time()
+            track_res = skel.update(pos_in, cnf_in, _now, depth_valid=dv_in, collect_events=False)
+
+            # F-21 ownership on the same raw, pre-smoothing hip the production sender uses.
+            _raw_hip = tuple(float(v) for v in mid_hip)
+            _raw_scale = None
+            if conf[5] >= a.conf and conf[6] >= a.conf:
+                _sh = 0.5 * (xyz_cam_track[5] + xyz_cam_track[6])
+                _raw_scale = float(np.linalg.norm(_sh - mid_hip))
+            _own_state, _should_emit = ownership.update(
+                TO.Observation(valid=True, pos=_raw_hip, conf=body_conf, scale=_raw_scale), _now)
+            for _e in ownership.drain_events():
+                print("[vid] TARGET %s state=%s target_id=%s%s" % (
+                    _e["event"], _e["state"], _e.get("target_id"),
+                    (" reason=%s" % _e["reason"]) if "reason" in _e else ""), flush=True)
+            if not _should_emit:
+                # Ownership rejected this observation. Production drops the frame here; matching that
+                # is the point of running the real machine rather than a permissive copy of it.
+                skipped += 1
+                frame_i += 1
+                continue
+
             # flatten_trunk MUST be passed explicitly. build_body_landmarks' SIGNATURE default is
             # True, but production's argparse default is FALSE (Milestone-2: "keep the measured
             # trunk Z so the model can BEND at the waist and TURN like the skeleton"). Calling it
@@ -198,7 +255,14 @@ def main():
                    "xyz": [round(float(mid_hip[0] * 1000.0 * a.sway_gain), 1),
                            round(float(mid_hip[1] * 1000.0 * a.sway_gain), 1),
                            round(float(mid_hip[2] * 1000.0), 1)],
-                   "src": src, "seq": seq, "sid": SID, "t": round(time.time(), 4)}
+                   "src": src, "seq": seq, "sid": SID, "t": round(time.time(), 4),
+                   # F-29 trust channel, same contract as the production sender.
+                   "st": W.build_joint_states(track_res),
+                   "own": _own_state,
+                   # No camera timestamp exists for a file, so this is decode->send, which is the
+                   # only leg this path actually owns. It is smaller than production's sensor->send
+                   # and must not be quoted as a sensor latency.
+                   "lat": round((time.time() - t_frame) * 1000.0, 1)}
             if lh is not None:
                 msg["lh"] = lh
             if rh is not None:

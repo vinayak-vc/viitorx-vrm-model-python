@@ -11,6 +11,35 @@ public interface and is what semver applies to here.
 
 ## [Unreleased]
 
+### Added
+
+- **Trust channel on the wire (F-29).** Three new OPTIONAL fields, so this is a backward-compatible
+  addition exactly as `sid` was — a consumer that ignores them is unaffected, and nothing in the
+  sidecar reads them back:
+  - `st` — P1-1/P1-4 tracking state per JointId slot, as 33 ints (`-1` no tracker, `0` TRACKED,
+    `1` WEAK, `2` PREDICTED, `3` LOST, `4` RECOVERING). Values are `joint_tracker.TrackingState`'s
+    own ints rather than a parallel enum that could drift out of step. Captured **after** P1-4, so
+    the reported state matches the geometry actually emitted. `-1` is a claim, not padding: only
+    the 12 joints in `DEFAULT_TRACKED` have a tracker, and reporting the rest as healthy would
+    overstate what the system knows.
+  - `own` — the F-21 ownership state. **Omitted entirely** under `--no-ownership`, so a consumer
+    can distinguish "identity tracking is not running" from "running but not locked".
+  - `lat` — measured camera-timestamp to payload-built latency, in ms.
+- `build_joint_states()`, shared by the sender and the video harness.
+- **`tools/video/f23_video_to_unity.py` now runs the real `SkeletonTracker` and `TargetOwnership`,**
+  so the video path reports genuine states instead of none. Two deliberate limits, documented in
+  the file: geometry is **not** written back (which keeps this harness's emitted landmarks
+  byte-identical to before, so earlier measurements stay valid, and keeps every `src` flag honestly
+  0), and `depth_valid=True` is passed because that input feeds only P1-1's suspicion score —
+  passing False for all 133 keypoints would drive every joint permanently WEAK.
+
+### Notes
+
+- **Feet were already on the wire and still are.** `build_body_landmarks` has always emitted
+  `FOOT_TO_JOINTID` — heels to JointId 29/30, big toes to 31/32 — inside `lm`. Measured 431/431 and
+  330/330 frames on the two regression clips. No change was needed; the consumer simply never drew
+  those four slots.
+
 ## [0.1.0] — 2026-09-16
 
 ### Added

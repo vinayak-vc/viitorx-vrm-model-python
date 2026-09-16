@@ -16,7 +16,18 @@ Wire contract (JSON per UDP datagram, default 127.0.0.1:8899):
     "lh":  [[x,y,z] x21],        # left hand, hip-relative metres (MediaPipe/COCO-WB hand order)
     "rh":  [[x,y,z] x21],        # right hand
     "xyz": [hipX,hipY,hipZ],     # measured mid-hip, millimetres, camera space (avatar root)
-    "src": [0|1 x33] }           # 1 = measured depth, 0 = hip-plane fallback (debug/coverage)
+    "src": [0|1 x33],            # 1 = measured depth, 0 = hip-plane fallback (debug/coverage)
+    "st":  [-1..4 x33],          # F-29: P1-1/P1-4 state per joint. -1 no tracker, 0 TRACKED,
+                                 #   1 WEAK, 2 PREDICTED, 3 LOST, 4 RECOVERING
+    "own": "LOCKED",             # F-29: F-21 ownership state; ABSENT when --no-ownership
+    "lat": 41.3 }                # F-29: measured camera-timestamp -> payload-built latency, ms
+
+Note that feet are ALREADY carried in `lm`: build_body_landmarks emits R.FOOT_TO_JOINTID (big toes ->
+JointId 31/32, heels -> 29/30) alongside the COCO-17 body. There is no separate foot field and none is
+needed - a consumer that ignores those four slots is choosing to, not being denied the data.
+
+`st`/`own`/`lat` are a READ-ONLY trust channel: they echo decisions the pipeline already made so a
+consumer can display them. Nothing upstream reads them back, and omitting them changes no behaviour.
 
 Axes are camera space (X right, Y down, Z forward) as with the Phase-1 GHUM stream, so the Unity
 PoseSpaceConverter + poseFlipX/Y/Z tuning apply the same way. Run:
@@ -201,6 +212,40 @@ def build_hand(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z, intr
             p = _fallback_point(i, uv, zrel, zrel_hip, mid_hip, hip_z, intr, use_zrel)  # M16
         out.append([round(float(p[0]), 4), round(float(p[1]), 4), round(float(p[2]), 4)])
     return out
+
+
+# ---- F-29 TRUST CHANNEL ------------------------------------------------------------------------
+# The pipeline's own verdict about each joint, published so a consumer can SHOW it. P1-1's tracker
+# states, P1-4's recovery and F-21's ownership already decide behaviour every frame; until now they
+# only ever reached a log file, so a viewer watching the skeleton had no way to tell a confidently
+# measured elbow from one being extrapolated through an occlusion. Both look identical on screen.
+#
+# THIS CHANGES NO BEHAVIOUR. It is a read-only echo of decisions already made upstream - adding a
+# field is backward compatible exactly as `sid` was (§F-20A), and a consumer that ignores `st`/`own`
+# behaves precisely as before.
+#
+# WHY A SENTINEL RATHER THAN A DEFAULT STATE: only the 12 joints in joint_tracker.DEFAULT_TRACKED
+# have a tracker at all. Reporting the other 21 as TRACKED would be a lie - the honest answer is
+# "this joint has no tracker", which is what NO_TRACKER means. A HUD must be able to draw that
+# difference or it overstates the system's own confidence, which is the opposite of the point.
+STATE_NO_TRACKER = -1
+
+
+def build_joint_states(res):
+    """P1-1/P1-4 tracking state per JointId slot, as 33 ints. `res` is SkeletonTracker.update()'s
+    output, keyed by WHOLEBODY index; the wire is JointId space, so the same COCO17_TO_JOINTID map
+    build_body_landmarks uses translates it. Untracked slots stay STATE_NO_TRACKER.
+
+    Values are joint_tracker.TrackingState's own ints (0 TRACKED, 1 WEAK, 2 PREDICTED, 3 LOST,
+    4 RECOVERING) - not a parallel enum that could drift out of step with it."""
+    st = [STATE_NO_TRACKER] * NUM_BODY
+    if not res:
+        return st
+    for wb_index, joint_id in R.COCO17_TO_JOINTID.items():
+        entry = res.get(wb_index)
+        if entry is not None:
+            st[joint_id] = int(entry[4])
+    return st
 
 
 def main():
@@ -862,6 +907,7 @@ def main():
             # drops it -- which hands the decision to the P0 LimbGate in Unity exactly as
             # a real occlusion would. The tracker never writes zeros itself.
             conf_emit = conf
+            _track_res = None   # F-29: post-P1-4 per-joint states, echoed on the wire for the HUD
             if skel is not None:
                 t_track0 = time.perf_counter()
                 pos_in, cnf_in, dv_in = {}, {}, {}
@@ -879,6 +925,10 @@ def main():
                     rec_out = recovery.apply(res, pos_in,
                                              collect_events=(holds_f is not None))
                     res = dict((k, v[:6]) for k, v in rec_out.items())
+                # F-29: captured AFTER P1-4 so the wire reports the state the emitted geometry
+                # actually has. Reading it before recovery would show LOST for a joint that was
+                # reconstructed and sent - the HUD would contradict the skeleton next to it.
+                _track_res = res
                 conf_emit = conf.copy()
                 for _j, (_x, _y, _z, _c, _st, _usable) in res.items():
                     if _usable:
@@ -945,7 +995,18 @@ def main():
                 "seq": frames,                 # monotonic frame id (aligns sender/recv/model logs)
                 "sid": SESSION_ID,             # F-20A: per-PROCESS id; seq is only monotonic within it
                 "t": round(time.time(), 4),    # send epoch seconds
+                # ---- F-29 trust channel (read-only; drives nothing) ----------------------------
+                "st": build_joint_states(_track_res),   # P1-1/P1-4 state per JointId, -1 = untracked
+                # Sensor-to-send latency in ms, MEASURED not estimated: the camera timestamp through
+                # to this payload being built. Unity adds its own receive->present leg to get a true
+                # end-to-end number; neither half is guessable from the other side alone.
+                "lat": round(float((time.time() - t_cap) * 1000.0), 1),
             }
+            # F-21 lock state, when ownership is enabled (--no-ownership omits the field entirely
+            # rather than sending a fake "LOCKED", so a HUD can distinguish "not running" from "not
+            # locked"). Both are real conditions and they mean opposite things to an operator.
+            if _own_state is not None:
+                message["own"] = _own_state
             # H7: only include a hand when confidently tracked. Unity treats a missing lh/rh as
             # "not tracked" and holds the rest pose instead of curling fingers from noise.
             if lh is not None:

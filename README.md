@@ -322,8 +322,36 @@ Local UDP, default `127.0.0.1:8899`, one JSON datagram per frame:
   "xyz": [hipX, hipY, hipZ],         // measured mid-hip, millimetres, camera space (root position)
   "src": [0|1, ...33],               // 1 = depth-measured, 0 = hip-plane fallback (debug)
   "seq": 1234,                       // monotonic frame id
-  "t":   1788846511.0234 }           // send epoch seconds
+  "t":   1788846511.0234,            // send epoch seconds
+  "st":  [-1..4, ...33],             // F-29 trust channel: P1-1/P1-4 state per joint
+  "own": "LOCKED",                   // F-29: F-21 ownership state  (OMITTED under --no-ownership)
+  "lat": 41.3 }                      // F-29: measured camera->payload latency, ms
 ```
+
+**Feet are inside `lm`, not a separate field.** `build_body_landmarks` emits `FOOT_TO_JOINTID`
+alongside the COCO-17 body: heels at JointId **29/30**, big toes at **31/32**. A consumer that
+ignores those four slots is choosing to, not being denied the data.
+
+### The F-29 trust channel (`st` / `own` / `lat`)
+
+Read-only: these echo decisions the pipeline has already made so a consumer can **display** them.
+Nothing upstream reads them back and omitting them changes no behaviour, so a consumer written
+before F-29 is unaffected.
+
+| `st` | meaning |
+|---|---|
+| `-1` | **no tracker covers this joint.** Only the 12 joints in `joint_tracker.DEFAULT_TRACKED` have one. This is a claim, not padding — reporting the other 21 as healthy would overstate what the system knows about them. |
+| `0`–`4` | `TrackingState`'s own ints: TRACKED, WEAK, PREDICTED, LOST, RECOVERING. Not a parallel enum, so the two cannot drift apart. |
+
+`st` is captured **after** P1-4, so it describes the geometry actually emitted — reading it before
+recovery would report `LOST` for a joint that was reconstructed and sent.
+
+`own` **absent** means ownership is not running (`--no-ownership`); it does **not** mean "not
+locked". Those mean opposite things to an operator and must not be rendered the same way.
+
+`lat` is the sidecar's leg only. A consumer adds its own receive-to-present time for an end-to-end
+figure — and must compare `t` against its own **epoch** clock to do so, never against a
+monotonic/stopwatch clock.
 
 **A joint that fails the confidence gate — or that P1-1 marks `LOST` — is emitted as `[0,0,0,0]`.**
 That zero is the "invalid" signal, **not** a position. Unity must never interpolate a position toward
