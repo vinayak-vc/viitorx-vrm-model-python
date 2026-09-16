@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-22 performance A/B - pose validation OFF vs ON on identical replay input.
 
 The F-22 report's own SS18 says performance "was not independently re-measured this session". This
@@ -32,6 +23,15 @@ once that path is live, which is the part a replay can honestly speak to.
 
     python tools/validation/f22_perf_ab.py --video "../../video/video.webm"
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -48,7 +48,7 @@ import target_ownership as TO
 import wholebody_udp_sender as W
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 NOMINAL_HIP_Z = 2.0
 CONF_THR = 0.3
 FLATTEN_TRUNK = False

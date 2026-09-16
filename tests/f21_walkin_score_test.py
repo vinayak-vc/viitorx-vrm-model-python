@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """Verify f21_walkin_score.py against synthetic sessions whose answers are known by construction.
 
 This project has three findings that came from a wrong instrument rather than wrong code (S30.6's
@@ -15,6 +8,14 @@ outcome decided in advance, and the scorer has to agree.
 
     .venv\\Scripts\\python.exe f21_walkin_score_test.py
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+
 import io
 import json
 import os

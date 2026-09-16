@@ -1,0 +1,199 @@
+{
+  "OWNERSHIP_OFF": {
+    "tag": "OWNERSHIP_OFF",
+    "frames": 775,
+    "emitted": 775,
+    "wrong_person_frames": 102,
+    "wrong_person_episodes": 2,
+    "first_wrong_person_frame": 14,
+    "wrong_person_duration_s": 1.7,
+    "unlabelled_emitted": 244,
+    "owner_of_epoch": {
+      "0": "W"
+    },
+    "epoch_anchors": {
+      "0": {
+        "epoch_label_histogram": {
+          "M": 102,
+          "W": 429
+        },
+        "labelled_frames": 531,
+        "majority": 0.808,
+        "anchored_on": "W",
+        "first_labelled_frame": 14,
+        "first_label": "M",
+        "ambiguous": false
+      }
+    },
+    "ambiguous_epochs": [],
+    "epochs": 0,
+    "temp_lost": 0,
+    "reacquired": 0,
+    "released": 0,
+    "switches": 0,
+    "rejections": 0,
+    "rejected_path_walked_in": 0,
+    "held_frames": 0,
+    "path_blocked_frames": 0,
+    "f22_suppressed_joint_frames": 1007,
+    "f22_frames_with_suppression": 366,
+    "wall_s": 54.67,
+    "throughput_fps": 14.18
+  },
+  "PATH_OFF": {
+    "tag": "PATH_OFF",
+    "frames": 775,
+    "emitted": 500,
+    "wrong_person_frames": 40,
+    "wrong_person_episodes": 2,
+    "first_wrong_person_frame": 14,
+    "wrong_person_duration_s": 0.667,
+    "unlabelled_emitted": 32,
+    "owner_of_epoch": {
+      "1": "W"
+    },
+    "epoch_anchors": {
+      "1": {
+        "epoch_label_histogram": {
+          "M": 40,
+          "W": 428
+        },
+        "labelled_frames": 468,
+        "majority": 0.915,
+        "anchored_on": "W",
+        "first_labelled_frame": 14,
+        "first_label": "M",
+        "ambiguous": false
+      }
+    },
+    "ambiguous_epochs": [],
+    "epochs": 1,
+    "temp_lost": 5,
+    "reacquired": 4,
+    "released": 0,
+    "switches": 0,
+    "rejections": 60,
+    "rejected_path_walked_in": 0,
+    "held_frames": 275,
+    "path_blocked_frames": 65,
+    "f22_suppressed_joint_frames": 232,
+    "f22_frames_with_suppression": 144,
+    "wall_s": 56.29,
+    "throughput_fps": 13.77,
+    "ownership_us_mean": 13.802,
+    "ownership_us_p95": 21.8,
+    "ownership_us_max": 58.2
+  },
+  "PATH_ON": {
+    "tag": "PATH_ON",
+    "frames": 775,
+    "emitted": 404,
+    "wrong_person_frames": 2,
+    "wrong_person_episodes": 1,
+    "first_wrong_person_frame": 14,
+    "wrong_person_duration_s": 0.033,
+    "unlabelled_emitted": 27,
+    "owner_of_epoch": {
+      "1": "W",
+      "2": "M"
+    },
+    "epoch_anchors": {
+      "1": {
+        "epoch_label_histogram": {
+          "M": 2,
+          "W": 332
+        },
+        "labelled_frames": 334,
+        "majority": 0.994,
+        "anchored_on": "W",
+        "first_labelled_frame": 14,
+        "first_label": "M",
+        "ambiguous": false
+      },
+      "2": {
+        "epoch_label_histogram": {
+          "M": 43
+        },
+        "labelled_frames": 43,
+        "majority": 1.0,
+        "anchored_on": "M",
+        "first_labelled_frame": 683,
+        "first_label": "M",
+        "ambiguous": false
+      }
+    },
+    "ambiguous_epochs": [],
+    "epochs": 2,
+    "temp_lost": 3,
+    "reacquired": 1,
+    "released": 1,
+    "switches": 1,
+    "rejections": 162,
+    "rejected_path_walked_in": 30,
+    "held_frames": 371,
+    "path_blocked_frames": 162,
+    "f22_suppressed_joint_frames": 166,
+    "f22_frames_with_suppression": 110,
+    "wall_s": 56.12,
+    "throughput_fps": 13.81,
+    "ownership_us_mean": 13.982,
+    "ownership_us_p95": 21.6,
+    "ownership_us_max": 44.4
+  },
+  "PATH_ON_NO_F22": {
+    "tag": "PATH_ON_NO_F22",
+    "frames": 775,
+    "emitted": 404,
+    "wrong_person_frames": 2,
+    "wrong_person_episodes": 1,
+    "first_wrong_person_frame": 14,
+    "wrong_person_duration_s": 0.033,
+    "unlabelled_emitted": 27,
+    "owner_of_epoch": {
+      "1": "W",
+      "2": "M"
+    },
+    "epoch_anchors": {
+      "1": {
+        "epoch_label_histogram": {
+          "M": 2,
+          "W": 332
+        },
+        "labelled_frames": 334,
+        "majority": 0.994,
+        "anchored_on": "W",
+        "first_labelled_frame": 14,
+        "first_label": "M",
+        "ambiguous": false
+      },
+      "2": {
+        "epoch_label_histogram": {
+          "M": 43
+        },
+        "labelled_frames": 43,
+        "majority": 1.0,
+        "anchored_on": "M",
+        "first_labelled_frame": 683,
+        "first_label": "M",
+        "ambiguous": false
+      }
+    },
+    "ambiguous_epochs": [],
+    "epochs": 2,
+    "temp_lost": 3,
+    "reacquired": 1,
+    "released": 1,
+    "switches": 1,
+    "rejections": 162,
+    "rejected_path_walked_in": 30,
+    "held_frames": 371,
+    "path_blocked_frames": 162,
+    "f22_suppressed_joint_frames": 0,
+    "f22_frames_with_suppression": 0,
+    "wall_s": 56.1,
+    "throughput_fps": 13.81,
+    "ownership_us_mean": 13.377,
+    "ownership_us_p95": 21.5,
+    "ownership_us_max": 44.4
+  }
+}

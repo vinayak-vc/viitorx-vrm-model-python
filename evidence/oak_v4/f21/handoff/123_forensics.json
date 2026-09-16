@@ -1,0 +1,2046 @@
+{
+  "video": "../../video/123.webm",
+  "frames": 775,
+  "emitted": 404,
+  "epochs": 2,
+  "margin_px": 141.0,
+  "verdict": "NO HAND-OFF CANDIDATES",
+  "episodes": [],
+  "events": [
+    {
+      "event": "TARGET_ACQUIRED",
+      "state": "LOCKED",
+      "target_id": 1,
+      "pos": [
+        0.0,
+        947.7978515625,
+        0.0
+      ],
+      "frame": 4
+    },
+    {
+      "event": "TARGET_LOCKED",
+      "state": "LOCKED",
+      "target_id": 1,
+      "pos": [
+        0.0,
+        947.7978515625,
+        0.0
+      ],
+      "frame": 4
+    },
+    {
+      "event": "TARGET_TEMP_LOST",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "no_observation",
+      "frame": 200
+    },
+    {
+      "event": "TARGET_REACQUIRED",
+      "state": "LOCKED",
+      "target_id": 1,
+      "pos": [
+        30.76335334777832,
+        1019.69873046875,
+        0.0
+      ],
+      "loss_duration": 1.333,
+      "frame": 280
+    },
+    {
+      "event": "TARGET_TEMP_LOST",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "no_observation",
+      "frame": 438
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        981.41357421875,
+        0.0
+      ],
+      "frame": 512
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        980.3008422851562,
+        0.0
+      ],
+      "frame": 513
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -103.81786346435547,
+        1004.7817993164062,
+        0.0
+      ],
+      "frame": 514
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -103.81786346435547,
+        1005.89453125,
+        0.0
+      ],
+      "frame": 515
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1035.9393310546875,
+        0.0
+      ],
+      "frame": 516
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1035.9393310546875,
+        0.0
+      ],
+      "frame": 517
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1059.3076171875,
+        0.0
+      ],
+      "frame": 518
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1059.3076171875,
+        0.0
+      ],
+      "frame": 519
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1040.390380859375,
+        0.0
+      ],
+      "frame": 520
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1040.390380859375,
+        0.0
+      ],
+      "frame": 521
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1033.7138671875,
+        0.0
+      ],
+      "frame": 522
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        -103.81786346435547,
+        1033.7138671875,
+        0.0
+      ],
+      "frame": 523
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -103.81786346435547,
+        1014.7967529296875,
+        0.0
+      ],
+      "frame": 524
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -103.81786346435547,
+        1014.7967529296875,
+        0.0
+      ],
+      "frame": 525
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -64.87091827392578,
+        1014.7967529296875,
+        0.0
+      ],
+      "frame": 526
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -64.87091827392578,
+        1014.7967529296875,
+        0.0
+      ],
+      "frame": 527
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -61.53261184692383,
+        1013.6839599609375,
+        0.0
+      ],
+      "frame": 528
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        -61.53261184692383,
+        1013.6839599609375,
+        0.0
+      ],
+      "frame": 529
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        1.8952692747116089,
+        981.4136352539062,
+        0.0
+      ],
+      "frame": 530
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        1.8952692747116089,
+        981.4136352539062,
+        0.0
+      ],
+      "frame": 531
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        1.8952691555023193,
+        948.030517578125,
+        0.0
+      ],
+      "frame": 532
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        1.8952691555023193,
+        948.030517578125,
+        0.0
+      ],
+      "frame": 533
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        8.571887969970703,
+        912.421875,
+        0.0
+      ],
+      "frame": 534
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        8.571887969970703,
+        912.421875,
+        0.0
+      ],
+      "frame": 535
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        15.248507499694824,
+        889.0537109375,
+        0.0
+      ],
+      "frame": 536
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        15.248507499694824,
+        889.0537109375,
+        0.0
+      ],
+      "frame": 537
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        30.827285766601562,
+        869.02392578125,
+        0.0
+      ],
+      "frame": 538
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        30.827285766601562,
+        869.02392578125,
+        0.0
+      ],
+      "frame": 539
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        34.16559600830078,
+        870.1366577148438,
+        0.0
+      ],
+      "frame": 540
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        34.16559600830078,
+        870.1366577148438,
+        0.0
+      ],
+      "frame": 541
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        47.51883316040039,
+        882.3770751953125,
+        0.0
+      ],
+      "frame": 542
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        47.51883316040039,
+        882.3770751953125,
+        0.0
+      ],
+      "frame": 543
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        75.33807373046875,
+        906.8580322265625,
+        0.0
+      ],
+      "frame": 544
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        75.33807373046875,
+        906.8580322265625,
+        0.0
+      ],
+      "frame": 545
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        116.51055908203125,
+        920.2113037109375,
+        0.0
+      ],
+      "frame": 546
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        116.51055908203125,
+        920.2113037109375,
+        0.0
+      ],
+      "frame": 547
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        132.08934020996094,
+        954.7071533203125,
+        0.0
+      ],
+      "frame": 548
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        132.08934020996094,
+        954.7071533203125,
+        0.0
+      ],
+      "frame": 549
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        155.45750427246094,
+        982.5263671875,
+        0.0
+      ],
+      "frame": 550
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "path_walked_in",
+      "pos": [
+        155.45750427246094,
+        982.5263671875,
+        0.0
+      ],
+      "frame": 551
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        178.82568359375,
+        999.2179565429688,
+        0.0
+      ],
+      "frame": 552
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        178.82568359375,
+        999.2179565429688,
+        0.0
+      ],
+      "frame": 553
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        194.40444946289062,
+        1004.7817993164062,
+        0.0
+      ],
+      "frame": 554
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        193.29168701171875,
+        1004.7817993164062,
+        0.0
+      ],
+      "frame": 555
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        212.20877075195312,
+        1005.89453125,
+        0.0
+      ],
+      "frame": 556
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        212.20877075195312,
+        1005.89453125,
+        0.0
+      ],
+      "frame": 557
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        243.3663330078125,
+        992.5413208007812,
+        0.0
+      ],
+      "frame": 558
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        243.3663330078125,
+        992.5413208007812,
+        0.0
+      ],
+      "frame": 559
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        263.39617919921875,
+        988.0902099609375,
+        0.0
+      ],
+      "frame": 560
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        263.39617919921875,
+        988.0902099609375,
+        0.0
+      ],
+      "frame": 561
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        278.9749755859375,
+        968.0604248046875,
+        0.0
+      ],
+      "frame": 562
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        278.9749755859375,
+        968.0604248046875,
+        0.0
+      ],
+      "frame": 563
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        297.89202880859375,
+        926.887939453125,
+        0.0
+      ],
+      "frame": 564
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        297.89202880859375,
+        926.887939453125,
+        0.0
+      ],
+      "frame": 565
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        323.48577880859375,
+        896.8431396484375,
+        0.0
+      ],
+      "frame": 566
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        323.48577880859375,
+        896.8431396484375,
+        0.0
+      ],
+      "frame": 567
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        340.17730712890625,
+        881.2643432617188,
+        0.0
+      ],
+      "frame": 568
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        340.17730712890625,
+        881.2643432617188,
+        0.0
+      ],
+      "frame": 569
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        357.98162841796875,
+        866.79833984375,
+        0.0
+      ],
+      "frame": 570
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        356.86883544921875,
+        866.79833984375,
+        0.0
+      ],
+      "frame": 571
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        372.4476318359375,
+        864.5728149414062,
+        0.0
+      ],
+      "frame": 572
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        372.4476318359375,
+        864.5728149414062,
+        0.0
+      ],
+      "frame": 573
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        384.6881103515625,
+        877.926025390625,
+        0.0
+      ],
+      "frame": 574
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        384.6881103515625,
+        877.926025390625,
+        0.0
+      ],
+      "frame": 575
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        402.492431640625,
+        895.7303466796875,
+        0.0
+      ],
+      "frame": 576
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        402.492431640625,
+        895.7303466796875,
+        0.0
+      ],
+      "frame": 577
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        414.7328796386719,
+        915.7601928710938,
+        0.0
+      ],
+      "frame": 578
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        414.7328796386719,
+        915.7601928710938,
+        0.0
+      ],
+      "frame": 579
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        431.4244384765625,
+        949.143310546875,
+        0.0
+      ],
+      "frame": 580
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        431.4244384765625,
+        949.143310546875,
+        0.0
+      ],
+      "frame": 581
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        454.7926025390625,
+        982.5263671875,
+        0.0
+      ],
+      "frame": 582
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        454.7926025390625,
+        982.5263671875,
+        0.0
+      ],
+      "frame": 583
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        473.7096862792969,
+        993.6541137695312,
+        0.0
+      ],
+      "frame": 584
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        473.7096862792969,
+        992.5413818359375,
+        0.0
+      ],
+      "frame": 585
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        499.30340576171875,
+        1000.3306884765625,
+        0.0
+      ],
+      "frame": 586
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        499.30340576171875,
+        1000.3306884765625,
+        0.0
+      ],
+      "frame": 587
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        513.7694091796875,
+        984.751953125,
+        0.0
+      ],
+      "frame": 588
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        513.7694091796875,
+        984.751953125,
+        0.0
+      ],
+      "frame": 589
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        533.7992553710938,
+        966.9476318359375,
+        0.0
+      ],
+      "frame": 590
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        533.7992553710938,
+        966.9476318359375,
+        0.0
+      ],
+      "frame": 591
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        560.5057373046875,
+        952.4815673828125,
+        0.0
+      ],
+      "frame": 592
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        560.5057373046875,
+        952.4815673828125,
+        0.0
+      ],
+      "frame": 593
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        576.08447265625,
+        922.4368286132812,
+        0.0
+      ],
+      "frame": 594
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        576.08447265625,
+        922.4368286132812,
+        0.0
+      ],
+      "frame": 595
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        592.7760620117188,
+        900.181396484375,
+        0.0
+      ],
+      "frame": 596
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        592.7760620117188,
+        900.181396484375,
+        0.0
+      ],
+      "frame": 597
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        606.1292724609375,
+        887.94091796875,
+        0.0
+      ],
+      "frame": 598
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        606.1292724609375,
+        887.94091796875,
+        0.0
+      ],
+      "frame": 599
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        623.93359375,
+        882.3770751953125,
+        0.0
+      ],
+      "frame": 600
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        623.93359375,
+        882.3770751953125,
+        0.0
+      ],
+      "frame": 601
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        640.6251220703125,
+        889.0537109375,
+        0.0
+      ],
+      "frame": 602
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        640.6251220703125,
+        889.0537109375,
+        0.0
+      ],
+      "frame": 603
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        660.655029296875,
+        897.9558715820312,
+        0.0
+      ],
+      "frame": 604
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        660.655029296875,
+        897.9558715820312,
+        0.0
+      ],
+      "frame": 605
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        688.4742431640625,
+        925.775146484375,
+        0.0
+      ],
+      "frame": 606
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        688.4742431640625,
+        925.775146484375,
+        0.0
+      ],
+      "frame": 607
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        705.165771484375,
+        959.158203125,
+        0.0
+      ],
+      "frame": 608
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        705.165771484375,
+        959.158203125,
+        0.0
+      ],
+      "frame": 609
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        730.759521484375,
+        991.4285888671875,
+        0.0
+      ],
+      "frame": 610
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        730.759521484375,
+        991.4285888671875,
+        0.0
+      ],
+      "frame": 611
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        747.4510498046875,
+        1010.3456420898438,
+        0.0
+      ],
+      "frame": 612
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        747.4510498046875,
+        1010.3456420898438,
+        0.0
+      ],
+      "frame": 613
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        758.5787353515625,
+        1015.9094848632812,
+        0.0
+      ],
+      "frame": 614
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        758.5787353515625,
+        1015.9094848632812,
+        0.0
+      ],
+      "frame": 615
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        779.7213745117188,
+        1012.5711669921875,
+        0.0
+      ],
+      "frame": 616
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        780.8341064453125,
+        1013.6839599609375,
+        0.0
+      ],
+      "frame": 617
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        450.3415222167969,
+        991.4285888671875,
+        0.0
+      ],
+      "frame": 618
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        449.228759765625,
+        991.4285888671875,
+        0.0
+      ],
+      "frame": 619
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        465.9202880859375,
+        972.511474609375,
+        0.0
+      ],
+      "frame": 620
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        465.9202880859375,
+        972.511474609375,
+        0.0
+      ],
+      "frame": 621
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        147.51156616210938,
+        905.4345703125,
+        0.0
+      ],
+      "frame": 626
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        147.51156616210938,
+        905.4345703125,
+        0.0
+      ],
+      "frame": 627
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        166.85293579101562,
+        901.3627319335938,
+        0.0
+      ],
+      "frame": 628
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        166.85293579101562,
+        901.3627319335938,
+        0.0
+      ],
+      "frame": 629
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        187.21224975585938,
+        908.488525390625,
+        0.0
+      ],
+      "frame": 630
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        187.21224975585938,
+        908.488525390625,
+        0.0
+      ],
+      "frame": 631
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        204.5177001953125,
+        926.8118896484375,
+        0.0
+      ],
+      "frame": 632
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        204.5177001953125,
+        926.8118896484375,
+        0.0
+      ],
+      "frame": 633
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        223.85906982421875,
+        950.22509765625,
+        0.0
+      ],
+      "frame": 634
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        223.85906982421875,
+        950.22509765625,
+        0.0
+      ],
+      "frame": 635
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        238.110595703125,
+        970.58447265625,
+        0.0
+      ],
+      "frame": 636
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        238.110595703125,
+        969.5665283203125,
+        0.0
+      ],
+      "frame": 637
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        259.4879150390625,
+        990.94384765625,
+        0.0
+      ],
+      "frame": 638
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        259.4879150390625,
+        990.94384765625,
+        0.0
+      ],
+      "frame": 639
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        277.811279296875,
+        1000.1055297851562,
+        0.0
+      ],
+      "frame": 640
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        277.811279296875,
+        1000.1055297851562,
+        0.0
+      ],
+      "frame": 641
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        297.15264892578125,
+        1008.249267578125,
+        0.0
+      ],
+      "frame": 642
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        297.15264892578125,
+        1008.249267578125,
+        0.0
+      ],
+      "frame": 643
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        318.52996826171875,
+        1012.3211669921875,
+        0.0
+      ],
+      "frame": 644
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        318.52996826171875,
+        1012.3211669921875,
+        0.0
+      ],
+      "frame": 645
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        340.92523193359375,
+        1002.1414794921875,
+        0.0
+      ],
+      "frame": 646
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        340.92523193359375,
+        1002.1414794921875,
+        0.0
+      ],
+      "frame": 647
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        359.2486572265625,
+        975.67431640625,
+        0.0
+      ],
+      "frame": 648
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        359.2486572265625,
+        975.67431640625,
+        0.0
+      ],
+      "frame": 649
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        376.5540771484375,
+        950.2251586914062,
+        0.0
+      ],
+      "frame": 650
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        376.5540771484375,
+        950.2251586914062,
+        0.0
+      ],
+      "frame": 651
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        407.09307861328125,
+        936.9915771484375,
+        0.0
+      ],
+      "frame": 652
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        407.09307861328125,
+        936.9915771484375,
+        0.0
+      ],
+      "frame": 653
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        422.362548828125,
+        913.578369140625,
+        0.0
+      ],
+      "frame": 654
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        422.362548828125,
+        913.578369140625,
+        0.0
+      ],
+      "frame": 655
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        432.542236328125,
+        900.3447875976562,
+        0.0
+      ],
+      "frame": 656
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        432.542236328125,
+        900.3447875976562,
+        0.0
+      ],
+      "frame": 657
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        456.97344970703125,
+        898.308837890625,
+        0.0
+      ],
+      "frame": 658
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        456.97344970703125,
+        897.2908935546875,
+        0.0
+      ],
+      "frame": 659
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        481.4046325683594,
+        907.4705810546875,
+        0.0
+      ],
+      "frame": 660
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        481.4046325683594,
+        907.4705810546875,
+        0.0
+      ],
+      "frame": 661
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        501.76397705078125,
+        919.6861572265625,
+        0.0
+      ],
+      "frame": 662
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        501.76397705078125,
+        919.6861572265625,
+        0.0
+      ],
+      "frame": 663
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        534.3388671875,
+        946.1532592773438,
+        0.0
+      ],
+      "frame": 664
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        534.3388671875,
+        946.1532592773438,
+        0.0
+      ],
+      "frame": 665
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        551.644287109375,
+        959.3868408203125,
+        0.0
+      ],
+      "frame": 666
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        551.644287109375,
+        959.3868408203125,
+        0.0
+      ],
+      "frame": 667
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        567.9317626953125,
+        987.889892578125,
+        0.0
+      ],
+      "frame": 668
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        567.9317626953125,
+        987.889892578125,
+        0.0
+      ],
+      "frame": 669
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        585.2372436523438,
+        998.069580078125,
+        0.0
+      ],
+      "frame": 670
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        585.2372436523438,
+        998.069580078125,
+        0.0
+      ],
+      "frame": 671
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        605.5965576171875,
+        1003.159423828125,
+        0.0
+      ],
+      "frame": 672
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        605.5965576171875,
+        1003.159423828125,
+        0.0
+      ],
+      "frame": 673
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        623.919921875,
+        1005.1953125,
+        0.0
+      ],
+      "frame": 674
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        623.919921875,
+        1005.1953125,
+        0.0
+      ],
+      "frame": 675
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        642.243408203125,
+        1003.159423828125,
+        0.0
+      ],
+      "frame": 676
+    },
+    {
+      "event": "TARGET_REJECTED_CANDIDATE",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "reason": "position_jump",
+      "pos": [
+        642.243408203125,
+        1003.159423828125,
+        0.0
+      ],
+      "frame": 677
+    },
+    {
+      "event": "TARGET_RELEASED",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 1,
+      "loss_duration": 4.0,
+      "frame": 678
+    },
+    {
+      "event": "TARGET_ACQUIRED",
+      "state": "LOCKED",
+      "target_id": 2,
+      "pos": [
+        670.7470092773438,
+        957.5611572265625,
+        0.0
+      ],
+      "frame": 683
+    },
+    {
+      "event": "TARGET_LOCKED",
+      "state": "LOCKED",
+      "target_id": 2,
+      "pos": [
+        670.7470092773438,
+        957.5611572265625,
+        0.0
+      ],
+      "frame": 683
+    },
+    {
+      "event": "TARGET_SWITCH",
+      "state": "LOCKED",
+      "target_id": 2,
+      "reason": "new acquisition 0.1s after previous release",
+      "frame": 683
+    },
+    {
+      "event": "TARGET_TEMP_LOST",
+      "state": "TEMPORARILY_LOST",
+      "target_id": 2,
+      "reason": "no_observation",
+      "frame": 733
+    }
+  ]
+}

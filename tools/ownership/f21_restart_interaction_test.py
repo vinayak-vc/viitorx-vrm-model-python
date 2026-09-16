@@ -17,6 +17,7 @@ the operator standing in frame.
 
     python f21_restart_interaction_test.py
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -35,7 +36,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
-MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+MODEL = EV.DEFAULT_MODEL
 EVIDENCE = EV.oak_v4("f21", "restart_test")
 LOG_DIR = os.path.join(EVIDENCE, "target_events")
 

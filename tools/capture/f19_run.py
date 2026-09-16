@@ -3,6 +3,7 @@
 
     python tools/capture/f19_run.py <label> <capture> [block] [loops]
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

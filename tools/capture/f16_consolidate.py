@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """
 F-16 consolidation - sections 6, 7, 9, 11, 12.
 
@@ -20,6 +11,15 @@ Pulls every F-16 capture together and answers the three questions the brief actu
 
 Output: evidence/oak_v4/f16/consolidated.txt
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import glob
 import io
 import json

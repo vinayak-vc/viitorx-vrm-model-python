@@ -355,4 +355,9 @@ evidence/oak_v4/f21/**/target_events.jsonl
 evidence/oak_v4/f21/**/*_rows.jsonl
 evidence/oak_v4/f21/**/*_events.jsonl
 evidence/oak_v4/f22/**/pose_events.jsonl
-evidence/oak_v4/
+# NOTE: do NOT re-add a bare `evidence/oak_v4/` rule here. The directory form stops git
+# descending into the tree, which silently defeats every `!evidence/oak_v4/**/*.png`
+# negation above - git cannot re-include a file whose parent directory is excluded. That is
+# why the ADR-056 / ADR-061 hand-off images were never committed, and so were lost when the
+# untracked captures were cleaned up. Line 243's `evidence/oak_v4/*` form excludes the
+# contents while still allowing the negations to work, and is the rule that belongs here.

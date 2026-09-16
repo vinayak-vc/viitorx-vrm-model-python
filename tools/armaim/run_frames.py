@@ -8,6 +8,7 @@ the capture is not a moving target: measurement and render describe the same pos
 
     python tools/armaim/run_frames.py 279 359 273 177 24
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

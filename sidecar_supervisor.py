@@ -31,6 +31,7 @@ Run:
         --subpixel-bits 3
 (all defaults already match the F-19/F-20A production configuration; see run_supervisor.bat)
 """
+
 import evidence_paths as EV
 
 import argparse
@@ -46,7 +47,7 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_PYTHON = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 DEFAULT_SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 DEFAULT_EVIDENCE_DIR = EV.oak_v4("f20b")
 
 STOPPED = "STOPPED"

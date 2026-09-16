@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """Drive the REAL Unity avatar from an ORDINARY VIDEO FILE, to see what the retarget does with
 motion the OAK-D envelope has never been asked for.
 
@@ -41,6 +34,15 @@ are all outside it), so it shows where the retarget degrades under motion nobody
 
     .venv\\Scripts\\python.exe f23_video_to_unity.py --video ..\\video\\video.webm
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import json
 import math
@@ -60,7 +62,7 @@ import wholebody_udp_sender as W
 SID = "vid%08x" % (int(time.time()) & 0xFFFFFFFF)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 
 
 def main():

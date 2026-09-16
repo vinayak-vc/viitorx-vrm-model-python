@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-22 - classify every ABSOLUTE-angle rejection found on real footage. True catch, or false one?
 
 f22_threshold_analysis.py found the thing the F-22 report said it had never had: the absolute-angle
@@ -35,6 +26,15 @@ checked by eye rather than taken on trust.
 
     python tools/validation/f22_inspect_rejections.py --video "../../video/123.webm"
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -49,7 +49,7 @@ import rtmw3d_pose as R
 import pose_validation as PV
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 NOMINAL_HIP_Z = 2.0
 CONF_THR = 0.3
 CHAIN_TRIPLE = {"left_elbow": (5, 7, 9), "right_elbow": (6, 8, 10),

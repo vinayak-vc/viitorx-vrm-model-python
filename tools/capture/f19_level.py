@@ -29,6 +29,7 @@ Height is the one item the device cannot supply; it is passed in with --height-m
 
     python tools/capture/f19_level.py --height-m 0.80
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

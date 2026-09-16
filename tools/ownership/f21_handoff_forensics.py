@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-21 forensics - did the emitted target actually change HUMAN inside a single ownership epoch?
 
 Why this exists. The F-21 report treats 123.webm as a single-person stress clip and reads its
@@ -29,6 +20,15 @@ emitted skeleton is in the image over time and how the body's apparent size chan
 
     python tools/ownership/f21_handoff_forensics.py --video "../../video/123.webm"
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -42,7 +42,7 @@ import rtmw3d_pose as R
 import target_ownership as TO
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 CONF_THR = 0.3
 SKEL = [(5, 7), (7, 9), (6, 8), (8, 10), (5, 6), (5, 11), (6, 12), (11, 12),
         (11, 13), (13, 15), (12, 14), (14, 16)]

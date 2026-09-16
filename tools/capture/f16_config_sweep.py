@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """
 F-16 step 2 - STATIC-SCENE stereo configuration sweep (no subject required).
 
@@ -20,6 +11,15 @@ range Z expose the quantisation ladder at Z directly.
 Usage:  python tools/capture/f16_config_sweep.py [--seconds 10] [--configs a,b,c] [--tag free]
 Output: evidence/oak_v4/f16/config_sweep_<tag>.txt  and  .json
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json

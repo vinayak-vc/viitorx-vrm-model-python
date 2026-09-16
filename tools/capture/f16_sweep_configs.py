@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """
 F-16 sections 8/9/10 - stereo CONFIGURATION sweep at one fixed distance, with the on-screen HUD.
 
@@ -16,6 +9,15 @@ guides them there once and then tells them to hold through each configuration.
 Usage:
   python tools/capture/f16_sweep_configs.py --distance 1.33 --seconds 12 --configs baseline,sub3,...
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -36,7 +38,7 @@ DEFAULT = "baseline,sub3,sub5,mono800,mono800_sub3,rgb800,sub3_rgb800,best"
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=r"..\..\..\SentisModel\rtmw3d-x.onnx")
+    ap.add_argument("--model", default=EV.DEFAULT_MODEL)
     ap.add_argument("--configs", default=DEFAULT)
     ap.add_argument("--seconds", type=float, default=12.0)
     ap.add_argument("--distance", type=float, default=1.33)

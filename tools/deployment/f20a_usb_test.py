@@ -6,6 +6,7 @@ sidecar, waits for the unplug, records what the sidecar process does when the de
 waits for the replug and restarts the sidecar. Phase names go into the same block file the Unity
 recorder polls.
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -19,7 +20,7 @@ import cv2, numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
-MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+MODEL = EV.DEFAULT_MODEL
 BLOCK = EV.oak_v4("f20a", "block.txt")
 OUT = EV.oak_v4("f20a", "usb_timeline.jsonl")
 LOG = EV.oak_v4("f20a", "log_usb")

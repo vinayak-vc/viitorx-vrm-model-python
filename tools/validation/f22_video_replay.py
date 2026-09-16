@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-22 offline replay + threshold-derivation harness — reuses f21_video_replay.py's video-input
 pattern (RTMW3D + M15 bbox loop, no OAK-D/depth needed) and composes F-21 ownership + F-22 pose
 validation in PRODUCTION'S OWN ORDER (brief SS20: "F-22 should validate the owned target, not select
@@ -26,6 +17,15 @@ Produces, per the brief's SS22/SS23:
 
     python tools/validation/f22_video_replay.py --video "path\to\video.webm"
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -40,7 +40,7 @@ import target_ownership as TO
 import pose_validation as PV
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 
 
 def _percentile(values, p):

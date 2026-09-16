@@ -18,6 +18,7 @@ slews from 0 to its target over ~1.3 s while the held source never changes.
 ApplyBone(hips, ...) runs after the arms are written in the same Apply() call, so if the arm solver's
 parent division were using a stale parent this is where it would show.
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""P1-1 deterministic unit tests for joint_tracker.
+
+Self-contained runner (no pytest dependency). Covers the 15 cases the P1-1 brief lists.
+    python test_joint_tracker.py
+"""
 
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
@@ -6,11 +11,7 @@ while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sid
     _d = _os.path.dirname(_d)
 _sys.path.insert(0, _d)
 import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
-"""P1-1 deterministic unit tests for joint_tracker.
 
-Self-contained runner (no pytest dependency). Covers the 15 cases the P1-1 brief lists.
-    python test_joint_tracker.py
-"""
 import math
 import sys
 

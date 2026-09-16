@@ -20,6 +20,7 @@ asserted. Phases:
 
     python f20a_failure_injection.py
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -38,7 +39,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
-MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+MODEL = EV.DEFAULT_MODEL
 BLOCK_FILE = EV.oak_v4("f20a", "block.txt")
 TIMELINE = EV.oak_v4("f20a", "timeline.jsonl")
 

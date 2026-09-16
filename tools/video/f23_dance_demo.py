@@ -16,6 +16,7 @@ this script cannot press Play.
 
     .venv\\Scripts\\python.exe f23_dance_demo.py --video ..\\..\\video\\video.webm
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

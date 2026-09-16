@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-19 section 8 - camera preflight, run against the REAL production pipeline.
 
 Why this owns the camera directly rather than parsing the sidecar log: section 8 asks for
@@ -25,6 +16,15 @@ way), so every instruction goes on a fullscreen HUD.
 
     python tools/capture/f19_preflight.py --seconds 12
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -151,7 +151,7 @@ def hud(frame, cue, colour, sub="", you_m=None, bar=None, extra=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=r"..\..\..\SentisModel\rtmw3d-x.onnx")
+    ap.add_argument("--model", default=EV.DEFAULT_MODEL)
     ap.add_argument("--seconds", type=float, default=12.0, help="square-stance hold to measure")
     ap.add_argument("--warmup", type=float, default=45.0, help="max positioning time before giving up")
     ap.add_argument("--dir", default="", help="force rotation direction; default = detect from the image")

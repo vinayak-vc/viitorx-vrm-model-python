@@ -36,6 +36,12 @@ dependencies = [
     "opencv-python==4.11.0.86",
 ]
 
+[project.optional-dependencies]
+# Not needed to run the sidecar. tools/armaim/analyze.py renders silhouette-comparison images with
+# Pillow; it is the only script in the tree with a dependency outside the runtime set, and it has
+# never been in requirements.lock.txt, so that harness has never run from a clean install.
+dev = ["Pillow>=10,<12"]
+
 [project.urls]
 Homepage = "https://github.com/vinayak-vc/viitorx-vrm-model-python"
 "Unity SDK" = "https://github.com/vinayak-vc/viitorx-vrm-avtar-unity"

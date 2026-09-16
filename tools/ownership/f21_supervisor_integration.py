@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-21 S31 / brief S15 - does the live protocol actually work UNDER F-20B supervision?
 
 Runs the real supervisor, which runs the real sidecar, against the real OAK-D, with an EMPTY ROOM.
@@ -30,6 +21,15 @@ What it does prove is the list the brief asks for, one check each:
 
     python f21_supervisor_integration.py
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import ctypes
 import io
 import json
@@ -44,7 +44,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
-MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+MODEL = EV.DEFAULT_MODEL
 EVID = EV.oak_v4("f21", "supervisor_integration")
 CUE = os.path.join(EVID, "cue.json")
 

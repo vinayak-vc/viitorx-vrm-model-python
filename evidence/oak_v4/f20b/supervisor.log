@@ -1,0 +1,30 @@
+[13:59:06] SUPERVISOR START pid=43152 lock_port=8897 evidence=D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\oak_v4_evidence\f20b
+[13:59:06] PORT CHECK SKIPPED (--allow-port-listener): a listener on 127.0.0.1:8899 is expected
+[13:59:06] SIDECAR CMD D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\.venv\Scripts\python.exe -u D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py --host 127.0.0.1 --port 8899 --model D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\SentisModel\rtmw3d-x.onnx --portrait --portrait-dir ccw --subpixel-bits 3 --seconds 0
+[13:59:06] SIDECAR START pid=27664 run=1
+[13:59:21] SIDECAR READY sid=c657c663159b pid=27664 elapsed=14.228s
+[13:59:26] SUPERVISOR START pid=44192 lock_port=8897 evidence=D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\oak_v4_evidence\f20b
+[13:59:26] PORT CHECK SKIPPED (--allow-port-listener): a listener on 127.0.0.1:8899 is expected
+[13:59:26] SIDECAR CMD D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\.venv\Scripts\python.exe -u D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py --host 127.0.0.1 --port 8899 --model D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\SentisModel\rtmw3d-x.onnx --portrait --portrait-dir ccw --subpixel-bits 3 --seconds 0
+[13:59:26] SIDECAR START pid=7084 run=1
+[13:59:39] SIDECAR READY sid=71f1d650d7d4 pid=7084 elapsed=12.962s
+[13:59:45] SUPERVISOR START pid=43072 lock_port=8897 evidence=D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\oak_v4_evidence\f20b
+[13:59:45] PORT CHECK SKIPPED (--allow-port-listener): a listener on 127.0.0.1:8899 is expected
+[13:59:45] SIDECAR CMD D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\.venv\Scripts\python.exe -u D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py --host 127.0.0.1 --port 8899 --model D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\SentisModel\rtmw3d-x.onnx --portrait --portrait-dir ccw --subpixel-bits 3 --seconds 0
+[13:59:45] SIDECAR START pid=2564 run=1
+[13:59:58] SIDECAR READY sid=e743e86ab64a pid=2564 elapsed=12.861s
+[14:32:30] SUPERVISOR START pid=42172 lock_port=8897 evidence=D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\evidence\oak_v4\f20b
+[14:32:30] PORT CHECK SKIPPED (--allow-port-listener): a listener on 127.0.0.1:8899 is expected
+[14:32:30] SIDECAR CMD D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\.venv\Scripts\python.exe -u D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py --host 127.0.0.1 --port 8899 --model D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\SentisModel\rtmw3d-x.onnx --portrait --portrait-dir ccw --subpixel-bits 3 --seconds 0
+[14:32:30] SIDECAR START pid=44856 run=1
+[14:32:43] SIDECAR READY sid=e9e09db3bcce pid=44856 elapsed=12.595s
+[14:32:48] SUPERVISOR START pid=31712 lock_port=8897 evidence=D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\evidence\oak_v4\f20b
+[14:32:48] PORT CHECK SKIPPED (--allow-port-listener): a listener on 127.0.0.1:8899 is expected
+[14:32:48] SIDECAR CMD D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\.venv\Scripts\python.exe -u D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py --host 127.0.0.1 --port 8899 --model D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\SentisModel\rtmw3d-x.onnx --portrait --portrait-dir ccw --subpixel-bits 3 --seconds 0
+[14:32:48] SIDECAR START pid=44224 run=1
+[14:32:55] SIDECAR READY sid=9fd54e3e2c1b pid=44224 elapsed=6.738s
+[14:33:00] SUPERVISOR START pid=39380 lock_port=8897 evidence=D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\evidence\oak_v4\f20b
+[14:33:00] PORT CHECK SKIPPED (--allow-port-listener): a listener on 127.0.0.1:8899 is expected
+[14:33:00] SIDECAR CMD D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\.venv\Scripts\python.exe -u D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py --host 127.0.0.1 --port 8899 --model D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\SentisModel\rtmw3d-x.onnx --portrait --portrait-dir ccw --subpixel-bits 3 --seconds 0
+[14:33:00] SIDECAR START pid=39656 run=1
+[14:33:07] SIDECAR READY sid=8599a6ee4167 pid=39656 elapsed=6.743s

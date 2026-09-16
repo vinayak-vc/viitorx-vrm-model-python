@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """P1-1 EVALUATION — replay + adversarial, against the REAL captured human motion.
 
 Source data: today's live OAK-D capture (recv_log.jsonl + blocks.json), which contains
@@ -27,6 +20,14 @@ Note: recv_log carries per-LIMB confidence (min over the limb's 3 joints), not p
 so each joint is fed its limb's confidence. Stated rather than hidden; it is the same
 signal the Unity gate sees.
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+
 import argparse
 import json
 import math

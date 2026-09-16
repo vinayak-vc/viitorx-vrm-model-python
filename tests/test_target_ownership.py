@@ -1,11 +1,4 @@
 #!/usr/bin/env python3
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-21 deterministic unit tests for target_ownership.py.
 
 Self-contained runner (no pytest dependency), matching test_joint_tracker.py's pattern. Covers as
@@ -16,6 +9,14 @@ docs/F21_SINGLE_PERSON_TARGET_OWNERSHIP_2026-09-14.md SS13/SS14.
 
     python test_target_ownership.py
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+
 import sys
 
 from target_ownership import (TargetOwnership, OwnershipConfig, Observation,

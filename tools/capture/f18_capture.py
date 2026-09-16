@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """
 F-18 portrait capture - framing envelope, torso measurement and interaction envelope.
 
@@ -22,6 +13,15 @@ Protocols:
 Per-frame JSONL carries the full COCO-17 keypoint set so body extents, margins and which part
 leaves frame can all be computed offline without another capture.
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -160,7 +160,7 @@ def open_out(name):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=r"..\..\..\SentisModel\rtmw3d-x.onnx")
+    ap.add_argument("--model", default=EV.DEFAULT_MODEL)
     ap.add_argument("--config", default="sub3", help="stereo config (F-16 names)")
     ap.add_argument("--protocol", default="frame", choices=["frame", "torso", "move", "probe"])
     ap.add_argument("--distances", default="0.70,0.75,0.78,0.80,0.85,0.90,1.00")

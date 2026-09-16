@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """
 F-16 self-driving distance sweep.
 
@@ -24,6 +15,15 @@ value, and the analysis reports measured range per block regardless.
 
 Self-terminating: per-target timeout, plus a global wall-clock cap.
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -122,7 +122,7 @@ def estimate_W(paths, fx640=FX640):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=r"..\..\..\SentisModel\rtmw3d-x.onnx")
+    ap.add_argument("--model", default=EV.DEFAULT_MODEL)
     ap.add_argument("--config", default="baseline")
     ap.add_argument("--targets", default="0.80,1.00,1.20,1.33,1.50,1.80,2.00")
     ap.add_argument("--seconds", type=float, default=12.0, help="record time per target")

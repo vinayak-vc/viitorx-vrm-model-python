@@ -12,6 +12,7 @@ state, hold the recorded frame on the real UDP wire, let it settle, then snapsho
     python tools/armaim/sweep_yaw.py                    # default scales, all five frames
     python tools/armaim/sweep_yaw.py 0.7 0.714 0.75     # extra scales
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

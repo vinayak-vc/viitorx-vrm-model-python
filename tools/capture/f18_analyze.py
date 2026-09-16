@@ -10,6 +10,7 @@ T-pose whose hands are really outside shows up as wrists at u=6 and u=393 of a 4
 in-frame test here therefore requires a keypoint to sit at least EDGE_PX from the border, and
 "at-edge" is counted and reported separately.
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

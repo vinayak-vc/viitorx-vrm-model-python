@@ -31,6 +31,7 @@ REV 3 (F-21 S31), both changes required before the next live session:
     python tools/ownership/f21_live_protocol.py                  # direct, as before
     python tools/ownership/f21_live_protocol.py --supervised     # under the F-20B watchdog
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -51,7 +52,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
 SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
-MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+MODEL = EV.DEFAULT_MODEL
 EVIDENCE = EV.oak_v4("f21", "live")
 TIMELINE = os.path.join(EVIDENCE, "timeline.jsonl")
 CUE_FILE = os.path.join(EVIDENCE, "cue.json")

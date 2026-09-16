@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """OFFLINE REPLAY SOAK - F-21 + F-22 running together over a long looped replay.
 
 LABEL, up front and not negotiable: this is an OFFLINE REPLAY SOAK. It is NOT equivalent to a
@@ -28,6 +19,15 @@ validator suppression rate, recovery behaviour, and processing throughput.
 
     python tools/validation/f2x_replay_soak.py --minutes 15
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import ctypes
 import ctypes.wintypes
@@ -47,7 +47,7 @@ import target_ownership as TO
 import wholebody_udp_sender as W
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 NOMINAL_HIP_Z = 2.0
 CONF_THR = 0.3
 FLATTEN_TRUNK = False

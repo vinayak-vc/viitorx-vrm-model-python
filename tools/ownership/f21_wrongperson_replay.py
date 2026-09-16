@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """F-21 S30 - WRONG_PERSON_FRAMES on real footage, through the whole production chain.
 
 This is the harness the S27 finding needed and did not have. Three things make it a different
@@ -34,6 +25,15 @@ evidence class from f21_multiperson_replay.py / f21_handoff_forensics.py:
 3. THE WHOLE CHAIN (brief S12). crop -> RTMW3D -> M15 refinement -> F-21 -> F-22 -> the real
    build_body_landmarks. What is counted is what Unity would actually have received.
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -50,7 +50,7 @@ import wholebody_udp_sender as W
 from f21_ground_truth import GroundTruth, classify, nearest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+DEFAULT_MODEL = EV.DEFAULT_MODEL
 CONF_THR = 0.3
 NOMINAL_HIP_Z = 2.0
 FX = FY = 800.0

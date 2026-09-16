@@ -7,6 +7,7 @@ depthai build actually exposes. Touches no production code and needs no subject 
 
 Output: evidence/oak_v4/f16/device_probe.txt
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

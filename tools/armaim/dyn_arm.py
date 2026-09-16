@@ -17,6 +17,7 @@ Reported KPI: world-frame source->skinned-bone arm direction error. If the arm s
 division is correct this stays at the static floor even while the torso slews; if it inherits a stale
 parent it will spike in proportion to torso angular velocity.
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

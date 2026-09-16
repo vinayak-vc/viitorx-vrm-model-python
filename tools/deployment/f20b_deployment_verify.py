@@ -25,6 +25,7 @@ that suite does NOT: the things between the supervisor and the MACHINE it has to
 
     python f20b_deployment_verify.py
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

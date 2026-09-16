@@ -1,0 +1,11 @@
+{
+  "SupervisorState": "RUNNING",
+  "SidecarPid": 39656,
+  "SidecarUptime": 6.7,
+  "RestartCount": 0,
+  "LastExitCode": null,
+  "LastFailureReason": "",
+  "BackoffSeconds": 0.0,
+  "SidecarReady": true,
+  "CurrentSessionId": "8599a6ee4167"
+}

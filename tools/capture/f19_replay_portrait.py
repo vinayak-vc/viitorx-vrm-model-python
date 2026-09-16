@@ -29,6 +29,7 @@ The wire payload is the production contract, byte-identical in shape to what
     python tools/capture/f19_replay_portrait.py --capture evidence/oak_v4/f18/f18_move_090.jsonl --block natural@090
     python tools/capture/f19_replay_portrait.py --capture ... --list
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):

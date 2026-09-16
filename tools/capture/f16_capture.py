@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-
-import evidence_paths as EV
-
-import os as _os, sys as _sys
-_d = _os.path.dirname(_os.path.abspath(__file__))
-while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
-    _d = _os.path.dirname(_d)
-_sys.path.insert(0, _d)
-import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
 """
 F-16 diagnostic capture core.
 
@@ -28,6 +19,15 @@ Per-frame JSONL record (all lengths in mm unless noted):
   yaw3D                      the SHIPPED Kalidokit y-channel, reproduced exactly
   latMs fps
 """
+
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -239,7 +239,7 @@ def open_out(name):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=r"..\..\..\SentisModel\rtmw3d-x.onnx")
+    ap.add_argument("--model", default=EV.DEFAULT_MODEL)
     ap.add_argument("--config", default="baseline")
     ap.add_argument("--blocks", required=True,
                     help="comma list label:seconds, e.g. d080:12,d100:12")

@@ -13,6 +13,7 @@ F-20A's live protocol didn't need.
     python tools/deployment/f20b_usb_test.py --mode live
     python tools/deployment/f20b_usb_test.py --mode absent    (unplug the OAK-D first, THEN run this)
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -34,7 +35,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
-MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
+MODEL = EV.DEFAULT_MODEL
 EVIDENCE_DIR = EV.oak_v4("f20b", "live")
 BLOCK_FILE = os.path.join(EVIDENCE_DIR, "block.txt")
 TIMELINE = os.path.join(EVIDENCE_DIR, "timeline.jsonl")

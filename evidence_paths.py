@@ -19,8 +19,8 @@ volume, and for tests that need an isolated directory.
 """
 import os
 
-__all__ = ["PROJECT_ROOT", "UNITY_PROJECT_ROOT", "EVIDENCE_ROOT", "evidence",
-           "oak_v4", "arm_v1", "arm_v2", "arm_v3", "ensure_dir"]
+__all__ = ["PROJECT_ROOT", "UNITY_PROJECT_ROOT", "ASSETS_ROOT", "DEFAULT_MODEL", "EVIDENCE_ROOT",
+           "evidence", "oak_v4", "arm_v1", "arm_v2", "arm_v3", "ensure_dir"]
 
 #: Repository root. This module deliberately lives there so the answer is a single dirname.
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +30,18 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 #: absolute path to a checkout that does not exist on any other machine - and, since the project
 #: moved from C: to D:, does not exist on this one either.
 UNITY_PROJECT_ROOT = os.path.dirname(PROJECT_ROOT)
+
+#: The Unity project's Assets/ folder - two levels above the game repository.
+ASSETS_ROOT = os.path.dirname(os.path.dirname(UNITY_PROJECT_ROOT))
+
+#: The RTMW3D pose model. Harnesses built this as `os.path.join(HERE, "..", "..", "..",
+#: "SentisModel", ...)` or as the literal `r"..\..\..\SentisModel\..."`, both of which encode a
+#: fixed depth. That was correct while every script sat at the repository root; after the ADR-065
+#: move it resolved two levels too shallow for anything under tools/ or tests/, to a SentisModel
+#: directory that does not exist. Same failure shape as the evidence paths below.
+#: Override with VIRTUAL_MIRROR_MODEL.
+DEFAULT_MODEL = os.environ.get("VIRTUAL_MIRROR_MODEL") or os.path.join(
+    ASSETS_ROOT, "SentisModel", "rtmw3d-x.onnx")
 
 #: Root of the capture tree. Override with VIRTUAL_MIRROR_EVIDENCE_DIR.
 EVIDENCE_ROOT = os.environ.get("VIRTUAL_MIRROR_EVIDENCE_DIR") or os.path.join(PROJECT_ROOT, "evidence")

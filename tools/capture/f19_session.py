@@ -13,6 +13,7 @@ able to see the avatar, which is the thing under test. Put it where it does not 
     python tools/capture/f19_session.py --protocol motion
     python tools/capture/f19_session.py --blocks "STAND STILL:15,RAISE ARMS:10"
 """
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
