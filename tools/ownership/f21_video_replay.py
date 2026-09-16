@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -47,7 +49,7 @@ def main():
     ap.add_argument("--switch-margin-ratio", type=float, default=0.25,
                     help="max plausible per-frame hip displacement, as a fraction of the frame "
                          "diagonal - NOT the production 0.35 m metric value, see module docstring")
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f21", "video_regression"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f21", "video_regression"))
     a = ap.parse_args()
 
     os.makedirs(a.out_dir, exist_ok=True)

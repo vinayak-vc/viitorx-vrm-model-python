@@ -35,7 +35,7 @@ echo ==================================================================
 echo  F-20B sidecar supervisor - production configuration
 echo   portrait ON, portrait-dir ccw, subpixel-bits 3, 127.0.0.1:8899
 echo  Model:  %MODEL%
-echo  Evidence: oak_v4_evidence\f20b\
+echo  Evidence: evidence\oak_v4\f20b\
 echo ==================================================================
 echo.
 

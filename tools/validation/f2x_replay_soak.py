@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -103,7 +105,7 @@ def main():
     # soaking the GATE needs. Both are run and reported separately - see F-21 report S30.13.
     ap.add_argument("--reset-per-clip", action="store_true",
                      help="rebuild the ownership machine at the start of every clip")
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "soak"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("soak"))
     a = ap.parse_args()
     os.makedirs(a.out_dir, exist_ok=True)
     videos = a.videos.split(",")

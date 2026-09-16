@@ -1,4 +1,4 @@
-# `oak_v4_evidence/` — what is here and what must not be deleted
+# `evidence/oak_v4/` — what is here and what must not be deleted
 
 Evidence backing the V4/V5 torso work and the F-09…F-12 investigations.
 Tracked in git: `*.txt`, `*.json`, `*.md` (the published evidence).

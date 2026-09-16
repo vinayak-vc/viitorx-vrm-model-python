@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -51,7 +53,7 @@ def main():
     import f21_live_protocol as LP
 
     io.open(STUB, "w", encoding="utf-8").write(STUB_SRC)
-    evidence = os.path.join(HERE, "oak_v4_evidence", "f21", "abort_test")
+    evidence = EV.oak_v4("f21", "abort_test")
     os.makedirs(evidence, exist_ok=True)
 
     # point the protocol at the stub and at its own evidence dir, and shorten the phases so the

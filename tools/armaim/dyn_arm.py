@@ -17,6 +17,14 @@ Reported KPI: world-frame source->skinned-bone arm direction error. If the arm s
 division is correct this stays at the static floor even while the torso slews; if it inherits a stale
 parent it will spike in proportion to torso angular velocity.
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import json
 import math
 import os
@@ -31,7 +39,7 @@ sys.path.insert(0, HERE)
 import ubridge
 
 DUMP = os.path.join(HERE, "wire_p0.jsonl")
-OUT = r"C:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\arm_v3_evidence"
+OUT = EV.arm_v3()
 PORT = 8899
 BODY = open(os.path.join(HERE, "dyn_light.cs.txt"), encoding="utf-8").read()
 

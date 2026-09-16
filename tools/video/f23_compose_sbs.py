@@ -12,7 +12,7 @@ the stereo sensor path was demonstrated. It was not: the avatar here is driven f
 monocular root-relative z, because a webm has one camera.
 
     .venv\\Scripts\\python.exe f23_compose_sbs.py --source ..\\..\\video\\video.webm \\
-        --capture oak_v4_evidence/f23/unity_XXXX.mkv --lead 4.08
+        --capture evidence/oak_v4/f23/unity_XXXX.mkv --lead 4.08
 """
 import argparse
 import os

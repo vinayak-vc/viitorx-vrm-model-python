@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -67,7 +69,7 @@ def main():
                     help="production-equivalent: 0.35 m at ~2 m through a ~800 px focal length")
     ap.add_argument("--shift-window", type=int, default=30,
                     help="frames over which a sustained hip translation is measured")
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f21", "handoff"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f21", "handoff"))
     a = ap.parse_args()
     os.makedirs(a.out_dir, exist_ok=True)
 

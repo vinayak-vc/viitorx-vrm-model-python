@@ -26,9 +26,17 @@ WHAT IS REAL HERE AND WHAT IS NOT — read this before trusting any number downs
 The wire payload is the production contract, byte-identical in shape to what
 `wholebody_udp_sender` emits: {"lm": [[x,y,z,vis] x33], "xyz": [...], "src": [...], "seq", "t"}.
 
-    python f19_replay_portrait.py --capture oak_v4_evidence/f18/f18_move_090.jsonl --block natural@090
+    python f19_replay_portrait.py --capture evidence/oak_v4/f18/f18_move_090.jsonl --block natural@090
     python f19_replay_portrait.py --capture ... --list
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import json
 import math
@@ -112,7 +120,7 @@ def build_payload(meta, r, conf_thr):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--capture", default=os.path.join("oak_v4_evidence", "f18", "f18_move_090.jsonl"))
+    ap.add_argument("--capture", default=EV.oak_v4("f18", "f18_move_090.jsonl"))
     ap.add_argument("--block", default="", help="only this capture block (see --list)")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8899)

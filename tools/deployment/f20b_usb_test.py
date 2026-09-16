@@ -13,6 +13,14 @@ F-20A's live protocol didn't need.
     python f20b_usb_test.py --mode live
     python f20b_usb_test.py --mode absent    (unplug the OAK-D first, THEN run this)
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -27,7 +35,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
 MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
-EVIDENCE_DIR = os.path.join(HERE, "oak_v4_evidence", "f20b", "live")
+EVIDENCE_DIR = EV.oak_v4("f20b", "live")
 BLOCK_FILE = os.path.join(EVIDENCE_DIR, "block.txt")
 TIMELINE = os.path.join(EVIDENCE_DIR, "timeline.jsonl")
 STATE_FILE = os.path.join(EVIDENCE_DIR, "supervisor_state.json")

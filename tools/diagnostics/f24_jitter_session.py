@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -39,7 +41,7 @@ import time
 import f21_live_protocol as LP
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-EVIDENCE = os.path.join(HERE, "oak_v4_evidence", "f24")
+EVIDENCE = EV.oak_v4("f24")
 CUE_FILE = os.path.join(EVIDENCE, "cue.json")
 WIRE = os.path.join(EVIDENCE, "wire.jsonl")
 

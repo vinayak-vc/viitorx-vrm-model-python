@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -11,7 +13,7 @@ F-16 analysis - turns f16_capture JSONL into the per-block metric tables the bri
 (sections 4, 6, 7, 11, 12). Offline only; reads nothing from production.
 
 Usage:
-    python f16_analyze.py oak_v4_evidence/f16/cap_*.jsonl --out <name> [--sq-blocks d080,d100]
+    python f16_analyze.py evidence/oak_v4/f16/cap_*.jsonl --out <name> [--sq-blocks d080,d100]
 """
 import argparse
 import glob
@@ -24,7 +26,7 @@ import numpy as np
 
 import f16_configs as C
 
-OUTDIR = os.path.join("oak_v4_evidence", "f16")
+OUTDIR = EV.oak_v4("f16")
 CONF_MIN = 0.30
 
 # Section 12 proposed engineering thresholds for a genuinely square subject.

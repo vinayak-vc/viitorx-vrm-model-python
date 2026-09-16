@@ -10,6 +10,14 @@ T-pose whose hands are really outside shows up as wrists at u=6 and u=393 of a 4
 in-frame test here therefore requires a keypoint to sit at least EDGE_PX from the border, and
 "at-edge" is counted and reported separately.
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import glob
 import io
@@ -19,7 +27,7 @@ import os
 
 import numpy as np
 
-OUTDIR = os.path.join("oak_v4_evidence", "f18")
+OUTDIR = EV.oak_v4("f18")
 CONF = 0.30
 EDGE_PX = 10          # closer than this to a border = clamped, not "in frame"
 SAFE_FRAC = 0.05      # margin needed to call a pose full-body-SAFE
@@ -168,9 +176,9 @@ def main():
     ap.add_argument("--out", default="analysis")
     a = ap.parse_args()
 
-    meta_f, frame_rows = load(sorted(glob.glob("oak_v4_evidence/f18/f18_frame_sweep*.jsonl")))
-    meta_t, torso_rows = load(sorted(glob.glob("oak_v4_evidence/f18/f18_torso_*.jsonl")))
-    meta_m, move_rows = load(sorted(glob.glob("oak_v4_evidence/f18/f18_move_*.jsonl")))
+    meta_f, frame_rows = load(sorted(glob.glob(EV.oak_v4("f18/f18_frame_sweep*.jsonl"))))
+    meta_t, torso_rows = load(sorted(glob.glob(EV.oak_v4("f18/f18_torso_*.jsonl"))))
+    meta_m, move_rows = load(sorted(glob.glob(EV.oak_v4("f18/f18_move_*.jsonl"))))
     meta = meta_f or meta_t
     w, h = meta["portrait_w"], meta["portrait_h"]
 
@@ -309,7 +317,7 @@ def main():
     say("-" * 116)
     say("Landscape reference: F-16 autosweep_sub3 (same sub-pixel 1/8 config, same subject).")
     land = {}
-    for x in io.open("oak_v4_evidence/f16/autosweep_sub3.jsonl", encoding="utf-8"):
+    for x in io.open(EV.oak_v4("f16/autosweep_sub3.jsonl"), encoding="utf-8"):
         if not x.strip():
             continue
         r = json.loads(x)

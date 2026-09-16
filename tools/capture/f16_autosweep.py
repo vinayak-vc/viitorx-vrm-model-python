@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -127,7 +129,7 @@ def main():
     ap.add_argument("--tol", type=float, default=0.06, help="+-m tolerance to accept a position")
     ap.add_argument("--hold", type=float, default=1.2, help="s inside tolerance before recording")
     ap.add_argument("--width", type=float, default=0.0, help="subject shoulder separation mm (0=auto)")
-    ap.add_argument("--calib", default="oak_v4_evidence/f16/dist_baseline.jsonl")
+    ap.add_argument("--calib", default=EV.oak_v4("f16/dist_baseline.jsonl"))
     ap.add_argument("--target-timeout", type=float, default=75.0)
     ap.add_argument("--global-timeout", type=float, default=900.0)
     ap.add_argument("--name", default="")

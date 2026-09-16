@@ -9,8 +9,16 @@ each shoulder, so the matcher can bias one edge foreground and the other backgro
 If that is the mechanism, then on each frame the shoulder reading FARTHER should show the wider /
 more contaminated depth window. Tested on data already captured -- no extra subject time.
 
-Output: oak_v4_evidence/f16/edge_check.txt
+Output: evidence/oak_v4/f16/edge_check.txt
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import glob
 import io
 import json
@@ -20,7 +28,7 @@ import numpy as np
 
 import f16_configs as C
 
-OUT = os.path.join("oak_v4_evidence", "f16", "edge_check.txt")
+OUT = EV.oak_v4("f16", "edge_check.txt")
 CONF = 0.30
 out = []
 
@@ -42,9 +50,9 @@ say("=" * 100)
 say("Hypothesis: the shoulder that reads FARTHER does so because its 5x5 depth window straddles")
 say("the body/background edge. If true, the farther window is the wider / lower-quality one.")
 
-for name, pat in (("sub-pixel distance sweep", "oak_v4_evidence/f16/autosweep_sub3.jsonl"),
-                  ("config sweep 1.33 m", "oak_v4_evidence/f16/cfgsweep_133.jsonl"),
-                  ("pose protocol 1.33 m", "oak_v4_evidence/f16/pose_sub3_133.jsonl")):
+for name, pat in (("sub-pixel distance sweep", EV.oak_v4("f16/autosweep_sub3.jsonl")),
+                  ("config sweep 1.33 m", EV.oak_v4("f16/cfgsweep_133.jsonl")),
+                  ("pose protocol 1.33 m", EV.oak_v4("f16/pose_sub3_133.jsonl"))):
     rows = load(pat)
     if not rows:
         continue
@@ -103,7 +111,7 @@ say()
 say("=" * 100)
 say("WHICH ANATOMICAL SIDE READS FARTHER, AND DOES IT TRACK THE IMAGE SIDE?")
 say("=" * 100)
-rows = load("oak_v4_evidence/f16/pose_sub3_133.jsonl")
+rows = load(EV.oak_v4("f16/pose_sub3_133.jsonl"))
 by = {}
 for r in rows:
     by.setdefault(r["block"], []).append(r)

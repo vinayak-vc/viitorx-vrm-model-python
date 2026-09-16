@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -43,7 +45,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
 MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
-EVID = os.path.join(HERE, "oak_v4_evidence", "f21", "supervisor_integration")
+EVID = EV.oak_v4("f21", "supervisor_integration")
 CUE = os.path.join(EVID, "cue.json")
 
 from f20b_deployment_verify import producer_pids            # noqa: E402  (path-dependent import)
@@ -160,7 +162,7 @@ def main():
         # and that the reader handles the empty file without raising instead of exploding on the
         # first live phase.
         LP._mode = "supervised"
-        LP.OWNERSHIP_LOG_DIR["supervised"] = os.path.join(HERE, "oak_v4_evidence", "f21")
+        LP.OWNERSHIP_LOG_DIR["supervised"] = EV.oak_v4("f21")
         own_log = os.path.join(LP.OWNERSHIP_LOG_DIR["supervised"], "target_events.jsonl")
         appeared = wait_for(lambda: os.path.isfile(own_log), 60)
         check("5a the sidecar writes its ownership log where the protocol looks for it",

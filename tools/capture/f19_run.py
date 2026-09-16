@@ -3,6 +3,14 @@
 
     python f19_run.py <label> <capture> [block] [loops]
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import os
 import subprocess
 import sys
@@ -12,7 +20,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import ubridge
 
-SIDE = r"C:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~"
+SIDE = EV.PROJECT_ROOT
 PY = os.path.join(SIDE, ".venv", "Scripts", "python.exe")
 
 STOP = '''

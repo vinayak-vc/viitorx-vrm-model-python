@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -22,7 +24,7 @@ Two numbers are reported per configuration:
   raw    - apparent yaw including the scene's own surface tilt (a constant per pair)
   detilt - apparent yaw after removing each PAIR's own median over the run, i.e. pure instability
 
-Output: oak_v4_evidence/f16/wall_probe_<tag>.txt / .json
+Output: evidence/oak_v4/f16/wall_probe_<tag>.txt / .json
 """
 import argparse
 import io
@@ -36,7 +38,7 @@ import depthai as dai
 
 import f16_configs as C
 
-OUTDIR = os.path.join("oak_v4_evidence", "f16")
+OUTDIR = EV.oak_v4("f16")
 FLAT_TOL_MM = 40      # a 5x5 neighbourhood flatter than this is one surface
 MIN_SPAN = 20
 MAX_SPAN = 220

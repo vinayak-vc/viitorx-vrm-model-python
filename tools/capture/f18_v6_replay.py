@@ -5,13 +5,21 @@ F-18 section 16 - V6 TorsoYawGuard in OBSERVATION MODE over the portrait yaw str
 The Unity Editor was not running, so the shipped C# could not be invoked directly as it was for
 V6's own validation. This is a line-by-line port of Runtime/Retargeting/TorsoYawGuard.cs, and it is
 VERIFIED rather than trusted: it is first replayed over the exact frames V6 published numbers for
-(oak_v4_evidence/f15/v6_replay_frames.csv) and the result is compared against the V6 report's
+(evidence/oak_v4/f15/v6_replay_frames.csv) and the result is compared against the V6 report's
 figures. If the port does not reproduce those, its portrait numbers are not reported.
 
 No threshold is modified. WrapGuardDeg = 150, ValidatedRangeDeg = 60, exactly as shipped.
 
-Output: oak_v4_evidence/f18/v6_observation.txt
+Output: evidence/oak_v4/f18/v6_observation.txt
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import io
 import math
 import os
@@ -19,7 +27,7 @@ import sys
 
 import numpy as np
 
-OUT = os.path.join("oak_v4_evidence", "f18", "v6_observation.txt")
+OUT = EV.oak_v4("f18", "v6_observation.txt")
 WRAP_DEG = 150.0
 RANGE_DEG = 60.0
 L = []
@@ -126,7 +134,7 @@ say()
 say("-" * 100)
 say("PORT VERIFICATION - replay the exact frames V6 published numbers for")
 say("-" * 100)
-ref = os.path.join("oak_v4_evidence", "f15", "v6_replay_frames.csv")
+ref = EV.oak_v4("f15", "v6_replay_frames.csv")
 verified = False
 if os.path.exists(ref):
     import csv
@@ -178,7 +186,7 @@ if not verified:
     say("  Port unverified - portrait figures withheld.")
 else:
     import csv
-    src = os.path.join("oak_v4_evidence", "f18", "v6_replay_input.csv")
+    src = EV.oak_v4("f18", "v6_replay_input.csv")
     rows = list(csv.DictReader(io.open(src, encoding="utf-8")))
     say()
     say("  %-22s %7s %8s %8s %9s %9s %9s %8s" %

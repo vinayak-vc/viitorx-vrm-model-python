@@ -12,6 +12,14 @@ state, hold the recorded frame on the real UDP wire, let it settle, then snapsho
     python sweep_yaw.py                    # default scales, all five frames
     python sweep_yaw.py 0.7 0.714 0.75     # extra scales
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import json
 import os
 import subprocess
@@ -22,8 +30,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import ubridge
 
-REPO = r"C:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity"
-EVID = os.path.join(REPO, "python-sidecar~", "arm_v3_evidence")
+REPO = EV.UNITY_PROJECT_ROOT
+EVID = os.path.join(REPO, "python-sidecar~", EV.arm_v3())
 DUMP = os.path.join(HERE, "wire_p0.jsonl")
 FRAMES = [24, 177, 273, 279, 359]          # f084 f237 f333 f339 f419
 SCALES = [0.0, 0.25, 0.5, 0.75, 1.0]

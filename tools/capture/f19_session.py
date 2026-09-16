@@ -13,6 +13,14 @@ able to see the avatar, which is the thing under test. Put it where it does not 
     python f19_session.py --protocol motion
     python f19_session.py --blocks "STAND STILL:15,RAISE ARMS:10"
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import os
@@ -27,7 +35,7 @@ WHITE = (255, 255, 255)
 GREEN = (90, 230, 90)
 AMBER = (0, 190, 255)
 GREY = (150, 150, 150)
-BLOCK_FILE = os.path.join("oak_v4_evidence", "f19", "block.txt")
+BLOCK_FILE = EV.oak_v4("f19", "block.txt")
 COUNTDOWN = 4.0
 
 # Section 10: the highest-value test - a physically square human must give a visually square avatar.

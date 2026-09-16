@@ -23,6 +23,8 @@ PoseSpaceConverter + poseFlipX/Y/Z tuning apply the same way. Run:
   cd python-sidecar~ && .venv\Scripts\python wholebody_udp_sender.py --model <rtmw3d-x.onnx> [--show]
 """
 
+import evidence_paths as EV
+
 import argparse
 import io          # F-21 S31.4: _read_cue() uses io.open and this was never imported - the bare
                    # `except Exception` around it turned a NameError into a silent None on EVERY
@@ -336,7 +338,7 @@ def main():
                         help="seconds a temporarily-lost owner can still fast-reacquire")
     parser.add_argument("--ownership-release-timeout", type=float, default=4.0,
                         help="seconds of no matching observation before RELEASED")
-    parser.add_argument("--ownership-log-dir", default="oak_v4_evidence/f21",
+    parser.add_argument("--ownership-log-dir", default=EV.oak_v4("f21"),
                         help="target_events.jsonl written here; empty = no file (console log only)")
     # ---- F-22 HUMAN POSE VALIDATION ----------------------------------------------------------
     # Default ON: F-19 found an anatomically-impossible elbow travelling the full path un-gated
@@ -345,7 +347,7 @@ def main():
     # pose_validation.py's own module docstring + docs/F22_HUMAN_POSE_VALIDATION_*.md - none is a
     # visual guess.
     parser.add_argument("--pose-validation", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--pose-validation-log-dir", default="oak_v4_evidence/f22",
+    parser.add_argument("--pose-validation-log-dir", default=EV.oak_v4("f22"),
                         help="pose_events.jsonl written here; empty = no file (console log only)")
     parser.add_argument("--cue-file", default="",
                         help="live-protocol phase cue (JSON: title/instruction/seconds_left), drawn "

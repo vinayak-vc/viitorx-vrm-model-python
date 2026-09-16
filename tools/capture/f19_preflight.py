@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -46,7 +48,7 @@ WHITE = (255, 255, 255)
 GREEN = (90, 230, 90)
 AMBER = (0, 190, 255)
 GREY = (150, 150, 150)
-OUT_DIR = os.path.join("oak_v4_evidence", "f19")
+OUT_DIR = EV.oak_v4("f19")
 # F-16 measured this subject's shoulder-KEYPOINT separation; used only for the fallback range cue.
 W_SHOULDER_MM = 333.1
 TARGET_M = 0.90                      # F-18's preferred working distance

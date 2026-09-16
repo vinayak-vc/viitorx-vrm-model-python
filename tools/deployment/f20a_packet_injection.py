@@ -10,6 +10,14 @@ be segmented the same way the failure-injection run is.
 
     python f20a_packet_injection.py --port 8899
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -19,8 +27,8 @@ import time
 import uuid
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BLOCK_FILE = os.path.join(HERE, "oak_v4_evidence", "f20a", "block.txt")
-OUT = os.path.join(HERE, "oak_v4_evidence", "f20a", "injection_sent.json")
+BLOCK_FILE = EV.oak_v4("f20a", "block.txt")
+OUT = EV.oak_v4("f20a", "injection_sent.json")
 
 
 def landmarks(phase):

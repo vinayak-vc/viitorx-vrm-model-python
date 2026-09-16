@@ -63,7 +63,7 @@ because it is the kind of error that quietly inflates a safety number: a dancer'
 sit inside the torso band, and skin sits at hue ~10-20 in OpenCV's space - right on top of the orange
 striped shirt that identifies the OTHER person. On 123.webm f108-f113 the median flipped to the man's
 window while the woman was demonstrably alone in the room (verified by eye - the frame is
-oak_v4_evidence/f21/wrongperson/frames/123_PATH_ON_f00111.png, she is in her green t-shirt and the
+evidence/oak_v4/f21/wrongperson/frames/123_PATH_ON_f00111.png, she is in her green t-shirt and the
 pipeline is correctly locked on her), and those six frames were being counted as WRONG-PERSON
 EMISSIONS by the pipeline. They were nothing of the sort; the instrument was broken.
 

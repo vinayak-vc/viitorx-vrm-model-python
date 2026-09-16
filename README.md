@@ -114,15 +114,38 @@ player needs — see `Editor/SidecarBuildPostprocessor.cs`.
 ├── requirements.txt            # human-readable intent
 │
 ├── docs/                       # sidecar-local notes + p0_human_report.txt
-├── oak_v4_evidence/            # tracked analysis summaries. The raw captures are git-ignored and
-│                               #   regenerable; script defaults hardcode this path, so it stays put.
-├── arm_v1_evidence/            # ARM V1/V2/V3 measurement records (data only - the scripts that
-├── arm_v2_evidence/            #   produced them now live in tools/armaim/)
-├── arm_v3_evidence/
+│
+├── evidence/                   # ALL capture output, under one root. Resolve it with
+│   ├── oak_v4/                 #   evidence_paths, never by hand - see below.
+│   ├── arm_v1/                 # Tracked: the distilled .txt/.json analyses the reports cite.
+│   ├── arm_v2/                 # Git-ignored: the per-frame captures, which are regenerable.
+│   └── arm_v3/
+│
+├── evidence_paths.py           # the ONLY place that knows where evidence lives
 │
 └── depthai_blazepose/          # vendored geaxgx/depthai_blazepose (MIT), Phase-1 fallback.
                                 # Superseded and NOT imported by the production path.
 ```
+
+### Evidence paths
+
+Every capture path resolves through `evidence_paths`, never through a literal:
+
+```python
+import evidence_paths as EV
+EV.oak_v4("f21")            # <root>/evidence/oak_v4/f21
+EV.evidence("oak_v4/f21")   # same thing; embedded separators are fine
+EV.ensure_dir(EV.oak_v4("f21"))
+```
+
+It resolves from the module's own location, so the answer does not depend on the caller's working
+directory or on how deep the calling script sits. Both had already caused silent bugs: the ADR-065
+move broke thirteen harnesses that built paths from a per-file `HERE`, and seven others hardcoded an
+absolute `C:\Unity\...` path to a checkout that exists on no machine - including this one, since the
+project now lives on `D:`.
+
+Set `VIRTUAL_MIRROR_EVIDENCE_DIR` to redirect the whole tree, e.g. to keep captures off the repo
+volume.
 
 The root holds 18 files: the 12 production `.py` above plus `.gitignore`, `README.md`, `AGENTS.md`,
 `setup_sidecar.ps1` and the two requirements files — each of which belongs at a repository root by
@@ -141,7 +164,7 @@ walks up to `_sidecar_path.py` and puts the root — and every `tools/` group �
 only puts the *script's own* directory on the path, so without it a harness one level down cannot
 `import rtmw3d_pose`.
 
-Capture output (`pipeline_logs*/`, `oak_v4_evidence/`, `probe*/`, …) is **git-ignored** — regenerate
+Capture output (`pipeline_logs*/`, `evidence/oak_v4/`, `probe*/`, …) is **git-ignored** — regenerate
 on demand; the commands are in the F-report that used them.
 
 ---

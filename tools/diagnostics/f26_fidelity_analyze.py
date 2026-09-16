@@ -26,7 +26,7 @@ every bone DIRECTION and still put the hands in different places, because the av
 are its own. Direction error is what a rotation-driven rig can be held to. Endpoint error is a
 different measurement and is deliberately not conflated with this one.
 
-    .venv\\Scripts\\python.exe f26_fidelity_analyze.py --in oak_v4_evidence/f26/fidelity.jsonl
+    .venv\\Scripts\\python.exe f26_fidelity_analyze.py --in evidence/oak_v4/f26/fidelity.jsonl
     .venv\\Scripts\\python.exe f26_fidelity_analyze.py --selftest
 """
 import argparse

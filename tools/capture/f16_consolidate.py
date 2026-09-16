@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -16,7 +18,7 @@ Pulls every F-16 capture together and answers the three questions the brief actu
   2. If not, what IS it?  (fit a constant-disparity-error model, which predicts Z^2 growth)
   3. Is there a usable distance window, and is it compatible with full-body framing?
 
-Output: oak_v4_evidence/f16/consolidated.txt
+Output: evidence/oak_v4/f16/consolidated.txt
 """
 import glob
 import io
@@ -28,7 +30,7 @@ import numpy as np
 
 import f16_configs as C
 
-OUTDIR = os.path.join("oak_v4_evidence", "f16")
+OUTDIR = EV.oak_v4("f16")
 FX = 284.6272          # CAM_A @ 640x400
 FY = 284.4536
 FB = 21224.6           # f*B, mm*px, mono 400p
@@ -88,8 +90,8 @@ say()
 say("-" * 112)
 say("1. IS THE SQUARE-STANCE ERROR QUANTISATION?   (all configs, same subject, same stance)")
 say("-" * 112)
-for dist, pat in (("1.33 m", "oak_v4_evidence/f16/cfgsweep_133.jsonl"),
-                  ("0.80 m", "oak_v4_evidence/f16/cfgsweep_080.jsonl")):
+for dist, pat in (("1.33 m", EV.oak_v4("f16/cfgsweep_133.jsonl")),
+                  ("0.80 m", EV.oak_v4("f16/cfgsweep_080.jsonl"))):
     rows = load(pat)
     if not rows:
         continue
@@ -117,7 +119,7 @@ say()
 say("-" * 112)
 say("2. WHAT IS THE RESIDUAL?  constant-disparity-error model:  dz = Z^2 * dd / (f*B)")
 say("-" * 112)
-rows = load("oak_v4_evidence/f16/autosweep_sub3.jsonl")
+rows = load(EV.oak_v4("f16/autosweep_sub3.jsonl"))
 by = {}
 for r in rows:
     by.setdefault(r["block"], []).append(r)
@@ -147,9 +149,9 @@ say("  %-7s %7s %8s %9s %9s %9s %9s %9s %9s %8s" %
     ("target", "span", "step", "b:dz", "b:med", "b:p95", "s:step", "s:med", "s:p95", "verdict"))
 base = {}
 sub = {}
-for r in load("oak_v4_evidence/f16/autosweep_baseline_1.jsonl"):
+for r in load(EV.oak_v4("f16/autosweep_baseline_1.jsonl")):
     base.setdefault(r["block"], []).append(r)
-for r in load("oak_v4_evidence/f16/autosweep_sub3.jsonl"):
+for r in load(EV.oak_v4("f16/autosweep_sub3.jsonl")):
     sub.setdefault(r["block"], []).append(r)
 dist_rows = []
 for blk in sorted(set(base) | set(sub)):
@@ -189,7 +191,7 @@ say()
 say("-" * 112)
 say("5. SECTION 6 - ROTATION SET at 1.33 m, sub-pixel (commanded heading is NOT exact truth)")
 say("-" * 112)
-rows = load("oak_v4_evidence/f16/pose_sub3_133.jsonl")
+rows = load(EV.oak_v4("f16/pose_sub3_133.jsonl"))
 by = {}
 for r in rows:
     by.setdefault(r["block"], []).append(r)
@@ -218,13 +220,13 @@ reps = []
 for src, blk, lab in (("pose_sub3_133", "sq_a", "pose sq_a"),
                       ("pose_sub3_133", "sq_b", "pose sq_b"),
                       ("pose_sub3_133", "sq_c", "pose sq_c")):
-    rr = [r for r in load("oak_v4_evidence/f16/%s.jsonl" % src) if r["block"] == blk]
+    rr = [r for r in load(EV.oak_v4("f16/%s.jsonl") % src) if r["block"] == blk]
     if rr:
         reps.append((lab, stats(rr)))
-rr = [r for r in load("oak_v4_evidence/f16/cfgsweep_133.jsonl") if r["cfg"] == "sub3"]
+rr = [r for r in load(EV.oak_v4("f16/cfgsweep_133.jsonl")) if r["cfg"] == "sub3"]
 if rr:
     reps.append(("cfgsweep sub3", stats(rr)))
-rr = [r for r in load("oak_v4_evidence/f16/autosweep_sub3.jsonl") if r["block"] == "d133"]
+rr = [r for r in load(EV.oak_v4("f16/autosweep_sub3.jsonl")) if r["block"] == "d133"]
 if rr:
     reps.append(("autosweep d133", stats(rr)))
 say("  sub-pixel 1/8, 1.33 m, five independent standing attempts:")

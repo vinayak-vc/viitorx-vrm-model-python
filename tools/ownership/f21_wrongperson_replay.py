@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -313,7 +315,7 @@ def main():
                     help="label for a person-sized blob carrying no signature colour")
     ap.add_argument("--label-radius", type=float, default=0.06,
                     help="max hip->blob distance as a fraction of the frame diagonal")
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f21", "wrongperson"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f21", "wrongperson"))
     ap.add_argument("--dump", action="store_true", help="write annotated evidence frames")
     a = ap.parse_args()
 

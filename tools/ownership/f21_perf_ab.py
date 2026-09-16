@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -75,12 +77,12 @@ def bench(stream, path_consistency, reps):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--rows", default=os.path.join("oak_v4_evidence", "f21", "wrongperson",
+    ap.add_argument("--rows", default=EV.oak_v4("f21", "wrongperson",
                                                    "123_PATH_ON_rows.jsonl"))
     ap.add_argument("--width", type=int, default=1080)
     ap.add_argument("--height", type=int, default=1920)
     ap.add_argument("--reps", type=int, default=200)
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f21", "perf"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f21", "perf"))
     a = ap.parse_args()
     os.makedirs(a.out_dir, exist_ok=True)
 

@@ -4,7 +4,7 @@
 Writes a small text summary beside the capture so the report's numbers stay reproducible after the
 large per-frame telemetry is pruned.
 
-    python f20a_analyze.py oak_v4_evidence/f20a/bones_f20a.jsonl
+    python f20a_analyze.py evidence/oak_v4/f20a/bones_f20a.jsonl
 """
 import collections, io, json, math, os, sys
 

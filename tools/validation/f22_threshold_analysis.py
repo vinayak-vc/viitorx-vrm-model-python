@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -198,8 +200,8 @@ def main():
                                                  ("video.webm", "123.webm", "456.webm")))
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--adversarial-summary",
-                    default=os.path.join("oak_v4_evidence", "f22", "adversarial", "summary.json"))
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f22", "thresholds"))
+                    default=EV.oak_v4("f22", "adversarial", "summary.json"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f22", "thresholds"))
     a = ap.parse_args()
     os.makedirs(a.out_dir, exist_ok=True)
 

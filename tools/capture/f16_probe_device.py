@@ -5,8 +5,16 @@ F-16 step 1 - device / calibration probe.
 Reads the OAK-D calibration and enumerates the stereo configuration options that the INSTALLED
 depthai build actually exposes. Touches no production code and needs no subject in frame.
 
-Output: oak_v4_evidence/f16/device_probe.txt
+Output: evidence/oak_v4/f16/device_probe.txt
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import io
 import os
 import sys
@@ -15,7 +23,7 @@ import traceback
 import numpy as np
 import depthai as dai
 
-OUT = os.path.join("oak_v4_evidence", "f16", "device_probe.txt")
+OUT = EV.oak_v4("f16", "device_probe.txt")
 L = []
 
 

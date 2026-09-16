@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -16,7 +18,7 @@ This isolates the sensor question from the pose question: whatever the room cont
 range Z expose the quantisation ladder at Z directly.
 
 Usage:  python f16_config_sweep.py [--seconds 10] [--configs a,b,c] [--tag free]
-Output: oak_v4_evidence/f16/config_sweep_<tag>.txt  and  .json
+Output: evidence/oak_v4/f16/config_sweep_<tag>.txt  and  .json
 """
 import argparse
 import io
@@ -32,7 +34,7 @@ import f16_configs as C
 
 BANDS = [(700, 900), (900, 1100), (1100, 1300), (1250, 1400),
          (1400, 1600), (1700, 1900), (1900, 2100), (2300, 2700)]
-OUTDIR = os.path.join("oak_v4_evidence", "f16")
+OUTDIR = EV.oak_v4("f16")
 
 
 def unique_step_stats(vals):

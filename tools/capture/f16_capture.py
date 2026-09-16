@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -45,7 +47,7 @@ import rtmw3d_pose as R
 import oak_depth as D
 import f16_configs as C
 
-OUTDIR = os.path.join("oak_v4_evidence", "f16")
+OUTDIR = EV.oak_v4("f16")
 
 
 def beep(freq=880, ms=150):

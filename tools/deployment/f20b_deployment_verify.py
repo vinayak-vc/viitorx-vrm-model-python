@@ -25,6 +25,14 @@ that suite does NOT: the things between the supervisor and the MACHINE it has to
 
     python f20b_deployment_verify.py
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -216,13 +224,13 @@ def t2_logon_registration():
 # ------------------------------------------------------------------------------------------- 3
 def t3_duplicate_supervisor_guard():
     print("\n-- 3  duplicate-supervisor guard (two supervisors, one lock port)")
-    ev = os.path.join(HERE, "oak_v4_evidence", "f20b", "deploy_dup")
+    ev = EV.oak_v4("f20b", "deploy_dup")
     p1 = start_sup(ev, ["--script", FAKE, "--lock-port", "8907", "--port", "8985",
                         "--heartbeat-timeout", "0"])
     st = wait_for(ev, lambda s: s.get("SidecarReady"), 30)
     check("3 the first supervisor starts and reports a ready sidecar", st is not None,
           str(st and st.get("SupervisorState")))
-    p2 = start_sup(os.path.join(HERE, "oak_v4_evidence", "f20b", "deploy_dup2"),
+    p2 = start_sup(EV.oak_v4("f20b", "deploy_dup2"),
                    ["--script", FAKE, "--lock-port", "8907", "--port", "8985",
                     "--heartbeat-timeout", "0"])
     out = b""
@@ -245,7 +253,7 @@ def t3_duplicate_supervisor_guard():
 # ------------------------------------------------------------------------------------------- 4
 def t4_diagnostics_after_logon():
     print("\n-- 4  operator diagnostics are complete and FRESH after a restart")
-    ev = os.path.join(HERE, "oak_v4_evidence", "f20b", "deploy_diag")
+    ev = EV.oak_v4("f20b", "deploy_diag")
     shutil.rmtree(ev, ignore_errors=True)
     os.makedirs(ev, exist_ok=True)
     stale = dict(SupervisorState="FROM_A_PREVIOUS_BOOT", SidecarPid=999999, SidecarUptime=99999.0,
@@ -278,7 +286,7 @@ def t4_diagnostics_after_logon():
 # ------------------------------------------------------------------------------------------- 5
 def t5_no_duplicate_sidecars():
     print("\n-- 5  no duplicate producers across a kill/restart cycle")
-    ev = os.path.join(HERE, "oak_v4_evidence", "f20b", "deploy_nodup")
+    ev = EV.oak_v4("f20b", "deploy_nodup")
     p = start_sup(ev, ["--script", FAKE, "--lock-port", "8909", "--port", "8987",
                        "--heartbeat-timeout", "0"])
     st = wait_for(ev, lambda s: s.get("SidecarReady"), 30)
@@ -334,7 +342,7 @@ def t6_f20a_reconnect_session_ids():
                      True, "free" if free else "in use, probably by a running Unity"))
     print("      UDP 8899 is currently %s" % ("free" if free else
                                               "in use (Unity is likely listening - expected)"))
-    with io.open(os.path.join(HERE, "oak_v4_evidence", "f20b", "deploy_session_ids.json"),
+    with io.open(EV.oak_v4("f20b", "deploy_session_ids.json"),
                  "w", encoding="utf-8") as f:
         json.dump(dict(session_ids=sids, udp_8899_free=free), f, indent=2)
     return sids
@@ -342,9 +350,9 @@ def t6_f20a_reconnect_session_ids():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out-dir", default=os.path.join(HERE, "oak_v4_evidence", "f20b"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f20b"))
     ap.parse_args()
-    os.makedirs(os.path.join(HERE, "oak_v4_evidence", "f20b"), exist_ok=True)
+    os.makedirs(EV.oak_v4("f20b"), exist_ok=True)
 
     print("=" * 96)
     print(" F-20A/F-20B deployment hardening verification")
@@ -366,7 +374,7 @@ def main():
             if not ok:
                 print("  %s  %s" % (name, detail))
     print("=" * 96)
-    with io.open(os.path.join(HERE, "oak_v4_evidence", "f20b", "deployment_verify.json"),
+    with io.open(EV.oak_v4("f20b", "deployment_verify.json"),
                  "w", encoding="utf-8") as f:
         json.dump(dict(checks=[dict(name=a, passed=b, detail=c) for a, b, c in _results],
                        passed=p, total=n, session_ids=sids), f, indent=2)

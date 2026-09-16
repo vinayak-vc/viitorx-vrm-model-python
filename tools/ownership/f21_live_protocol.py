@@ -31,6 +31,14 @@ REV 3 (F-21 S31), both changes required before the next live session:
     python f21_live_protocol.py                  # direct, as before
     python f21_live_protocol.py --supervised     # under the F-20B watchdog
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -44,7 +52,7 @@ PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
 SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
 MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
-EVIDENCE = os.path.join(HERE, "oak_v4_evidence", "f21", "live")
+EVIDENCE = EV.oak_v4("f21", "live")
 TIMELINE = os.path.join(EVIDENCE, "timeline.jsonl")
 CUE_FILE = os.path.join(EVIDENCE, "cue.json")
 SUP_EVIDENCE = os.path.join(EVIDENCE, "supervisor")
@@ -110,9 +118,9 @@ def write_cue(title, instruction, seconds_left):
 
 # Where the SIDECAR writes its ownership log in each mode. Direct mode passes --ownership-log-dir
 # explicitly; supervised mode does not (the supervisor forwards only --show/--cue-file, deliberately
-# - see its build_command), so the sidecar uses its own argparse default of oak_v4_evidence/f21
+# - see its build_command), so the sidecar uses its own argparse default of evidence/oak_v4/f21
 # relative to its cwd, which the supervisor sets to HERE.
-OWNERSHIP_LOG_DIR = {"direct": EVIDENCE, "supervised": os.path.join(HERE, "oak_v4_evidence", "f21")}
+OWNERSHIP_LOG_DIR = {"direct": EVIDENCE, "supervised": EV.oak_v4("f21")}
 _mode = "direct"
 
 

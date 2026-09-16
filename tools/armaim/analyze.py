@@ -16,6 +16,14 @@ is verified against Unity's own Camera.WorldToScreenPoint to 0.003 px):
 
 Writes screen_error.json and *_overlay.png next to the captures.
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import json
 import math
 import os
@@ -23,7 +31,7 @@ import sys
 
 from PIL import Image, ImageDraw
 
-EVID = r"C:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\arm_v3_evidence"
+EVID = EV.arm_v3()
 WHITE, RED, CYAN, MAGENTA, GREEN, YELLOW = (255, 255, 255), (255, 70, 70), (0, 235, 235), (255, 0, 255), (80, 255, 80), (255, 210, 0)
 
 

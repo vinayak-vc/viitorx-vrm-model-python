@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -74,7 +76,7 @@ if "depthai" not in sys.modules:
 import oak_depth as D
 import f16_capture as CAP    # for line_yaw_deg: the SHIPPED Kalidokit y-channel, verbatim
 
-EVID = os.path.join("oak_v4_evidence", "f18")
+EVID = EV.oak_v4("f18")
 CAPS = ["f18_move_090.jsonl", "f18_torso_near.jsonl", "f18_torso_far.jsonl", "f18_frame_sweep.jsonl"]
 LSH, RSH = 5, 6          # COCO-17 left/right shoulder, as F-18 used
 LHIP, RHIP = 11, 12

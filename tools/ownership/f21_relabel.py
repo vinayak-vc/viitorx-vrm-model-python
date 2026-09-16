@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -35,7 +37,7 @@ ARMS = ["OWNERSHIP_OFF", "PATH_OFF", "PATH_ON", "PATH_ON_NO_F22"]
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--video", required=True)
-    ap.add_argument("--dir", default=os.path.join("oak_v4_evidence", "f21", "wrongperson"))
+    ap.add_argument("--dir", default=EV.oak_v4("f21", "wrongperson"))
     ap.add_argument("--labels", default="W=55:90:0.15")
     ap.add_argument("--default-label", default="M")
     ap.add_argument("--label-radius", type=float, default=0.06)

@@ -29,6 +29,14 @@ Height is the one item the device cannot supply; it is passed in with --height-m
 
     python f19_level.py --height-m 0.80
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -48,7 +56,7 @@ GREEN = (90, 230, 90)
 AMBER = (0, 190, 255)
 RED = (60, 60, 255)
 GREY = (150, 150, 150)
-OUT = os.path.join("oak_v4_evidence", "f19", "mount.json")
+OUT = EV.oak_v4("f19", "mount.json")
 TILT_TOL_DEG = 2.0
 ROLL_TOL_DEG = 3.0
 # Measured, image-anchored (see the module docstring). Not a guess and not from calibration.

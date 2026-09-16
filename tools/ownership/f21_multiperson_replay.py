@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -184,7 +186,7 @@ def main():
     # margin cannot answer.
     ap.add_argument("--margins", default="0.064,0.10,0.25",
                     help="comma-separated ownership margins as a fraction of the frame diagonal")
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f21", "multiperson"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f21", "multiperson"))
     a = ap.parse_args()
     os.makedirs(a.out_dir, exist_ok=True)
     margins = [float(x) for x in a.margins.split(",")]

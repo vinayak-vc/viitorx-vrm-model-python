@@ -20,6 +20,14 @@ asserted. Phases:
 
     python f20a_failure_injection.py
 """
+import os as _os, sys as _sys
+_d = _os.path.dirname(_os.path.abspath(__file__))
+while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
+    _d = _os.path.dirname(_d)
+_sys.path.insert(0, _d)
+import _sidecar_path  # noqa: F401  - puts the sidecar root and every tools/ group on sys.path
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -31,8 +39,8 @@ import time
 HERE = os.path.dirname(os.path.abspath(__file__))
 PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
-BLOCK_FILE = os.path.join(HERE, "oak_v4_evidence", "f20a", "block.txt")
-TIMELINE = os.path.join(HERE, "oak_v4_evidence", "f20a", "timeline.jsonl")
+BLOCK_FILE = EV.oak_v4("f20a", "block.txt")
+TIMELINE = EV.oak_v4("f20a", "timeline.jsonl")
 
 events = []
 
@@ -98,8 +106,8 @@ def main():
     try:
         # ---- phase 1: healthy -----------------------------------------------------------------
         label("STARTING")
-        proc, out = start_sidecar(os.path.join("oak_v4_evidence", "f20a", "log_run1"))
-        sid1 = wait_until_sending(os.path.join("oak_v4_evidence", "f20a", "log_run1"))
+        proc, out = start_sidecar(EV.oak_v4("f20a", "log_run1"))
+        sid1 = wait_until_sending(EV.oak_v4("f20a", "log_run1"))
         hold(a.baseline, "LIVE_BASELINE")
 
         # ---- phase 2: FORCED kill (§12 forced termination) --------------------------------------
@@ -112,8 +120,8 @@ def main():
 
         # ---- phase 3: restart -> new session, seq back to 1 -------------------------------------
         label("RESTART_1")
-        proc, out = start_sidecar(os.path.join("oak_v4_evidence", "f20a", "log_run2"))
-        sid2 = wait_until_sending(os.path.join("oak_v4_evidence", "f20a", "log_run2"))
+        proc, out = start_sidecar(EV.oak_v4("f20a", "log_run2"))
+        sid2 = wait_until_sending(EV.oak_v4("f20a", "log_run2"))
         note("session_ids", "run1=%s run2=%s distinct=%s" % (sid1, sid2, sid1 != sid2))
         hold(a.after, "LIVE_AFTER_1")
 
@@ -131,8 +139,8 @@ def main():
 
         # ---- phase 5: restart again -------------------------------------------------------------
         label("RESTART_2")
-        proc, out = start_sidecar(os.path.join("oak_v4_evidence", "f20a", "log_run3"))
-        sid3 = wait_until_sending(os.path.join("oak_v4_evidence", "f20a", "log_run3"))
+        proc, out = start_sidecar(EV.oak_v4("f20a", "log_run3"))
+        sid3 = wait_until_sending(EV.oak_v4("f20a", "log_run3"))
         note("session_ids", "run3=%s distinct_from_run2=%s" % (sid3, sid3 != sid2))
         hold(a.after, "LIVE_AFTER_2")
         label("DONE")

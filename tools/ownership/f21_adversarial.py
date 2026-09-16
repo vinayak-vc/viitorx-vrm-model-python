@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -29,7 +31,7 @@ can have TARGET_SWITCH == 0 and still be silently emitting the wrong person; thi
 the two and reports both.
 
     python f21_adversarial.py
-    python f21_adversarial.py --out-dir oak_v4_evidence/f21/adversarial
+    python f21_adversarial.py --out-dir evidence/oak_v4/f21/adversarial
 """
 import argparse
 import io
@@ -789,7 +791,7 @@ def p11_control_gate_off_reproduces_the_silent_handoff():
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out-dir", default=os.path.join("oak_v4_evidence", "f21", "adversarial"))
+    ap.add_argument("--out-dir", default=EV.oak_v4("f21", "adversarial"))
     a = ap.parse_args()
     os.makedirs(a.out_dir, exist_ok=True)
 

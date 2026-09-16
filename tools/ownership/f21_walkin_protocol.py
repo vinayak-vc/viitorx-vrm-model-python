@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -76,7 +78,7 @@ import f21_live_protocol as LP     # reuse the launch definition so it cannot dr
                                    # protocol: PY / SCRIPT / SUPERVISOR / MODEL / ProducerDied
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-EVIDENCE = os.path.join(HERE, "oak_v4_evidence", "f21", "walkin")
+EVIDENCE = EV.oak_v4("f21", "walkin")
 TIMELINE = os.path.join(EVIDENCE, "timeline.jsonl")
 CUE_FILE = os.path.join(EVIDENCE, "cue.json")
 SUP_EVIDENCE = os.path.join(EVIDENCE, "supervisor")
@@ -124,7 +126,7 @@ BLOCK = {
 events = []
 _mode = "direct"
 OWNERSHIP_LOG_DIR = {"direct": EVIDENCE,
-                     "supervised": os.path.join(HERE, "oak_v4_evidence", "f21")}
+                     "supervised": EV.oak_v4("f21")}
 
 
 # NO AUDIO CUES. Verified on this machine: winsound.Beep returns without error but there is no

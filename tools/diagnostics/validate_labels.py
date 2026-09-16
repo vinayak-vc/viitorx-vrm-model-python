@@ -14,7 +14,7 @@ labeller called six frames of 123.webm a WRONG-PERSON EMISSION while the woman w
 and the pipeline was correctly locked on her (see the module docstring in f21_ground_truth.py).
 
 TRUTH below is not derived from the pipeline, the labeller, or any threshold. Every entry was read
-off the two contact sheets written to oak_v4_evidence/f21/labels/ and checked by eye:
+off the two contact sheets written to evidence/oak_v4/f21/labels/ and checked by eye:
 
     123_contact_sheet.png   f0..f774 at 50-frame intervals, plus the hand-off region
     123_gaps.png            f190..f270 and f430..f520, the two empty-room stretches

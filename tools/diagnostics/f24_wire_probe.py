@@ -11,7 +11,7 @@ the same run that produces the numbers - one session, one clock, no second captu
 The forward is byte-for-byte: this process never parses a packet before passing it on, so it cannot
 alter what Unity sees. Parsing happens only for the recorded copy.
 
-    .venv\\Scripts\\python.exe f24_wire_probe.py --seconds 60 --out oak_v4_evidence/f24/wire.jsonl
+    .venv\\Scripts\\python.exe f24_wire_probe.py --seconds 60 --out evidence/oak_v4/f24/wire.jsonl
 """
 import argparse
 import io

@@ -22,7 +22,7 @@ deviation from frontal - so the number is directly comparable to the deadzone it
 
 Run the STILL block and the MOVE block in one session and pass --split, or analyse a single block.
 
-    .venv\\Scripts\\python.exe f24_trunk_jitter.py --wire oak_v4_evidence/f24/wire.jsonl
+    .venv\\Scripts\\python.exe f24_trunk_jitter.py --wire evidence/oak_v4/f24/wire.jsonl
 """
 import argparse
 import io

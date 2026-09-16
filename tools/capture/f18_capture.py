@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import evidence_paths as EV
+
 import os as _os, sys as _sys
 _d = _os.path.dirname(_os.path.abspath(__file__))
 while _d != _os.path.dirname(_d) and not _os.path.isfile(_os.path.join(_d, "_sidecar_path.py")):
@@ -37,7 +39,7 @@ import f16_capture as CAP
 import f16_configs as C
 import f18_portrait as PT
 
-OUTDIR = os.path.join("oak_v4_evidence", "f18")
+OUTDIR = EV.oak_v4("f18")
 WIN = "F-18 PORTRAIT CAPTURE"
 RED, AMBER, GREEN, WHITE, GREY = (60, 60, 235), (40, 180, 245), (80, 220, 90), (245, 245, 245), (140, 140, 140)
 

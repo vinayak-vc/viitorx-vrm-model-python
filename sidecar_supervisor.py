@@ -31,6 +31,8 @@ Run:
         --subpixel-bits 3
 (all defaults already match the F-19/F-20A production configuration; see run_supervisor.bat)
 """
+import evidence_paths as EV
+
 import argparse
 import io
 import json
@@ -45,7 +47,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_PYTHON = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 DEFAULT_SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
 DEFAULT_MODEL = os.path.join(HERE, "..", "..", "..", "SentisModel", "rtmw3d-x.onnx")
-DEFAULT_EVIDENCE_DIR = os.path.join(HERE, "oak_v4_evidence", "f20b")
+DEFAULT_EVIDENCE_DIR = EV.oak_v4("f20b")
 
 STOPPED = "STOPPED"
 STARTING = "STARTING"
@@ -497,7 +499,7 @@ def build_arg_parser():
     ap.add_argument("--portrait-dir", default="ccw", choices=["ccw", "cw"])
     ap.add_argument("--subpixel-bits", type=int, default=3)
     ap.add_argument("--evidence-dir", default=None,
-                     help="default oak_v4_evidence/f20b; tests point this at their own subfolder")
+                     help="default evidence/oak_v4/f20b; tests point this at their own subfolder")
     ap.add_argument("--lock-port", type=int, default=8897,
                      help="loopback TCP port used as the single-supervisor-instance mutex (SS14)")
     ap.add_argument("--ready-timeout", type=float, default=45.0,
