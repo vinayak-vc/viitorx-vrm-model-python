@@ -5,9 +5,9 @@
 # Writes wall-clock (UTC epoch seconds) block boundaries to oak_v4_evidence/guided_marks.json so the
 # Unity trace and the sidecar log can both be cut per motion.
 #
-#   powershell -ExecutionPolicy Bypass -File oak_guided_v4.ps1
+#   powershell -ExecutionPolicy Bypass -File scripts\oak_guided_v4.ps1
 
-param([string]$Out = "oak_v4_evidence\guided_marks.json")
+param([string]$Out = (Join-Path $PSScriptRoot "..\oak_v4_evidence\guided_marks.json"))
 
 Add-Type -AssemblyName System.Speech
 $voice = New-Object System.Speech.Synthesis.SpeechSynthesizer

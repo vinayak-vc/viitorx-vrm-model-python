@@ -1,6 +1,18 @@
 @echo off
+REM ###########################################################################
+REM  DOES NOT RUN. It invokes analyze_capture.py, which was deleted in 29ec57e
+REM  ("Remove legacy verification and video streaming scripts").
+REM
+REM  Kept because docs/P0_ACCEPTANCE_2026-09-07.md cites this file by name as the
+REM  command that produced its measurements. It is a record of HOW that run was
+REM  made, not a command you can re-run. Restore analyze_capture.py from git
+REM  history first if you need to reproduce it.
+REM ###########################################################################
+exit /b 1
+
+@echo off
 setlocal enabledelayedexpansion
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 REM ============================================================================
 REM  P0 ACCEPTANCE CAPTURE  (OAK-D -> Python -> UDP -> Unity -> VRM avatar)

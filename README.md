@@ -96,15 +96,37 @@ player needs — see `Editor/SidecarBuildPostprocessor.cs`.
 │   ├── ownership/    (13)      # F-21 two-person ownership: protocols, replays, adversarial
 │   ├── validation/    (6)      # F-22 pose validation: thresholds, rejections, replay soak
 │   ├── video/         (4)      # F-23 video-driven pipeline and demo composition
-│   └── diagnostics/  (11)      # F-24..F-27 jitter, fidelity, humanized-skeleton analysis
+│   ├── diagnostics/  (11)      # F-24..F-27 jitter, fidelity, humanized-skeleton analysis
+│   └── armaim/        (9)      # ARM V2/V3 aiming analysis (was loose inside arm_v*_evidence/)
+│
+├── scripts/                    # double-clickable launchers. Each re-bases to the repo root with
+│   ├── run_supervisor.bat      #   `cd /d "%~dp0.."`, so they work from this subfolder.
+│   ├── run_capture.bat         # capture + compare_logs report
+│   ├── oak_guided_v4.ps1       # guided LIVE capture, instructions SPOKEN aloud (the subject is
+│   │                           #   2 m away and cannot read a console)
+│   ├── run_p0_acceptance.bat   # DOES NOT RUN - needs analyze_capture.py, deleted in 29ec57e.
+│   └── run_p12_ab.bat          # DOES NOT RUN - needs compare_p12.py, deleted in 29ec57e.
+│                               #   Both kept because P0_ACCEPTANCE / P1_2_FRESHNESS cite them by
+│                               #   name as the command that produced their numbers. They exit 1.
 │
 ├── setup_sidecar.ps1           # one-time target setup; VERIFIES the DirectML provider
 ├── requirements.lock.txt       # exact pins - this is what setup installs
 ├── requirements.txt            # human-readable intent
 │
+├── docs/                       # sidecar-local notes + p0_human_report.txt
+├── oak_v4_evidence/            # tracked analysis summaries. The raw captures are git-ignored and
+│                               #   regenerable; script defaults hardcode this path, so it stays put.
+├── arm_v1_evidence/            # ARM V1/V2/V3 measurement records (data only - the scripts that
+├── arm_v2_evidence/            #   produced them now live in tools/armaim/)
+├── arm_v3_evidence/
+│
 └── depthai_blazepose/          # vendored geaxgx/depthai_blazepose (MIT), Phase-1 fallback.
                                 # Superseded and NOT imported by the production path.
 ```
+
+The root holds 18 files: the 12 production `.py` above plus `.gitignore`, `README.md`, `AGENTS.md`,
+`setup_sidecar.ps1` and the two requirements files — each of which belongs at a repository root by
+convention. It was 96 before ADR-065.
 
 **Running a harness.** They are still plain scripts, so only the path changed:
 

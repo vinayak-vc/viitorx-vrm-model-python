@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 REM ============================================================================
 REM  One-shot pipeline capture: start the OAK whole-body sidecar WITH logging,
@@ -51,9 +51,9 @@ echo.
 "%PY%" wholebody_udp_sender.py --model "%MODEL%" --log-dir "%LOGDIR%" --show %SIDECAR_ARGS% %SECS_ARG%
 
 echo.
-echo [sidecar stopped] running compare_logs.py ...
+echo [sidecar stopped] running tools\diagnostics\compare_logs.py ...
 echo ==================================================================
-"%PY%" compare_logs.py --dir "%LOGDIR%"
+"%PY%" tools\diagnostics\compare_logs.py --dir "%LOGDIR%"
 echo ==================================================================
 echo.
 echo Raw logs: %LOGDIR%\sender_log.jsonl  recv_log.jsonl  model_log.jsonl

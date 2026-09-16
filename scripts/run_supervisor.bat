@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 REM ============================================================================
 REM  F-20B - start the sidecar supervisor/watchdog with the PRODUCTION configuration.

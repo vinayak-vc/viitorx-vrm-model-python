@@ -1,6 +1,18 @@
 @echo off
+REM ###########################################################################
+REM  DOES NOT RUN. It invokes compare_p12.py, which was deleted in 29ec57e
+REM  ("Remove legacy verification and video streaming scripts").
+REM
+REM  Kept because docs/P1_2_FRESHNESS_2026-09-08.md cites this file by name as the
+REM  command that produced its measurements. It is a record of HOW that run was
+REM  made, not a command you can re-run. Restore compare_p12.py from git
+REM  history first if you need to reproduce it.
+REM ###########################################################################
+exit /b 1
+
+@echo off
 setlocal enabledelayedexpansion
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 REM ============================================================================
 REM  P1-2 HUMAN A/B  —  frame freshness with a real subject (Phases 5-6)
