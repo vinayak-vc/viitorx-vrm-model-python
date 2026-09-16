@@ -1,0 +1,26 @@
+================================================================================================
+F-17 HOST STEREO RIG VALIDATION  (static scene, no subject)
+================================================================================================
+
+rectified geometry derived from the device's own EEPROM:
+  pair   cams            B_rect mm    f_rect px      f*B mm*px
+  BC     B(L) C(R)          74.992     252.7255        18952.3
+  AC     A(L) C(R)          37.641     245.7626         9250.7
+
+  device StereoDepth f*B (CAM_C fx x 74.99 mm) = 21222.2 mm*px  [F-16 measured]
+
+frames: 300    host stereo cost: 28.7 ms/frame for BOTH pairs (34.8 fps ceiling)
+
+central-ROI median depth over the run (the three sources looking at the same scene):
+  source        median mm          p05          p95   coverage
+  device           3465.0       2978.0       3952.7      87.8%
+  hostBC           3158.7       2942.6       3528.1      57.6%
+  hostAC           3524.1       2277.1       4625.3       2.2%
+
+AGREEMENT CHECKS
+  host BC vs device  : -306.3 mm  (-8.84 %)
+  host AC vs host BC : +365.4 mm  (11.57 %)
+
+  host BC and the device share a baseline and should agree closely; a large gap means the
+  host rectification or matcher is wrong. host AC sees the same scene from half the
+  baseline and should agree on DEPTH while being ~2x coarser in resolution.

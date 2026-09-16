@@ -1,0 +1,107 @@
+﻿================================================================================================================
+ REAL OAK-D TORSO YAW -- recorded sidecar logs, Unity's own derivation, degeneracy-classified
+================================================================================================================
+  pipeline_logs                n=4139    194.8s @21.3Hz   valid= 4127 ( 99.7%)  degenerate=   12  90deg-sentinel=    0
+      detection drops while streaming: 2      flat shoulder Z within valid: 80 (1.9%)
+      shoulder yaw  p05=  -31.5 p50=   -7.0 p95=    7.9  min= -178.9 max=  176.2  |yaw|>22: 18.6%
+      hip yaw       p05=  -21.8 p50=   -2.7 p95=   14.7  min=  -48.6 max=  170.3
+      frame steps   sh p50=  0.46 p95=  2.59 max=  25.12 deg  (p95    55 deg/s)  hip p95=  3.03
+      >150deg flips=0   sign reversals(|yaw|>20)=1   steps>140deg/s=36 (0.9%)
+
+  pipeline_logs_ab_legacy      n=3934    194.9s @21.0Hz   valid= 3896 ( 99.0%)  degenerate=   38  90deg-sentinel=    0
+      detection drops while streaming: 9      flat shoulder Z within valid: 521 (13.4%)
+      shoulder yaw  p05=  -52.2 p50=  -11.5 p95=    1.3  min= -177.7 max=  178.4  |yaw|>22: 27.5%
+      hip yaw       p05=  -30.9 p50=    0.0 p95=   23.5  min= -176.3 max=  178.8
+      frame steps   sh p50=  0.49 p95=  2.90 max=  60.40 deg  (p95    61 deg/s)  hip p95=  3.13
+      >150deg flips=0   sign reversals(|yaw|>20)=2   steps>140deg/s=52 (1.3%)
+
+  pipeline_logs_ab_surface     n=4139    194.8s @21.3Hz   valid= 4127 ( 99.7%)  degenerate=   12  90deg-sentinel=    0
+      detection drops while streaming: 2      flat shoulder Z within valid: 80 (1.9%)
+      shoulder yaw  p05=  -31.5 p50=   -7.0 p95=    7.9  min= -178.9 max=  176.2  |yaw|>22: 18.6%
+      hip yaw       p05=  -21.8 p50=   -2.7 p95=   14.7  min=  -48.6 max=  170.3
+      frame steps   sh p50=  0.46 p95=  2.59 max=  25.12 deg  (p95    55 deg/s)  hip p95=  3.03
+      >150deg flips=0   sign reversals(|yaw|>20)=1   steps>140deg/s=36 (0.9%)
+
+  pipeline_logs_armv1          n=13524   588.8s @21.7Hz   valid=13517 ( 99.9%)  degenerate=    7  90deg-sentinel=    0
+      detection drops while streaming: 2      flat shoulder Z within valid: 1334 (9.9%)
+      shoulder yaw  p05=  -28.9 p50=   -4.7 p95=   10.6  min= -174.0 max=   43.2  |yaw|>22: 19.6%
+      hip yaw       p05=  -12.5 p50=    0.0 p95=   15.5  min= -175.6 max=  178.0
+      frame steps   sh p50=  0.29 p95=  2.46 max=  13.78 deg  (p95    53 deg/s)  hip p95=  2.36
+      >150deg flips=0   sign reversals(|yaw|>20)=0   steps>140deg/s=75 (0.6%)
+
+  pipeline_logs_armv1b         n=5304    244.7s @21.5Hz   valid= 5229 ( 98.6%)  degenerate=   75  90deg-sentinel=   14
+      detection drops while streaming: 8      flat shoulder Z within valid: 15 (0.3%)
+      shoulder yaw  p05=  -25.1 p50=    0.8 p95=   38.3  min= -167.0 max=  175.4  |yaw|>22: 25.6%
+      hip yaw       p05=  -26.8 p50=    0.0 p95=   41.8  min= -118.0 max=   64.2
+      frame steps   sh p50=  0.16 p95=  1.50 max= 171.99 deg  (p95    32 deg/s)  hip p95=  2.18
+      >150deg flips=1   sign reversals(|yaw|>20)=2   steps>140deg/s=20 (0.4%)
+
+  pipeline_logs_baseline_audit n=54600  2530.8s @21.5Hz   valid= 1693 (  3.1%)  degenerate=52907  90deg-sentinel=52800
+      detection drops while streaming: 12      flat shoulder Z within valid: 127 (7.5%)
+      shoulder yaw  p05= -172.4 p50=   -5.4 p95=  139.3  min= -179.1 max=  180.0  |yaw|>22: 38.9%
+      hip yaw       p05= -170.3 p50=    0.0 p95=   62.6  min= -179.9 max=  180.0
+      frame steps   sh p50=  0.37 p95=  3.27 max=  88.81 deg  (p95    70 deg/s)  hip p95=  4.36
+      >150deg flips=0   sign reversals(|yaw|>20)=7   steps>140deg/s=25 (1.5%)
+
+  pipeline_logs_f08            n=5780    272.9s @21.3Hz   valid= 5213 ( 90.2%)  degenerate=  567  90deg-sentinel=  176
+      detection drops while streaming: 29      flat shoulder Z within valid: 249 (4.8%)
+      shoulder yaw  p05=  -31.2 p50=   -8.6 p95=   11.7  min= -179.9 max=  179.9  |yaw|>22: 23.1%
+      hip yaw       p05=  -18.7 p50=    0.2 p95=   32.3  min= -178.9 max=  178.3
+      frame steps   sh p50=  0.39 p95=  2.36 max= 123.64 deg  (p95    50 deg/s)  hip p95=  3.10
+      >150deg flips=0   sign reversals(|yaw|>20)=9   steps>140deg/s=54 (1.0%)
+
+  pipeline_logs_p13            n=4717    220.9s @21.4Hz   valid= 4545 ( 96.4%)  degenerate=  172  90deg-sentinel=    0
+      detection drops while streaming: 6      flat shoulder Z within valid: 731 (16.1%)
+      shoulder yaw  p05=  -45.0 p50=  -11.1 p95=    0.0  min= -177.8 max=   54.5  |yaw|>22: 35.4%
+      hip yaw       p05=  -33.5 p50=   -0.1 p95=   15.4  min= -179.9 max=  177.4
+      frame steps   sh p50=  0.25 p95=  2.47 max=  22.84 deg  (p95    53 deg/s)  hip p95=  3.20
+      >150deg flips=0   sign reversals(|yaw|>20)=0   steps>140deg/s=19 (0.4%)
+
+  pipeline_logs_p14            n=4856    227.7s @21.3Hz   valid= 3271 ( 67.4%)  degenerate= 1585  90deg-sentinel=  156
+      detection drops while streaming: 46      flat shoulder Z within valid: 342 (10.5%)
+      shoulder yaw  p05= -147.6 p50=   -5.3 p95=   24.0  min= -178.2 max=  179.9  |yaw|>22: 36.7%
+      hip yaw       p05= -163.4 p50=   -1.9 p95=  146.6  min= -179.9 max=  176.7
+      frame steps   sh p50=  0.28 p95=  3.20 max= 171.56 deg  (p95    68 deg/s)  hip p95=  4.31
+      >150deg flips=1   sign reversals(|yaw|>20)=2   steps>140deg/s=43 (1.3%)
+
+  pipeline_logs_previsual_bak  n=427     NO VALID FRAMES (427 degenerate) -- excluded
+
+  pipeline_logs_rollback       n=4859    227.9s @21.4Hz   valid= 4544 ( 93.5%)  degenerate=  315  90deg-sentinel=  205
+      detection drops while streaming: 28      flat shoulder Z within valid: 819 (18.0%)
+      shoulder yaw  p05= -144.3 p50=   -5.2 p95=    6.3  min= -179.7 max=  178.1  |yaw|>22: 20.7%
+      hip yaw       p05=  -42.8 p50=    0.0 p95=   29.3  min= -179.0 max=  179.8
+      frame steps   sh p50=  0.35 p95=  3.01 max= 147.12 deg  (p95    64 deg/s)  hip p95=  3.90
+      >150deg flips=0   sign reversals(|yaw|>20)=4   steps>140deg/s=69 (1.5%)
+
+  pipeline_logs_surface        n=5267    246.9s @21.4Hz   valid= 5246 ( 99.6%)  degenerate=   21  90deg-sentinel=    0
+      detection drops while streaming: 4      flat shoulder Z within valid: 1330 (25.4%)
+      shoulder yaw  p05=  -25.9 p50=   -1.1 p95=   11.0  min= -178.2 max=  180.0  |yaw|>22: 10.0%
+      hip yaw       p05=  -22.0 p50=    0.0 p95=   13.6  min= -179.7 max=  179.8
+      frame steps   sh p50=  0.25 p95=  2.55 max=  23.10 deg  (p95    54 deg/s)  hip p95=  2.41
+      >150deg flips=0   sign reversals(|yaw|>20)=4   steps>140deg/s=30 (0.6%)
+
+================================================================================================================
+ SWEEP CAPTURE: pipeline_logs_armv1  (13517 valid frames, yaw span 217.2 deg)
+================================================================================================================
+
+  --- avatar shoulder-line yaw, SHIPPING (no gate) -- pipeline_logs_armv1 ---
+   scale | err mean  err p95  err max |  out p95  out max |    gain
+   0.000 |    11.10    30.23   174.03 |     0.00     0.00 |   0.000
+   0.250 |     9.72    24.95   141.89 |     5.54    42.91 |   0.185
+   0.500 |     8.44    19.61   121.93 |    11.08    85.82 |   0.370
+   0.750 |     7.23    14.91   130.55 |    16.63   128.73 |   0.556
+   0.813 |     6.96    14.03   141.06 |    18.02   139.54 |   0.602
+   1.000 |     6.29    13.43   172.24 |    22.17   171.64 |   0.741
+
+  --- avatar shoulder-line yaw, WITH a confidence gate (counterfactual) -- pipeline_logs_armv1 ---
+   scale | err mean  err p95  err max |  out p95  out max |    gain
+   0.000 |    11.10    30.23   174.03 |     0.00     0.00 |   0.000
+   0.250 |     9.73    24.95   147.40 |     5.54    42.56 |   0.180
+   0.500 |     8.46    19.61   130.78 |    11.08    85.12 |   0.360
+   0.750 |     7.27    14.92   133.17 |    16.63   127.68 |   0.540
+   0.813 |     7.00    14.03   143.89 |    18.02   138.41 |   0.586
+   1.000 |     6.34    13.45   175.73 |    22.17   170.25 |   0.721
+
+================================================================================================================
+ POOLED over 11 captures: 111119 frames, 55408 valid | >150deg flips=2  reversals=32  drops=148
+================================================================================================================

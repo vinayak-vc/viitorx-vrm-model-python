@@ -1,0 +1,64 @@
+[wb] loading RTMW3D ...
+[wb] providers: ['DmlExecutionProvider', 'CPUExecutionProvider']
+[wb] ======================================================================
+[wb] CameraOrientation = PORTRAIT_CCW
+[wb]   rgb 400x640   depth 400x640
+[wb]   intrinsics  fx=284.454 fy=284.627 cx=201.530 cy=319.789
+[wb]   intrinsics(landscape, pre-rotation)  fx=284.627 fy=284.454 cx=319.211 cy=201.530
+[wb]   FOV  H 70.22 deg  V 96.70 deg
+[wb]   stereo: preset=HIGH_DENSITY subpixel=on(1/8) LR-check=on align=CAM_A mono=400p
+[wb]   depth sampling: surfaceDepth=True kwin=5 (F-08)
+[wb]   working-distance target: 0.90 m (F-18 preferred)
+[wb]   udp -> ('127.0.0.1', 8899)
+[wb]   producer session id = 18f3a0f25933  (F-20A: new on every process start)
+[wb] ======================================================================
+[wb] P1-1 joint tracker ON (predict<=6, reacquire=5)
+[wb] frames=56 sent=54 hip_z=0.77m measured_body=15/33 fps~27.7 age=17ms stale=7
+[wb] depthQuality mean=0.765 multiSurface=3.3% winSpread=61mm (surface-aware)
+[wb] frames=117 sent=115 hip_z=0.84m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.778 multiSurface=0.8% winSpread=25mm (surface-aware)
+[wb] frames=178 sent=176 hip_z=0.82m measured_body=16/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.798 multiSurface=0.8% winSpread=38mm (surface-aware)
+[wb] frames=239 sent=237 hip_z=0.83m measured_body=21/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.822 multiSurface=6.0% winSpread=140mm (surface-aware)
+[wb] frames=300 sent=298 hip_z=0.77m measured_body=21/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.886 multiSurface=4.5% winSpread=45mm (surface-aware)
+[wb] frames=360 sent=358 hip_z=0.76m measured_body=18/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.876 multiSurface=5.4% winSpread=44mm (surface-aware)
+[wb] frames=421 sent=419 hip_z=0.84m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.797 multiSurface=2.5% winSpread=42mm (surface-aware)
+[wb] frames=482 sent=480 hip_z=0.84m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.758 multiSurface=1.5% winSpread=29mm (surface-aware)
+[wb] frames=542 sent=540 hip_z=0.83m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.784 multiSurface=0.0% winSpread=24mm (surface-aware)
+[wb] frames=602 sent=600 hip_z=0.83m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.785 multiSurface=0.1% winSpread=23mm (surface-aware)
+[wb] frames=663 sent=661 hip_z=0.83m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.785 multiSurface=0.4% winSpread=24mm (surface-aware)
+[wb] frames=724 sent=722 hip_z=0.82m measured_body=17/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.802 multiSurface=1.6% winSpread=47mm (surface-aware)
+[wb] frames=785 sent=783 hip_z=0.82m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.800 multiSurface=3.4% winSpread=71mm (surface-aware)
+[wb] frames=845 sent=843 hip_z=0.82m measured_body=17/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.813 multiSurface=2.4% winSpread=79mm (surface-aware)
+[wb] frames=906 sent=904 hip_z=0.83m measured_body=17/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.814 multiSurface=2.0% winSpread=159mm (surface-aware)
+[wb] frames=966 sent=964 hip_z=0.82m measured_body=17/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.810 multiSurface=2.5% winSpread=76mm (surface-aware)
+[wb] frames=1027 sent=1025 hip_z=0.84m measured_body=19/33 fps~30.0 age=18ms stale=7
+[wb] depthQuality mean=0.827 multiSurface=1.6% winSpread=70mm (surface-aware)
+[wb] frames=1087 sent=1085 hip_z=0.84m measured_body=19/33 fps~30.0 age=18ms stale=7
+[wb] depthQuality mean=0.929 multiSurface=1.2% winSpread=28mm (surface-aware)
+[wb] frames=1147 sent=1145 hip_z=0.74m measured_body=15/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.880 multiSurface=3.3% winSpread=42mm (surface-aware)
+[wb] frames=1208 sent=1206 hip_z=0.54m measured_body=12/33 fps~30.0 age=17ms stale=7
+[wb] depthQuality mean=0.709 multiSurface=2.2% winSpread=23mm (surface-aware)
+[14442C10F143D3D200] [2.3.1] [1789371673.305] [host] [error] Device likely crashed but did not reboot in time to get the crash dump
+Traceback (most recent call last):
+  File "D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py", line 865, in <module>
+    main()
+  File "D:\Unity\viitorx-vrm-avtar-unity-base-project\Assets\Games\viitorx-vrm-avtar-unity\python-sidecar~\wholebody_udp_sender.py", line 449, in main
+    _rgb_pkt = q_rgb.get()
+RuntimeError: Communication exception - possible device error/misconfiguration. Original message 'Couldn't read data from stream: 'rgb' (X_LINK_ERROR)'
+[31mF: [global] [         0] [ThreadN] dispatcherResponseServe:928	no request for this response: XLINK_READ_REL_RESP 1
+[0m

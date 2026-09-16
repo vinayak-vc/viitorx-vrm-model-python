@@ -1,0 +1,277 @@
+================================================================================================================
+ F-13 -- HIP-LINE DEPTH SIGN FOR TORSO YAW   (offline; no production code touched)
+================================================================================================================
+  F-10  pipeline_logs_f10_near  27363 frames ->  2478 labelled | fx=288.5 px  K=91.2  1.5 m   [marks RECOVERED, reconstructed]
+  F-11  pipeline_logs_f11       22380 frames ->  1457 labelled | fx=291.1 px  K=88.8  1.5 m
+
+  scored population: 1320 turned frames, 1000 true-zero frames
+  EXCLUDED from every headline number: 561 twist frames (subject reported confusion
+  during the F-10 twist protocol, so their hip truth is not reliable)
+
+  polarity inferred per candidate (never assumed): dzCtr=-1, dzEmit=-1, dzP30=-1, dzP50=-1, hipAng=-1
+
+================================================================================================================
+ (7) STATIC SIGN ACCURACY vs hip ground truth   (0 deg excluded; no threshold)
+================================================================================================================
+ id  signal   defined  coverage   overall  positive  negative       +90       -90   ALL frm
+ A   dzP30        434     32.9%   70.51%   63.21%   86.67%   none     10.00%   23.18%
+ A2  dzP50        435     33.0%   72.87%   61.13%   91.18%   none     11.76%   24.02%
+ B   hipAng       434     36.0%   70.51%   63.21%   86.67%   none     10.00%   25.35%
+ C   dzEmit       745     56.4%   71.95%   65.08%   79.02%    0.00%   24.51%   40.61%
+ D   dzCtr        443     33.6%   74.04%   62.55%   91.48%  100.00%   16.67%   24.87%
+     A   dzP30    raw hip depth difference, p30 of the depth window   (mm)
+     A2  dzP50    raw hip depth difference, p50 of the depth window   (mm)
+     B   hipAng   hip-line out-of-plane angle atan2(dz, horizontal sep) (deg)
+     C   dzEmit   emitted 3-D hip dz, i.e. post-smoothing              (mm)
+     D   dzCtr    centre-pixel depth ordering only, no window stats    (mm)
+
+  'coverage'  = turned frames on which the candidate produces ANY sign; the depth
+                difference is exactly 0 mm on the rest, so there is no bit to read.
+  'overall'   = accuracy CONDITIONED on a sign existing -- it is not the shipped number.
+  'ALL frm'   = accuracy over every turned frame, counting an undefined sign as wrong,
+                because a production estimator has to emit something on every frame.
+
+  A, A2, B and D are the SAME ONE BIT where all are defined: B divides A by a strictly
+  positive horizontal separation, which cannot change a sign. They differ only in which
+  depth statistic is read and once a threshold is applied (section 12).
+
+================================================================================================================
+ (7b) PER-HEADING COVERAGE x ACCURACY -- the pooled table above hides empty cells
+================================================================================================================
+ signal                 head        n  defined   coverage acc|defined
+ HIP raw dz             +45       380      299      78.7%     63.21%
+ HIP raw dz             -45       371      115      31.0%    100.00%
+ HIP raw dz             +90       275        0       0.0%       none
+ HIP raw dz             -90       294       20       6.8%     10.00%
+
+ HIP emitted dz         +45       380      367      96.6%     67.03%
+ HIP emitted dz         -45       371      265      71.4%    100.00%
+ HIP emitted dz         +90       275       11       4.0%      0.00%
+ HIP emitted dz         -90       294      102      34.7%     24.51%
+
+ SHOULDER raw dz        +45       380      380     100.0%    100.00%
+ SHOULDER raw dz        -45       371      370      99.7%    100.00%
+ SHOULDER raw dz        +90       275       93      33.8%     98.92%
+ SHOULDER raw dz        -90       294       11       3.7%    100.00%
+
+ SHOULDER emitted dz    +45       380      380     100.0%    100.00%
+ SHOULDER emitted dz    -45       371      371     100.0%    100.00%
+ SHOULDER emitted dz    +90       275      275     100.0%    100.00%
+ SHOULDER emitted dz    -90       294      131      44.6%    100.00%
+
+================================================================================================================
+ (7c) BLOCK-LEVEL EVIDENCE -- the honest unit
+================================================================================================================
+ Inside one held pose consecutive frames are near-duplicates, so a frame count of 1320
+ is NOT 1320 independent observations. The real unit is the held block.
+
+ cap    block              true  | HIP raw dz                 | SHOULDER emitted dz       
+ F-10   h_m45              -45   | NO SIGNAL (0 frames)       | CORRECT    106/ 106 frames
+ F-10   h_m90              -90   | NO SIGNAL (0 frames)       | NO SIGNAL (0 frames)      
+ F-10   h_p45              45    | CORRECT     41/ 111 frames | CORRECT    111/ 111 frames
+ F-10   h_p90              90    | NO SIGNAL (0 frames)       | CORRECT    140/ 140 frames
+ F-11   dc_body45L_face0   -45   | CORRECT      1/ 150 frames | CORRECT    150/ 150 frames
+ F-11   dc_body45R_face0   45    | CORRECT    148/ 148 frames | CORRECT    148/ 148 frames
+ F-11   h_m45              -45   | CORRECT    114/ 115 frames | CORRECT    115/ 115 frames
+ F-11   h_m90              -90   | WRONG       18/ 147 frames | CORRECT    131/ 147 frames
+ F-11   h_p45              45    | WRONG      110/ 121 frames | CORRECT    121/ 121 frames
+ F-11   h_p90              90    | NO SIGNAL (0 frames)       | CORRECT    135/ 135 frames
+
+                          correct     wrong   no signal
+ HIP raw dz                     4         2           4   (of 10 held blocks)
+ SHOULDER emitted dz            9         0           1   (of 10 held blocks)
+
+================================================================================================================
+ (8) RAW HIP DEPTH DISTRIBUTIONS per true heading   (p30 window depth, mm)
+================================================================================================================
+ block(s)               n |   zL p50   zR p50 |   dz p10   dz p50   dz p90    dz sd |dz| p50
+ true 0              1000 |   1326.0   1326.0 |      0.0      0.0      0.0     22.8      0.0
+ true +45             380 |   1326.0   1326.0 |   -147.0      0.0    147.0    102.6     78.0
+ true -45             371 |   1326.0   1248.0 |      0.0      0.0     78.0     44.0      0.0
+ true +90             275 |   1415.0   1415.0 |      0.0      0.0      0.0      0.0      0.0
+ true -90             294 |   1326.0   1326.0 |      0.0      0.0      0.0     19.0      0.0
+
+ OVERLAP between the mirrored poses -- AUC 0.50 means the two are indistinguishable
+   +45 vs -45 : AUC 0.336   (separability 66.4%; 50% = pure chance)
+   +90 vs -90 : AUC 0.527   (separability 52.7%; 50% = pure chance)
+
+ QUANTISATION  dz is EXACTLY 0 mm on 886/1320 turned frames (67.1%) -> no sign at all
+   smallest non-zero |dz| levels (mm): 16, 62, 78, 81, 101, 131, 133, 147, 147, 197
+
+================================================================================================================
+ (8b) MECHANISM -- what physically destroys the hip sign
+================================================================================================================
+ (i) DEPTH IS QUANTISED TO INTEGER DISPARITY.  z = f*B/d, and the levels actually used
+     near the hips are: 1179, 1248, 1326, 1415, 1516, 1632, 1768 mm
+     Fitting z*d over those levels gives f*B = 21216 mm.px, constant to <1%.
+     At the subject's 1326 mm the disparity is d=16, and the neighbouring rungs are
+     1248 mm and 1414 mm -- so ONE STEP is 78-88 mm, mean 83 mm.
+
+ (ii) GEOMETRY.  Measured hip separation = 130 mm, so a turn of theta puts the hips
+      dz = 130 * sin(theta) mm apart:
+        theta = 15 deg -> true dz =   33.7 mm = 0.41 disparity steps
+        theta = 30 deg -> true dz =   65.2 mm = 0.78 disparity steps
+        theta = 45 deg -> true dz =   92.2 mm = 1.11 disparity steps
+        theta = 60 deg -> true dz =  112.9 mm = 1.36 disparity steps
+        theta = 90 deg -> true dz =  130.4 mm = 1.57 disparity steps
+      A 45 deg turn is worth 1.1 steps. The sign is a comparison of two numbers that
+      each move in 83 mm jumps -- so both hips land on the SAME rung most of the time.
+
+ (iii) AT +-90 THE FAR HIP IS OCCLUDED BY THE NEAR ONE.
+ heading         n   uSpan px   |dz| p50      dz sd   measured   conf p50
+ 0            1000       43.9        0.0       22.8    100.00%      0.655
+ +45           380       30.1       78.0      102.6    100.00%      0.621
+ -45           371       30.8        0.0       44.0    100.00%      0.635
+ +90           275       14.6        0.0        0.0    100.00%      0.491
+ -90           294       10.6        0.0       19.0    100.00%      0.461
+     At +-90 the two hips project close together and the far one is behind the near one,
+     so both 5x5 depth windows land on the SAME body surface: dz collapses to 0 with
+     zero spread. The pose that most needs a sign is the pose that cannot produce one.
+
+================================================================================================================
+ (9) TRUE 0 deg -- does a square torso produce a confident sign?
+================================================================================================================
+   F-10  h_0                n= 139  |dz| p50=   0.0 p95=   0.0 mm  defined   0.0%  flips= 0 (0.00/s)
+   F-10  h_0b               n= 111  |dz| p50=   0.0 p95=   0.0 mm  defined   0.0%  flips= 0 (0.00/s)
+   F-10  h_0c               n= 109  |dz| p50=   0.0 p95= 101.0 mm  defined  16.5%  flips= 0 (0.00/s)
+   F-11  h_0                n= 136  |dz| p50=   0.0 p95=  78.0 mm  defined  19.9%  flips= 0 (0.00/s)
+   F-11  h_0b               n=  90  |dz| p50=  62.4 p95=  78.0 mm  defined  56.7%  flips= 0 (0.00/s)
+   F-11  h_0c               n= 117  |dz| p50=   0.0 p95=   0.0 mm  defined   0.0%  flips= 0 (0.00/s)
+   F-11  dc_body0_head45R   n= 147  |dz| p50=   0.0 p95=   0.0 mm  defined   0.0%  flips= 0 (0.00/s)
+   F-11  dc_body0_head45L   n= 151  |dz| p50=   0.0 p95=   0.0 mm  defined   0.0%  flips= 0 (0.00/s)
+
+   pooled true-0 |dz|: p50 0.0  p90 0.0  p95 78.0  max 101.0 mm
+   fraction of true-0 frames whose |dz| exceeds the MEDIAN |dz| of a real turn:
+     turned-frame median |dz| = 0.0 mm  ->  96/1000 = 9.6% of true-0 frames look at least as turned
+
+================================================================================================================
+ (10) DYNAMIC MOTION -- no instantaneous truth exists, so behaviour only
+================================================================================================================
+ block              n |  flips  flips/s    longest   defined% |   |dz| p50
+ m_slow           172 |      3     0.50          8      12.8% |        0.0
+ m_normal         137 |      6     1.21          5      17.5% |        0.0
+ m_fast           130 |     11     2.22         10      32.3% |        0.0
+ m_rev_lr         113 |      5     1.00          6      15.9% |        0.0
+ m_rev_rl         114 |      5     1.01         16      28.9% |        0.0
+ m_180            139 |      2     0.33          6       9.4% |        0.0
+ m_turn_arms      124 |      5     1.00         12      20.2% |        0.0
+ m_turn_still     124 |      1     0.20         18      15.3% |        0.0
+
+   'defined%' = frames whose dz is not exactly 0 mm, i.e. where a sign exists at all.
+   For reference a subject physically reverses at most ~0.5 times per second.
+
+================================================================================================================
+ (11) HIP vs SHOULDER DEPTH SIGN -- is the hip line genuinely a better source?
+================================================================================================================
+ source                 defined  coverage   overall  positive  negative       +90       -90   ALL frm
+ HIP raw dz (p30)           434     32.9%   70.51%   63.21%   86.67%   none     10.00%   23.18%
+ SHOULDER raw dz (p30)      854     64.7%   99.88%   99.79%  100.00%   98.92%  100.00%   64.62%
+ HIP emitted dz             745     56.4%   71.95%   65.08%   79.02%    0.00%   24.51%   40.61%
+ SHOULDER emitted dz       1157     87.7%  100.00%  100.00%  100.00%  100.00%  100.00%   87.65%
+
+   F-10 reference -- the estimator that was actually rejected there was sign(yaw3D),
+   not this: 78.49% overall, 100% on positive turns, 50.5% on negative turns.
+   yaw3D is atan2(dx, dz) over the shoulder line, so it WRAPS when the line goes
+   edge-on. dz alone does not wrap. Shoulder pixel span at each heading:
+     |heading| = +-45  uSpanSh p50 =  40.5 px
+     |heading| = +-90  uSpanSh p50 =   9.6 px
+
+----------------------------------------------------------------------------------------------------------------
+ (11b) The shoulder signal in MOTION and at TRUE ZERO -- context for the comparison
+----------------------------------------------------------------------------------------------------------------
+ motion block       n |  flips  flips/s   longest  defined%
+ m_slow           172 |      5     0.84        37    100.0%
+ m_normal         138 |      7     1.41        36    100.0%
+ m_fast           130 |      3     0.60        50    100.0%
+ m_rev_lr         113 |      2     0.40        48    100.0%
+ m_rev_rl         114 |      5     1.01        40    100.0%
+ m_180            139 |      4     0.67        38    100.0%
+ m_turn_arms      124 |      8     1.61        33    100.0%
+ m_turn_still     124 |      4     0.81        35    100.0%
+
+ true-zero block         n    defined   flips/s     |dz| p50
+ h_0                   275     100.0%      0.00        136.0
+ h_0b                  201      98.0%      0.00         24.0
+ h_0c                  226      34.1%      0.00          0.0
+ dc_body0_head45R      147     100.0%      0.00         87.0
+ dc_body0_head45L      151       0.0%      0.00          0.0
+
+   At a true 0 the shoulder dz still emits a confident, non-flipping sign (|dz| p50 up
+   to 136 mm, comparable to a real 45 deg turn). For a SIGN-ONLY use that is not
+   automatically a defect -- sign * |yaw2D| is near zero when the magnitude is near
+   zero -- but it does mean the magnitude of this signal carries no yaw information,
+   and it has NOT been verified that the product stays small in practice.
+
+================================================================================================================
+ (12) THRESHOLD / COVERAGE SWEEP on |dz| (p30, mm)
+================================================================================================================
+   |dz| >   n kept  coverage   overall  positive  negative   +90/-90 0deg defined
+        0      434     32.9%   70.51%   63.21%   86.67%    none/10.0           9.6%
+       10      434     32.9%   70.51%   63.21%   86.67%    none/10.0           9.6%
+       20      430     32.6%   70.70%   63.21%   87.79%    none/11.1           9.6%
+       30      430     32.6%   70.70%   63.21%   87.79%    none/11.1           9.2%
+       50      430     32.6%   70.70%   63.21%   87.79%    none/11.1           9.1%
+       75      427     32.3%   71.19%   63.85%   87.79%    none/11.1           7.5%
+      100      157     11.9%   64.33%   61.64%  100.00%    none/none           1.2%
+      150       22      1.7%    4.55%    0.00%  100.00%    none/none           0.0%
+
+   'coverage' = share of turned frames that still have a defined sign.
+   '0deg defined' = share of TRUE-ZERO frames that would emit a confident sign anyway;
+   that is the false-sign rate a square-standing user would see.
+
+================================================================================================================
+ (13) HYPOTHETICAL HYBRID   sign(hip dz) * |yaw2D|   -- NOT implemented
+================================================================================================================
+ estimator                           MAE     RMSE      p50      p95      max wrong sign
+ hip-sign hybrid (hold on 0)       72.46   100.48    83.50   178.85   180.00     50.61%
+ hip-sign hybrid (no hold)         69.66    96.45    18.55   178.85   180.00     49.85%
+ yaw2D magnitude alone              8.34     9.96     7.29    18.55    22.76        n/a
+
+   published references, same kind of static population:
+     production yaw3D signed MAE 61.08 | F-10 depth-sign hybrid 13.09
+     F-11 face-sign hybrid 31.60      | F-12 temporal hybrid 9.92 (unstable)
+     yaw2D magnitude alone (F-10)      5.90
+
+================================================================================================================
+ (14) THE >90 deg LIMIT -- independent of any sign result
+================================================================================================================
+   m_180 block: |yaw2D| p50 18.2  p95 74.2  MAX 83.7 deg over 139 frames
+   |yaw2D| = acos(clamp(uSpan*Z/K)) is bounded to [0,90]. A 120 deg turn and a 60 deg
+   turn foreshorten the shoulders identically, so no sign source can separate them.
+
+================================================================================================================
+ (15) IS A WRONG HIP SIGN ASSOCIATED WITH LOW CONFIDENCE?  (forensic only)
+================================================================================================================
+ population                   n  conf p50  conf p10 depthQ p50   dsd p50
+ sign CORRECT               306     0.625     0.608     1.000      28.9
+ sign WRONG                 128     0.610     0.450     0.690      34.5
+
+   81 of 128 WRONG-sign frames (63.3%) carry hip confidence >= 0.60 -- i.e. the sign
+   is wrong while the landmark looks healthy. Confidence is not validity.
+
+================================================================================================================
+ (16) TWIST BLOCKS -- reported for completeness, EXCLUDED from every headline number
+================================================================================================================
+   tw_rigid_p45   n= 102  heading label=45     hip dz p50=    0.0 mm  |dz| p50=   0.0
+   tw_sh_p45      n= 112  heading label=45     hip dz p50=    0.0 mm  |dz| p50=   0.0
+   tw_sh_m45      n= 114  heading label=-45    hip dz p50=    0.0 mm  |dz| p50=   0.0
+   tw_opp_a       n= 116  heading label=None   hip dz p50=    0.0 mm  |dz| p50=   0.0
+   tw_opp_b       n= 112  heading label=None   hip dz p50=    0.0 mm  |dz| p50=   0.0
+
+   tw_sh_* turn the SHOULDERS while the hips stay square, so the heading label is not
+   hip truth; and the subject reported confusion during this protocol in F-10.
+
+================================================================================================================
+ (17) FALSIFICATION -- the five cases that would sink the hypothesis
+================================================================================================================
+ case 1  true +45 but dz is 0 or points the wrong way :  191/380 = 50.3% of frames
+ case 2  true -45, wrong sign, hip confidence >= 0.60  :  0/371 = 0.0% of frames
+ case 3  true 0 but |dz| >= one disparity step (78 mm) :  75/1000 = 7.5% of frames
+ case 4  +90 and -90 give the same ordering            :  +90 defines a sign on 0 frames, -90 on 20, out of 569
+         -> at +90 the hip depth difference is NEVER non-zero, so +90 and -90 are
+            literally indistinguishable: neither produces a bit to compare.
+ case 5  sign changes with no physical turn            :  38 flips over 42 s of motion = 0.91/s
+
+================================================================================================================
+ distance coverage: both captures are ~1.5 m ('near'). Distance sensitivity NOT MEASURED.
+================================================================================================================

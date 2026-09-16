@@ -23,9 +23,15 @@ PoseSpaceConverter + poseFlipX/Y/Z tuning apply the same way. Run:
   cd python-sidecar~ && .venv\Scripts\python wholebody_udp_sender.py --model <rtmw3d-x.onnx> [--show]
 """
 
+import evidence_paths as EV
+
 import argparse
+import io          # F-21 S31.4: _read_cue() uses io.open and this was never imported - the bare
+                   # `except Exception` around it turned a NameError into a silent None on EVERY
+                   # call, so the --cue-file banner never drew. See the F-21 report S31.4.
 import json
 import socket
+import uuid
 import time
 import os
 
@@ -35,9 +41,21 @@ import depthai as dai
 
 import rtmw3d_pose as R
 import oak_depth as D
+import f18_portrait as PORTRAIT   # F-19: the transform VERIFIED in F-18, imported, not re-derived
 import smoothing
+import joint_tracker as JT   # P1-1 per-joint temporal tracking + plausibility
+import kinematic_recovery as KR   # P1-4 skeleton constraints + long-horizon recovery
+import target_ownership as TO   # F-21 single-person target ownership
+import pose_validation as PV    # F-22 human pose / biomechanical validation
 
 NUM_BODY = 33
+
+# P0-2 diagnostics: WholeBody index -> readable name for the tracked body joints we log spike/hold events on.
+JOINT_NAMES = {
+    5: "left_shoulder", 6: "right_shoulder", 7: "left_elbow", 8: "right_elbow",
+    9: "left_wrist", 10: "right_wrist", 11: "left_hip", 12: "right_hip",
+    13: "left_knee", 14: "right_knee", 15: "left_ankle", 16: "right_ankle",
+}
 
 # Left<->right JointId pairs for mirroring (a true reflection swaps sides AND negates X).
 MIRROR_PAIRS = [(1, 4), (2, 5), (3, 6), (7, 8), (9, 10), (11, 12), (13, 14), (15, 16),
@@ -47,6 +65,19 @@ MIRROR_PAIRS = [(1, 4), (2, 5), (3, 6), (7, 8), (9, 10), (11, 12), (13, 14), (15
 # farther = +). +1 assumes they agree (a joint the model puts farther gets a larger camera Z). This is
 # convention-sensitive — if occluded limbs poke the WRONG way in depth on a live OAK-D, flip to -1.0.
 ZREL_SIGN = 1.0
+
+
+# ---- F-20A PRODUCER SESSION ID ---------------------------------------------------------------
+# Generated ONCE per sidecar process and stamped on every datagram. F-19 measured that restarting
+# this process restarts `seq` at 1, after which Unity's P1-3 buffer correctly rejected every packet
+# as out-of-order and the avatar rendered a 208-second-old pose while every health counter looked
+# fine. The consumer cannot distinguish "restarted producer" from "stale/duplicated packets" by
+# sequence numbers alone - and treating a seq reset as proof of a restart would be the same as
+# disabling ordering. An explicit per-process identifier is that proof.
+#
+# Adding a field is backward compatible: consumers that do not read `sid` are unaffected, and the
+# payload grows by ~22 bytes out of a ~6 KB datagram.
+SESSION_ID = uuid.uuid4().hex[:12]
 
 
 def _fallback_point(wb_index, uv, zrel, zrel_hip, mid_hip, hip_z, intr, use_zrel):
@@ -68,6 +99,17 @@ def _fallback_point(wb_index, uv, zrel, zrel_hip, mid_hip, hip_z, intr, use_zrel
     x = (u_d - cx) * z_cam / fx
     y = (v_d - cy) * z_cam / fy
     return np.array([x, y, z_cam], dtype=np.float32) - mid_hip
+
+
+# F-08 AUDIT (DIAG-ONLY): the COCO-WholeBody indices the audit traces, by name.
+AUDIT_JOINTS = (("L-shoulder", 5), ("R-shoulder", 6), ("L-elbow", 7), ("R-elbow", 8),
+                ("L-wrist", 9), ("R-wrist", 10), ("L-hip", 11), ("R-hip", 12),
+                ("L-knee", 13), ("R-knee", 14), ("L-ankle", 15), ("R-ankle", 16))
+# F-11 (DIAG-ONLY): face keypoints for the 2-D torso-yaw SIGN experiment. COCO-WholeBody indices,
+# confirmed against rtmw3d_pose.COCO17_TO_JOINTID: 0 nose, 1/2 eyes, 3/4 ears.
+# Deliberately SEPARATE from AUDIT_JOINTS: these carry no depth window, and keeping them out of that
+# tuple leaves the periodic depthQuality aggregate (which iterates AUDIT_JOINTS) numerically unchanged.
+AUDIT_FACE_JOINTS = (("nose", 0), ("L-eye", 1), ("R-eye", 2), ("L-ear", 3), ("R-ear", 4))
 
 
 def build_body_landmarks(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z, intr, conf_thr,
@@ -169,29 +211,177 @@ def main():
     parser.add_argument("--conf", type=float, default=0.3, help="keypoint confidence threshold")
     parser.add_argument("--kwin", type=int, default=5, help="depth sampling window (px)")
     parser.add_argument("--show", action="store_true", help="cv2 preview of the OAK view + skeleton")
-    parser.add_argument("--flatten-trunk", action=argparse.BooleanOptionalAction, default=True,
-                        help="zero the Z of shoulders+hips so the trunk stays vertical (fixes the forward hunch from noisy torso depth). --no-flatten-trunk to disable.")
+    parser.add_argument("--flatten-trunk", action=argparse.BooleanOptionalAction, default=False,
+                        help="DEFAULT OFF (Milestone-2): keep the measured trunk Z so the model can BEND at the waist and TURN like the skeleton. The trunk joints are now depth-smoothed (see limb_idx) so this is stable at ~2 m without the old profile swing. Pass --flatten-trunk to restore the frontal-locked fallback (zeroes shoulders+hips Z) if a noisy/farther setup swings into profile.")
     parser.add_argument("--mirror", action=argparse.BooleanOptionalAction, default=False,
                         help="DEFAULT OFF. Mirroring the INPUT skeleton (negate X + swap sides) reflects the pose, but the FK retarget builds rotations with LookRotation and a reflected skeleton twists the torso/limbs. Leave off (clean 'copy' retarget); do the mirror on the Unity/avatar side instead. --mirror to experiment.")
     parser.add_argument("--smooth", action=argparse.BooleanOptionalAction, default=True,
                         help="temporal One-Euro smoothing + depth-outlier gate to kill jitter. --no-smooth to disable.")
-    parser.add_argument("--min-cutoff", type=float, default=0.7, help="One-Euro min cutoff Hz — sets smoothness WHEN STILL (lower = smoother/steadier when you hold still, but adds lag to slow moves). Unity's jointFilter is bypassed for OAK (single-owner smoothing, ADR-020), so this is the ONLY smoothing stage. Range ~0.3 (very steady) .. 1.0 (snappier when still).")
+    parser.add_argument("--min-cutoff", type=float, default=0.5, help="One-Euro min cutoff Hz — sets smoothness WHEN STILL (lower = smoother/steadier when you hold still, but adds lag to slow moves). Unity's jointFilter is bypassed for OAK (single-owner smoothing, ADR-020), so this is the ONLY smoothing stage. Range ~0.3 (very steady) .. 1.0 (snappier when still).")
     parser.add_argument("--beta", type=float, default=0.4, help="One-Euro beta — sets REACTION SPEED during motion (higher = less lag on fast moves). The old 0.02 felt sluggish on metric keypoints; 0.4 reacts quickly while --min-cutoff keeps stillness steady. Raise toward ~1.0 if it still feels laggy, lower if fast moves look jittery (ADR-020).")
-    parser.add_argument("--max-jump", type=float, default=1.5, help="rate-limit a keypoint that jumps more than this many metres in one frame (only catches gross depth-spike garbage; keep it ABOVE the depth-quantization step so normal motion is untouched)")
+    parser.add_argument("--max-jump", type=float, default=1.5, help="GLOBAL rate-limit (m/frame) for trunk + hands. Kept generous; the distal-limb caps below are tighter (P0-2).")
+    parser.add_argument("--arm-max-jump", type=float, default=0.35, help="P0-2: tighter per-frame displacement cap (m) for elbows+wrists (WB 7,8,9,10). Below the observed ~0.8 m spikes, above the depth-quantization step. Rate-limited (slewed), not dropped, so genuine fast motion catches up in 1-2 frames.")
+    parser.add_argument("--leg-max-jump", type=float, default=0.35, help="P0-2: tighter per-frame displacement cap (m) for knees+ankles (WB 13,14,15,16). Same rationale as --arm-max-jump; legs are now also depth-smoothed + hold-protected.")
     parser.add_argument("--depth-min-cutoff", type=float, default=0.3, help="LIMB depth (z) gets a HEAVIER One-Euro min-cutoff than the image plane (limb depth is ~5x noisier for small/distant hands). Lower = steadier depth, more lag. Arms+hands only.")
     parser.add_argument("--depth-beta", type=float, default=0.1, help="One-Euro beta for LIMB depth (low = depth reacts slowly, since it is the noisy axis). Raise if reaching toward/away the camera feels laggy.")
     parser.add_argument("--max-hold-frames", type=int, default=8, help="hold a LIMB keypoint's last-good value through up to N depth-dropout frames instead of the noisy zrel fallback (kills the 8-12 m spikes). 0 = off. Bounded so a genuinely-gone limb still drops.")
     parser.add_argument("--zrel-fallback", action=argparse.BooleanOptionalAction, default=True,
                         help="M16: for keypoints with NO measured depth (holes), use the model's root-relative z as the depth offset from the hip plane instead of flattening to the plane. --no-zrel-fallback restores the flat hip-plane. If occluded limbs poke the wrong way in depth, flip ZREL_SIGN in this file.")
     parser.add_argument("--seconds", type=float, default=0.0, help="auto-stop after N seconds (0 = run forever)")
+    # ---- P1-1 ----
+    # ---- P1-2 frame freshness ----
+    parser.add_argument("--latest-frame", dest="latest_frame", action="store_true", default=True,
+                        help="P1-2 (default ON): drain the RGB/depth queues to the NEWEST frame each "
+                             "iteration instead of consuming them FIFO. q.get() returns the OLDEST "
+                             "frame, so when inference is slower than the sensor the host queue "
+                             "(maxSize=4) stays full and every pose is ~4 frames (~133 ms) stale.")
+    parser.add_argument("--no-latest-frame", dest="latest_frame", action="store_false",
+                        help="P1-2 OFF: original FIFO behaviour (for A/B).")
+    # ---- F-08: surface-aware depth sampling (measurement change, quality is ADVISORY) ----
+    parser.add_argument("--surface-depth", dest="surface_depth", action="store_true", default=True,
+                        help="F-08 (default ON): separate depth surfaces inside the sampling window "
+                             "and take the one at the keypoint pixel, instead of a percentile over "
+                             "every valid pixel. Single-surface windows are unchanged; only "
+                             "multi-surface windows differ.")
+    parser.add_argument("--no-surface-depth", dest="surface_depth", action="store_false",
+                        help="A/B only: restore the pre-F-08 whole-window percentile sampler.")
+    # ---- F-08 AUDIT: DIAG-ONLY, default OFF, no effect on the emitted pose ----
+    parser.add_argument("--audit-log", action="store_true", default=False,
+                        help="F-08 AUDIT (DIAG-ONLY, default OFF): write audit_log.jsonl with, per "
+                             "frame and per body joint, the RAW SimCC confidence, the 2D pixel, the "
+                             "depth-validity flag and full depth-window statistics -- plus a raw "
+                             "depth crop every --audit-crop-every frames. Read-only: it observes "
+                             "the same values production uses and changes nothing.")
+    parser.add_argument("--audit-crop-every", type=int, default=3,
+                        help="F-08 AUDIT: dump the raw depth crop every Nth frame (0 = never).")
+    parser.add_argument("--audit-crop-k", type=int, default=11,
+                        help="F-08 AUDIT: side length of the raw depth crop (odd; 11 covers 5x5 "
+                             "and lets larger estimators be evaluated OFFLINE).")
+    parser.add_argument("--inject-drift-file", default="",
+                        help="TEST-ONLY (P1-4 visual validation). Path polled once per frame; when the file "
+                        "appears it is read as JSON {mode:drift|teleport, joint:N, meters:F, frames:N} and "
+                        "DELETED, then that joint is corrupted for N frames at HIGH confidence upstream of "
+                        "P1-1/P1-4. Never set this in production; it deliberately falsifies measurements.")
+    parser.add_argument("--inject-load-ms", type=float, default=0.0,
+                        help="TEST-ONLY (P1-2 diagnostics): add N ms of artificial work per frame to "
+                             "reproduce the consumer-slower-than-sensor condition a tracked subject "
+                             "causes (~21 fps), so the queue policy can be proven without a human. "
+                             "0 = off. Never set this in production.")
+    parser.add_argument("--tracker", dest="tracker", action="store_true", default=True,
+                        help="P1-1 per-joint temporal tracking + plausibility (default ON). Catches "
+                             "CONFIDENT-BUT-WRONG landmarks that the confidence gate cannot see.")
+    parser.add_argument("--no-tracker", dest="tracker", action="store_false",
+                        help="disable P1-1 (A/B against P0-only).")
+    parser.add_argument("--tracker-predict-frames", type=int, default=6,
+                        help="P1-1 max PREDICTED frames before a joint goes LOST (2-6 typical).")
+    parser.add_argument("--tracker-reacquire-frames", type=int, default=5,
+                        help="P1-1 frames to blend predicted -> measured on reacquisition (never teleport).")
+    # ---- P1-4: REJECTED / EXPERIMENTAL -- NOT FOR SHIPPING (see docs/P1_4_CLOSEOUT_2026-09-08.md)
+    # DEFAULT OFF. Live human validation on 2026-09-08 showed P1-4 MISSED the controlled
+    # 0.85 m knee drift/teleport (GEOMETRIC_REJECT=0, RECONSTRUCT=0) while raising P0 limb
+    # holds 0.47% -> 17.83% and LOST episodes 1 -> 122. The bone-length signal it rejects on
+    # overlaps the natural noise floor of this pipeline, so no threshold separates them.
+    # Retained for forensic/research use ONLY; do not enable in production.
+    parser.add_argument("--recovery", dest="recovery", action="store_true", default=False,
+                        help="RESEARCH ONLY -- P1-4 is REJECTED (default OFF). Skeleton-level "
+                             "constraints + long-horizon recovery. It did NOT catch the controlled "
+                             "corruption on hardware and it degraded the avatar; see "
+                             "docs/P1_4_CLOSEOUT_2026-09-08.md before enabling.")
+    parser.add_argument("--no-recovery", dest="recovery", action="store_false",
+                        help="explicitly disable P1-4 (already the default).")
+    parser.add_argument("--recovery-max-frames", type=int, default=30,
+                        help="RESEARCH ONLY (P1-4 rejected): max frames a joint may be "
+                             "geometrically reconstructed before it goes LOST.")
+    parser.add_argument("--recovery-blend-frames", type=int, default=8,
+                        help="RESEARCH ONLY (P1-4 rejected): frames to blend a recovered joint back.")
+    # ---- F-19 PORTRAIT CAMERA ORIENTATION -----------------------------------------------
+    # Portrait is a CAMERA/INPUT transformation, not a new pose protocol: the RGB, the depth
+    # and the INTRINSICS are rotated together, so back-projection still yields the same
+    # (X right, Y down, Z forward) camera-space convention every downstream stage already
+    # expects. The UDP payload is byte-for-byte unchanged and Unity cannot tell the
+    # difference. Default OFF: landscape stays the rollback path until F-19 passes.
+    parser.add_argument("--portrait", action=argparse.BooleanOptionalAction, default=False,
+                        help="F-19: rotate RGB+depth+intrinsics 90 deg so the camera can be "
+                             "mounted in portrait. OFF = landscape (default, rollback path).")
+    parser.add_argument("--portrait-dir", default="ccw", choices=["ccw", "cw"],
+                        help="F-19: rotation direction. F-18 measured CCW on this mount.")
+    # ---- F-19 STEREO SUB-PIXEL --------------------------------------------------------------
+    # Why this flag exists, stated plainly rather than slipped in: EVERY F-18 portrait measurement
+    # was taken with sub-pixel 1/8 (capture config "sub3"), while production ships setSubpixel(False).
+    # F-19's live preflight measured what that costs - at 0.90 m the shipped configuration has a
+    # 6.80 deg TORSO-YAW QUANTUM (235 of 270 frames sat on one 116 mm shoulder-dz bin), against
+    # 0.85 deg with 1/8 sub-pixel, and only the latter met the <=5 deg median gate on a square
+    # subject. Without this flag the live avatar test could only be run on a configuration that
+    # provably cannot meet its own measurement criterion.
+    # DEFAULT -1 LEAVES PRODUCTION EXACTLY AS SHIPPED - nothing changes unless it is passed.
+    parser.add_argument("--subpixel-bits", type=int, default=-1,
+                        help="F-19: -1 (default) = production stereo settings untouched. "
+                             "0 = sub-pixel off, 3 = 1/8 px (the configuration F-18 validated).")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
+    # ---- F-21 TARGET OWNERSHIP ---------------------------------------------------------------
+    # Default ON: an unattended installation must not silently switch to a second person (F-19's
+    # failure mode). --no-ownership restores the exact pre-F-21 M15 behaviour for A/B comparison.
+    # See target_ownership.py's module docstring + docs/F21_SINGLE_PERSON_TARGET_OWNERSHIP_*.md for
+    # what each threshold is derived from - none of these are arbitrary round numbers.
+    parser.add_argument("--ownership", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--ownership-min-confidence", type=float, default=0.3,
+                        help="reuses --conf's value by default; kept separate so it can be tuned "
+                             "independently if evidence ever calls for it")
+    parser.add_argument("--ownership-acquire-frames", type=int, default=5,
+                        help="mirrors P1-1's own --tracker-reacquire-frames default")
+    parser.add_argument("--ownership-reacquire-frames", type=int, default=5)
+    parser.add_argument("--ownership-switch-margin", type=float, default=0.35,
+                        help="max plausible per-frame RAW (pre-smoothing) hip displacement, metres")
+    parser.add_argument("--ownership-scale-margin", type=float, default=0.45,
+                        help="corroborating torso-span tolerance ratio, not a primary discriminator")
+    parser.add_argument("--ownership-reacquire-window", type=float, default=2.0,
+                        help="seconds a temporarily-lost owner can still fast-reacquire")
+    parser.add_argument("--ownership-release-timeout", type=float, default=4.0,
+                        help="seconds of no matching observation before RELEASED")
+    parser.add_argument("--ownership-log-dir", default=EV.oak_v4("f21"),
+                        help="target_events.jsonl written here; empty = no file (console log only)")
+    # ---- F-22 HUMAN POSE VALIDATION ----------------------------------------------------------
+    # Default ON: F-19 found an anatomically-impossible elbow travelling the full path un-gated
+    # (LimbGate held 0.00% of that block - confidence was high, the angle was not). --no-pose-
+    # validation restores the exact pre-F-22 path for A/B comparison. Thresholds are cited in
+    # pose_validation.py's own module docstring + docs/F22_HUMAN_POSE_VALIDATION_*.md - none is a
+    # visual guess.
+    parser.add_argument("--pose-validation", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--pose-validation-log-dir", default=EV.oak_v4("f22"),
+                        help="pose_events.jsonl written here; empty = no file (console log only)")
+    parser.add_argument("--cue-file", default="",
+                        help="live-protocol phase cue (JSON: title/instruction/seconds_left), drawn "
+                             "as a banner on the --show preview - see f21_live_protocol.py. Empty = off.")
+    parser.add_argument("--cue-panel", action="store_true",
+                        help="F-21 S32: draw the cue as a LARGE side panel (instruction + top-down "
+                             "diagram) next to the feed in ONE window, instead of the small banner "
+                             "on top of it. The banner is 13 px cap-height in a 400 px AUTOSIZE "
+                             "window - readable at the desk, ~4x too small at the camera, which is "
+                             "where the subjects are. PREVIEW-ONLY and opt-in: without this flag "
+                             "the preview is unchanged. Needs --show and --cue-file.")
     args = parser.parse_args()
+    global _CUE_PANEL
+    _CUE_PANEL = bool(args.cue_panel)
+
+    if args.subpixel_bits >= 0:
+        # Applied to the shared STEREO_CONFIG BEFORE build_rgbd_pipeline reads it, so the startup
+        # banner and the pipeline cannot disagree.
+        D.STEREO_CONFIG["subpixel"] = args.subpixel_bits > 0
+        D.STEREO_CONFIG["subpixelBits"] = args.subpixel_bits
 
     log_f = None
+    holds_f = None
     if args.log_dir:
         os.makedirs(args.log_dir, exist_ok=True)
         log_f = open(os.path.join(args.log_dir, "sender_log.jsonl"), "w", buffering=1)
-        print("[wb] pipeline logging -> %s" % os.path.join(args.log_dir, "sender_log.jsonl"))
+        # P0-2: separate stream of rejected/held joint events (spike rate-limits + depth dropouts).
+        holds_f = open(os.path.join(args.log_dir, "holds_log.jsonl"), "w", buffering=1)
+    audit_f = None
+    if args.audit_log and args.log_dir:
+        audit_f = open(os.path.join(args.log_dir, "audit_log.jsonl"), "w", buffering=1)
+        print("[wb] F-08 AUDIT logging -> %s (DIAG-ONLY)"
+              % os.path.join(args.log_dir, "audit_log.jsonl"))
+        print("[wb] pipeline logging -> %s (+ holds_log.jsonl)" % os.path.join(args.log_dir, "sender_log.jsonl"))
 
     print("[wb] loading RTMW3D ...")
     model = R.RTMW3D(args.model)
@@ -208,20 +398,128 @@ def main():
         depth0 = q_depth.get().getFrame()
         dh, dw = depth0.shape
         intr = D.read_rgb_intrinsics(device, dw, dh)
-        print("[wb] rgb %dx%d depth %dx%d intr fx=%.1f fy=%.1f cx=%.1f cy=%.1f  -> %s"
-              % (rgb_w, rgb_h, dw, dh, intr[0], intr[1], intr[2], intr[3], str(addr)))
+        # ---- F-19 PORTRAIT ---------------------------------------------------------------------
+        # read_rgb_intrinsics returns intrinsics in DEPTH-frame pixels (backproject scales uv into
+        # that frame), so the intrinsics must be rotated against (dw, dh) and NOT against the RGB
+        # dimensions. They are the same 640x400 here, but rotating against the wrong frame would
+        # silently corrupt every back-projected X, so it is done explicitly.
+        intr_landscape = intr
+        if args.portrait:
+            intr = PORTRAIT.rotate_intrinsics(intr, dw, dh, args.portrait_dir)
+            rgb_w, rgb_h = rgb_h, rgb_w
+            dw, dh = dh, dw
+        _orient = ("PORTRAIT_" + args.portrait_dir.upper()) if args.portrait else "LANDSCAPE"
+        print("[wb] ======================================================================")
+        print("[wb] CameraOrientation = %s" % _orient)
+        print("[wb]   rgb %dx%d   depth %dx%d" % (rgb_w, rgb_h, dw, dh))
+        print("[wb]   intrinsics  fx=%.3f fy=%.3f cx=%.3f cy=%.3f" % intr)
+        if args.portrait:
+            print("[wb]   intrinsics(landscape, pre-rotation)  fx=%.3f fy=%.3f cx=%.3f cy=%.3f"
+                  % intr_landscape)
+        print("[wb]   FOV  H %.2f deg  V %.2f deg"
+              % (PORTRAIT.fov_deg(intr[0], dw), PORTRAIT.fov_deg(intr[1], dh)))
+        # Read back from oak_depth.STEREO_CONFIG, never hand-written: see the note there.
+        print("[wb]   stereo: %s" % D.stereo_config_str())
+        print("[wb]   depth sampling: surfaceDepth=%s kwin=%d (F-08)"
+              % (args.surface_depth, args.kwin))
+        print("[wb]   working-distance target: 0.90 m (F-18 preferred)")
+        print("[wb]   udp -> %s" % str(addr))
+        print("[wb]   producer session id = %s  (F-20A: new on every process start)" % SESSION_ID)
+        print("[wb] ======================================================================")
 
         bbox = R.center_bbox(rgb_w, rgb_h)
         body_smoother = None
         if args.smooth:
-            # LIMB depth-smoothing + hold-on-dropout target: arms (elbows 7/8, wrists 9/10) + both hands
-            # (WholeBody 91-132). Legs are intentionally EXCLUDED so an occluded lower body still drops.
-            limb_idx = set([7, 8, 9, 10]) | set(range(91, 133))
+            # Depth-smoothing + hold-on-dropout target: TRUNK (shoulders 5/6, hips 11/12) + arms (elbows 7/8,
+            # wrists 9/10) + LEGS (knees 13/14, ankles 15/16) + both hands (WholeBody 91-132). P0-2 (audit
+            # F-04): legs were previously EXCLUDED, so a bad/occluded knee got only the light image-plane
+            # One-Euro (no heavy depth cutoff, no hold) → leg jitter/collapse. They now get the SAME depth
+            # smoothing + bounded hold as the arms. The hold is bounded (max_hold), so a genuinely-gone
+            # lower body still drops after N frames rather than freezing.
+            limb_idx = set([5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]) | set(range(91, 133))
+            # P0-2: per-index displacement caps. Trunk (5,6,11,12) + hands keep the global --max-jump; the
+            # spike-prone distal joints (wrist/elbow/knee/ankle) get tighter caps that sit BELOW the observed
+            # ~0.8 m spikes but ABOVE the depth-quantization step, so garbage is slewed out while genuine fast
+            # motion still catches up within a frame or two (rate-limited, never frozen).
+            limb_max_jump = {}
+            for _idx in (7, 8, 9, 10):
+                limb_max_jump[_idx] = args.arm_max_jump
+            for _idx in (13, 14, 15, 16):
+                limb_max_jump[_idx] = args.leg_max_jump
             body_smoother = smoothing.KeypointSmoother(
                 133, min_cutoff=args.min_cutoff, beta=args.beta, max_jump=args.max_jump,
                 depth_min_cutoff=args.depth_min_cutoff, depth_beta=args.depth_beta,
-                limb_indices=limb_idx, max_hold=args.max_hold_frames)
+                limb_indices=limb_idx, max_hold=args.max_hold_frames,
+                max_jump_overrides=limb_max_jump)
+        # P1-1: one reusable tracker per tracked joint. Runs AFTER the P0 smoother, so P0-2's
+        # cap/hold behaviour is untouched; P1 only adds temporal state + plausibility on top.
+        skel = None
+        if args.tracker:
+            skel = JT.SkeletonTracker(cfg=JT.TrackerConfig(
+                max_predict_frames=args.tracker_predict_frames,
+                reacquire_frames=args.tracker_reacquire_frames))
+            print("[wb] P1-1 joint tracker ON (predict<=%d, reacquire=%d)"
+                  % (args.tracker_predict_frames, args.tracker_reacquire_frames))
+        recovery = None
+        if args.tracker and args.recovery:
+            # P1-4 sits AFTER P1-1 and consumes its output. It is meaningless without the
+            # tracker, so it is gated on it.
+            recovery = KR.KinematicRecovery(KR.RecoveryConfig(
+                max_reconstruct_frames=args.recovery_max_frames,
+                recover_frames=args.recovery_blend_frames))
+            print("[wb] *** WARNING: P1-4 kinematic recovery ENABLED (reconstruct<=%d, blend=%d)"
+                  % (args.recovery_max_frames, args.recovery_blend_frames))
+            print("[wb] *** P1-4 is REJECTED for production -- research use only.")
+            print("[wb] *** See docs/P1_4_CLOSEOUT_2026-09-08.md")
+        # F-21: single-person target ownership. Sits between the raw depth-backprojected keypoints
+        # and P0 smoothing/P1-1/the UDP build - see target_ownership.py's module docstring for why
+        # RAW (pre-smoothing) data is what it evaluates.
+        ownership = None
+        target_log_f = None
+        if args.ownership:
+            ownership = TO.TargetOwnership(TO.OwnershipConfig(
+                min_confidence=args.ownership_min_confidence,
+                acquire_confirm_frames=args.ownership_acquire_frames,
+                reacquire_confirm_frames=args.ownership_reacquire_frames,
+                switch_margin_m=args.ownership_switch_margin,
+                scale_margin_ratio=args.ownership_scale_margin,
+                reacquire_window_s=args.ownership_reacquire_window,
+                release_timeout_s=args.ownership_release_timeout))
+            if args.ownership_log_dir:
+                os.makedirs(args.ownership_log_dir, exist_ok=True)
+                target_log_f = open(os.path.join(args.ownership_log_dir, "target_events.jsonl"),
+                                    "a", buffering=1)
+            print("[wb] F-21 target ownership ON (confirm=%d/%d switch_margin=%.2fm "
+                  "reacquire_window=%.1fs release_timeout=%.1fs)"
+                  % (args.ownership_acquire_frames, args.ownership_reacquire_frames,
+                     args.ownership_switch_margin, args.ownership_reacquire_window,
+                     args.ownership_release_timeout))
+        else:
+            print("[wb] *** F-21 target ownership OFF (--no-ownership) - pre-F-21 M15 behaviour; "
+                  "a second person CAN silently take over tracking. Diagnostic/A-B use only.")
+
+        # F-22: elbow/knee biomechanical validation - see pose_validation.py's module docstring.
+        pose_validator = None
+        pose_log_f = None
+        if args.pose_validation:
+            pose_validator = PV.PoseValidator()
+            if args.pose_validation_log_dir:
+                os.makedirs(args.pose_validation_log_dir, exist_ok=True)
+                pose_log_f = open(os.path.join(args.pose_validation_log_dir, "pose_events.jsonl"),
+                                  "a", buffering=1)
+            print("[wb] F-22 pose validation ON (elbow reject=%.0fdeg knee reject=%.0fdeg)"
+                  % (PV.ELBOW_CONFIG.reject_deg, PV.KNEE_CONFIG.reject_deg))
+        else:
+            print("[wb] *** F-22 pose validation OFF (--no-pose-validation) - pre-F-22 behaviour; "
+                  "an anatomically impossible elbow/knee CAN reach the avatar un-gated (F-19). "
+                  "Diagnostic/A-B use only.")
+        stale_rgb = 0         # P1-2: RGB frames discarded as stale (never inferred on)
+        stale_depth = 0       # P1-2: depth frames discarded as stale
         frames = 0            # monotonic total frame count (never reset)
+        inject = None         # TEST-ONLY --inject-drift-file: active injection, or None
+        # F-08 depth-quality aggregate, flushed on the periodic log tick.
+        # [qSum, n, clusterSum, occSum, selSpreadSum, winSpreadSum, validSum, multiCount]
+        dq_agg = dict((n, [0.0] * 8) for n, _ in AUDIT_JOINTS)
         win_frames = 0        # LOW-D: separate windowed counter for the fps estimate (reset each log window)
         sent = 0
         last_mid_hip = None   # M11: hold last good mid-hip through transient hip depth-holes
@@ -231,29 +529,248 @@ def main():
         while True:
             if args.seconds > 0.0 and (time.time() - t_start) > args.seconds:
                 break
-            frame = q_rgb.get().getCvFrame()
-            depth = q_depth.get().getFrame()
+            _cue = _read_cue(args.cue_file) if args.cue_file else None
+            # DIAG-ONLY (P0 acceptance S16): stage timestamps so camera->pose->depth->send is MEASURED,
+            # not estimated. `getTimestamp()` is the OAK device clock (synchronised to the host by
+            # depthai), so `dai.Clock.now() - ts` is the true sensor->host latency. Read-only.
+            # ---- P1-2 FRAME FRESHNESS -------------------------------------------
+            # q.get() hands back the OLDEST queued packet. With inference (~21 ms) slower
+            # than the 30 fps sensor the host queue (maxSize=4) stays full, so FIFO makes
+            # every pose ~4 frames stale -- the measured ~131 ms camera->host latency.
+            # Fix: take one blocking packet (guarantees liveness), then drain whatever else
+            # has arrived and keep only the NEWEST. Stale intermediates are discarded.
+            _rgb_pkt = q_rgb.get()
+            _rgb_dropped = 0
+            _depth_dropped = 0
+            _depth_pkt = q_depth.get()
+            if args.latest_frame:
+                _extra = q_rgb.tryGetAll()
+                if _extra:
+                    _rgb_dropped = len(_extra)
+                    _rgb_pkt = _extra[-1]
+                _dextra = q_depth.tryGetAll()
+                _depth_cands = [_depth_pkt] + list(_dextra)
+                _depth_dropped = len(_depth_cands) - 1
+                # RGB/depth pairing: pick the depth packet CLOSEST IN TIMESTAMP to the
+                # selected RGB frame. Taking newest-RGB + oldest-depth (or vice versa)
+                # would mis-associate depth, which the brief explicitly forbids.
+                try:
+                    _rts = _rgb_pkt.getTimestamp()
+                    _depth_pkt = min(_depth_cands,
+                                     key=lambda _d: abs((_d.getTimestamp() - _rts).total_seconds()))
+                except Exception:
+                    _depth_pkt = _depth_cands[-1]
+            t_cap = time.time()
+            try:
+                _cam_lat_ms = (dai.Clock.now() - _rgb_pkt.getTimestamp()).total_seconds() * 1000.0
+            except Exception:
+                _cam_lat_ms = -1.0
+            try:
+                _sync_ms = abs((_rgb_pkt.getTimestamp() - _depth_pkt.getTimestamp()).total_seconds()) * 1000.0
+            except Exception:
+                _sync_ms = -1.0
+            frame = _rgb_pkt.getCvFrame()
+            depth = _depth_pkt.getFrame()
+            if args.portrait:
+                # BOTH must rotate, identically: depth is aligned to CAM_A, so any mismatch would
+                # sample the wrong surface for every keypoint.
+                frame = PORTRAIT.rotate_image(frame, args.portrait_dir)
+                depth = PORTRAIT.rotate_image(depth, args.portrait_dir)
+            t_depth_ready = time.time()
+            stale_rgb += _rgb_dropped
+            stale_depth += _depth_dropped
             frames += 1
             win_frames += 1
 
+            # ---- IDLE LIVENESS HEARTBEAT ------------------------------------------------------
+            # The detailed "[wb] frames=..." status line further down sits AFTER build_body_landmarks
+            # and the UDP send, so every `continue` above it skips the heartbeat entirely: no hip
+            # depth, and (since F-21) any frame ownership withholds. With nobody in front of the
+            # camera, a perfectly healthy sidecar therefore prints NO frames= line at all.
+            #
+            # That silently breaks F-20B. Its readiness check is "SID banner, then the first
+            # frames= line" (sidecar_supervisor.py SID_MARKER/FRAME_MARKER), so an EMPTY ROOM - the
+            # normal state of an unattended installation between visitors - reads as a stuck
+            # startup. Reproduced on real hardware 2026-09-14 with the OAK-D attached and no person
+            # present: "STARTUP STUCK pid=24460 not ready after 45s - killing for restart", then the
+            # same again on every retry, which reaches FAILED_PERMANENT after 5 restarts (~4 min).
+            # F-20B's live SS17 matrix passed only because a person was standing in frame throughout.
+            #
+            # A liveness heartbeat must report that the CAMERA LOOP is alive, which is not the same
+            # question as whether a SUBJECT is present. This fires only when the detailed line has
+            # been starved (3 s > its own 2 s cadence), so it never doubles up during normal
+            # tracking - it is purely the idle case.
+            if time.time() - t_log > 3.0:
+                print("[wb] frames=%d sent=%d idle - camera loop alive, no pose emitted "
+                      "(no subject / withheld) fps~%.1f age=%.0fms stale=%d"
+                      % (frames, sent, win_frames / (time.time() - t_log + 1e-6),
+                         _cam_lat_ms, stale_rgb), flush=True)
+                t_log = time.time()
+                win_frames = 0
+
             uv, zrel, conf = model.infer(frame, bbox)
-            # Person-box tracking WITH recovery (M15): follow the person from the previous frame's
-            # confident keypoints; if detection is lost OR the box wedges (body confidence stays low for a
-            # sustained run, e.g. it locked onto a false detection), re-acquire from the full-frame centre.
+            if args.inject_load_ms > 0.0:      # TEST-ONLY, see --inject-load-ms
+                _busy_until = time.perf_counter() + args.inject_load_ms / 1000.0
+                while time.perf_counter() < _busy_until:
+                    pass
+            t_pose = time.time()
+            # Person-box tracking (M15): candidate box from THIS frame's confident keypoints. Whether
+            # it is actually ACCEPTED as the new crop centre is decided after backprojection, below -
+            # F-21 gates it by identity when ownership is on (SS9 of the report: without this, the
+            # crop would keep following whoever is currently most confident regardless of who F-21
+            # has decided is the owner, and a reacquire of the true owner would become impossible).
             refined = R.bbox_from_keypoints(uv, conf, rgb_w, rgb_h, thr=args.conf)
             body_conf_mean = float(np.mean(conf[0:17]))
-            if refined is not None and body_conf_mean >= args.conf:
-                lowconf_streak = 0
-                bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
-            else:
-                lowconf_streak = lowconf_streak + 1
-                if refined is None or lowconf_streak >= 20:
-                    bbox = R.center_bbox(rgb_w, rgb_h)
-                    lowconf_streak = 0
-                else:
-                    bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
 
-            xyz_cam, measured = D.backproject(uv, depth, rgb_w, rgb_h, intr, k=args.kwin)
+            # F-08: quality + per-window diagnostics come back alongside the SAME xyz/measured
+            # contract. depthQuality is ADVISORY in this change -- nothing consumes it to gate,
+            # suppress or reweight a joint. See docs/F08_SURFACE_AWARE_DEPTH_IMPLEMENTATION_*.
+            xyz_cam, measured, dquality, ddiag = D.backproject(
+                uv, depth, rgb_w, rgb_h, intr, k=args.kwin,
+                with_quality=True, legacy=not args.surface_depth)
+            for _n, _i in AUDIT_JOINTS:          # periodic aggregate (NOT per frame)
+                _agg = dq_agg[_n]
+                _agg[0] += float(dquality[_i])
+                _agg[1] += 1
+                _dg = ddiag[_i]
+                if _dg is not None:
+                    _agg[2] += _dg["clusterCount"]
+                    _agg[3] += _dg["selectedClusterOccupancy"]
+                    _agg[4] += _dg["selectedClusterSpread"]
+                    _agg[5] += _dg["depthWindowSpread"]
+                    _agg[6] += _dg["validPixelCount"]
+                    if _dg["clusterCount"] > 1:
+                        _agg[7] += 1
+            # ---- F-08 AUDIT (DIAG-ONLY) -------------------------------------------
+            # Observes exactly what production just computed: the RAW SimCC confidence, the 2D
+            # pixel, the depth-validity flag, and the CONTENTS of the depth window that produced
+            # z. Nothing here feeds back into the pose. See docs/F08_*.
+            if audit_f is not None:
+                _sxd = depth.shape[1] / float(rgb_w)
+                _syd = depth.shape[0] / float(rgb_h)
+                _r = args.kwin // 2
+                _crop = (args.audit_crop_every > 0
+                         and (frames % args.audit_crop_every) == 0)
+                _ck = args.audit_crop_k // 2
+                _rec = {"seq": frames, "t": t_cap, "hipZ": None, "syncMs": _sync_ms,
+                        "camLatMs": _cam_lat_ms, "j": {}, "f": {}}
+                for _n, _i in AUDIT_JOINTS:
+                    _ud = uv[_i, 0] * _sxd
+                    _vd = uv[_i, 1] * _syd
+                    _x, _y = int(round(_ud)), int(round(_vd))
+                    _x0, _x1 = max(0, _x - _r), min(depth.shape[1], _x + _r + 1)
+                    _y0, _y1 = max(0, _y - _r), min(depth.shape[0], _y + _r + 1)
+                    _e = {"c": round(float(conf[_i]), 4),
+                          "u": round(float(uv[_i, 0]), 2), "v": round(float(uv[_i, 1]), 2),
+                          "m": int(bool(measured[_i]))}
+                    if _x1 > _x0 and _y1 > _y0:
+                        _w = depth[_y0:_y1, _x0:_x1].reshape(-1)
+                        _v = _w[_w > 0]
+                        _e["n"] = int(_w.size)
+                        _e["nv"] = int(_v.size)
+                        if _v.size:
+                            _e["p30"] = round(float(np.percentile(_v, 30.0)), 1)
+                            _e["p50"] = round(float(np.percentile(_v, 50.0)), 1)
+                            _e["dmin"] = int(_v.min())
+                            _e["dmax"] = int(_v.max())
+                            _e["dsd"] = round(float(_v.std()), 1)
+                        _cp = depth[max(0, _y - 0):_y + 1, max(0, _x - 0):_x + 1]
+                        _e["ctr"] = int(_cp.reshape(-1)[0]) if _cp.size else 0
+                    if _crop:
+                        _cx0, _cx1 = max(0, _x - _ck), min(depth.shape[1], _x + _ck + 1)
+                        _cy0, _cy1 = max(0, _y - _ck), min(depth.shape[0], _y + _ck + 1)
+                        if _cx1 > _cx0 and _cy1 > _cy0:
+                            _e["crop"] = depth[_cy0:_cy1, _cx0:_cx1].astype(int).tolist()
+                    _e["q"] = round(float(dquality[_i]), 4)
+                    _dgj = ddiag[_i]
+                    if _dgj is not None:
+                        _e["cl"] = _dgj["clusterCount"]
+                        _e["occ"] = round(_dgj["selectedClusterOccupancy"], 3)
+                        _e["csp"] = round(_dgj["selectedClusterSpread"], 1)
+                        _e["rsn"] = _dgj["reason"]
+                    _rec["j"][_n] = _e
+                # F-11 (DIAG-ONLY): pixel coords + confidence for the face keypoints. Read-only --
+                # nothing here feeds the pose, the UDP payload, filtering or retargeting.
+                for _n, _i in AUDIT_FACE_JOINTS:
+                    _rec["f"][_n] = {"c": round(float(conf[_i]), 4),
+                                     "u": round(float(uv[_i, 0]), 2),
+                                     "v": round(float(uv[_i, 1]), 2)}
+                audit_f.write(json.dumps(_rec) + chr(10))
+
+            t_backproj = time.time()   # DIAG-ONLY (S16)
+
+            # ---- F-21: raw (pre-smoothing) identity check --------------------------------------
+            # Read RIGHT HERE, before body_smoother.filter() below mutates xyz_cam - by the time the
+            # EXISTING M11 mid_hip (further down) exists it has already been rate-limited to
+            # --max-jump (1.5 m/frame default), which would blur a genuine person-swap into what
+            # looks like fast continuous motion over a couple of frames instead of a jump. See
+            # target_ownership.py's module docstring.
+            raw_hip = None
+            raw_hip_valid = False
+            raw_scale = None
+            if bool(measured[11]) and bool(measured[12]):
+                raw_hip = (xyz_cam[11] + xyz_cam[12]) / 2.0
+                raw_hip_valid = True
+            elif bool(measured[11]):
+                raw_hip = xyz_cam[11].copy()
+                raw_hip_valid = True
+            elif bool(measured[12]):
+                raw_hip = xyz_cam[12].copy()
+                raw_hip_valid = True
+            if raw_hip_valid and bool(measured[5]) and bool(measured[6]):
+                raw_scale = float(np.linalg.norm((xyz_cam[5] + xyz_cam[6]) / 2.0 - raw_hip))
+
+            should_emit = True
+            _own_state = None
+            _own_snap = None
+            if ownership is not None:
+                _obs = TO.Observation(
+                    valid=raw_hip_valid,
+                    pos=(tuple(float(v) for v in raw_hip) if raw_hip_valid else None),
+                    conf=body_conf_mean, scale=raw_scale)
+                _own_state, should_emit = ownership.update(_obs, time.time())
+                for _e in ownership.drain_events():
+                    print("[wb] TARGET %s state=%s target_id=%s%s" % (
+                        _e["event"], _e["state"], _e.get("target_id"),
+                        (" reason=%s" % _e["reason"]) if "reason" in _e else ""), flush=True)
+                    if target_log_f is not None:
+                        _e["seq"] = frames
+                        _e["sid"] = SESSION_ID
+                        _e["t"] = round(time.time(), 4)
+                        target_log_f.write(json.dumps(_e) + "\n")
+                _own_snap = ownership.snapshot(time.time())
+
+                # M15 acceptance, identity-gated: only refine the crop toward an observation that is
+                # currently plausibly the owner (or, pre-lock, whatever ACQUIRING is converging on).
+                # TEMPORARILY_LOST holds the box where it last was — it must NOT drift toward a
+                # rejected candidate. Only a real RELEASED/NO_TARGET re-opens full-frame search.
+                if (refined is not None and body_conf_mean >= args.conf
+                        and _own_state in (TO.ACQUIRING, TO.LOCKED, TO.REACQUIRING)):
+                    bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
+                elif _own_state in (TO.NO_TARGET, TO.RELEASED):
+                    bbox = R.center_bbox(rgb_w, rgb_h)
+                # else: TEMPORARILY_LOST — hold bbox unchanged.
+
+                if not should_emit:
+                    if args.show:
+                        _preview(frame, uv, conf, args.conf, frames, sent,
+                                 "F21 %s" % _own_state, ownership=_own_snap,
+                                 candidate_count=int(raw_hip_valid), cue=_cue)
+                        if cv2.waitKey(1) in (27, ord("q")):
+                            break
+                    continue
+            else:
+                # Pre-F-21 M15 behaviour, unchanged, for --no-ownership A/B comparison only.
+                if refined is not None and body_conf_mean >= args.conf:
+                    lowconf_streak = 0
+                    bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
+                else:
+                    lowconf_streak = lowconf_streak + 1
+                    if refined is None or lowconf_streak >= 20:
+                        bbox = R.center_bbox(rgb_w, rgb_h)
+                        lowconf_streak = 0
+                    else:
+                        bbox = tuple(0.7 * np.array(bbox) + 0.3 * np.array(refined))
 
             # Smooth the metric keypoints at the source (One-Euro + depth-outlier gate) to kill jitter,
             # before hip-centring / building the message. Unmeasured points reset their filter.
@@ -261,11 +778,22 @@ def main():
                 si = 0
                 sn = xyz_cam.shape[0]
                 while si < sn:
-                    sx, sy, sz, eff = body_smoother.filter(si, float(xyz_cam[si, 0]), float(xyz_cam[si, 1]), float(xyz_cam[si, 2]), bool(measured[si]))
+                    raw_measured = bool(measured[si])
+                    sx, sy, sz, eff, action, disp = body_smoother.filter(
+                        si, float(xyz_cam[si, 0]), float(xyz_cam[si, 1]), float(xyz_cam[si, 2]), raw_measured)
                     xyz_cam[si, 0] = sx
                     xyz_cam[si, 1] = sy
                     xyz_cam[si, 2] = sz
                     measured[si] = eff  # hold-on-dropout can report a held limb as measured -> build uses it, not the fallback
+                    # P0-2 diagnostics: log only the interesting events (spike rate-limited, dropout held/dropped)
+                    # on the tracked body joints — never per-frame for healthy joints. Opt-in via --log-dir.
+                    if holds_f is not None and action != 'ACCEPT' and si in JOINT_NAMES:
+                        holds_f.write(json.dumps({
+                            "seq": frames, "t": round(time.time(), 4), "joint": JOINT_NAMES[si],
+                            "confidence": round(float(conf[si]), 3), "displacement": round(disp, 4),
+                            "depthValid": raw_measured, "action": action,
+                            "reason": ("DISPLACEMENT_OUTLIER" if action == 'RATE_LIMIT'
+                                       else "DEPTH_DROPOUT_HOLD" if action == 'HOLD' else "MEASUREMENT_INVALID")}) + "\n")
                     si = si + 1
 
             # Mid-hip origin (M11): both hips → midpoint; one hip → that hip; neither but a recent mid-hip
@@ -283,7 +811,8 @@ def main():
                 mid_hip = last_mid_hip
             else:
                 if args.show:
-                    _preview(frame, uv, conf, args.conf, frames, sent, "no hip depth")
+                    _preview(frame, uv, conf, args.conf, frames, sent, "no hip depth",
+                             ownership=_own_snap, candidate_count=int(raw_hip_valid), cue=_cue)
                     if cv2.waitKey(1) in (27, ord("q")):
                         break
                 continue
@@ -291,7 +820,116 @@ def main():
             # M16: the hips' own root-relative z, so a hole's zrel is offset relative to the hips (origin).
             zrel_hip = float((zrel[11] + zrel[12]) / 2.0)
 
-            lm, src = build_body_landmarks(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z,
+            # ---- TEST-ONLY landmark injection (--inject-drift-file) -----------------
+            # Falsifies ONE joint at high confidence BEFORE P1-1/P1-4 see it, so a live
+            # run can exercise the "confidently wrong" path on demand instead of waiting
+            # for nature to produce one. Off unless the flag is set AND the file appears.
+            if args.inject_drift_file:
+                if inject is None and os.path.exists(args.inject_drift_file):
+                    try:
+                        with open(args.inject_drift_file) as _f:
+                            _spec = json.load(_f)
+                        os.remove(args.inject_drift_file)
+                        inject = {"mode": _spec.get("mode", "drift"),
+                                  "joint": int(_spec.get("joint", 14)),
+                                  "meters": float(_spec.get("meters", 0.85)),
+                                  "frames": int(_spec.get("frames", 25)),
+                                  "i": 0, "seq0": frames}
+                        print("[INJECT] %s joint=%d %.2fm over %d frames (seq %d)"
+                              % (inject["mode"], inject["joint"], inject["meters"],
+                                 inject["frames"], frames))
+                    except Exception as _e:
+                        print("[INJECT] bad spec: %s" % _e)
+                        inject = None
+                if inject is not None:
+                    _j = inject["joint"]
+                    _i = inject["i"]
+                    if _i >= inject["frames"]:
+                        print("[INJECT] end (seq %d)" % frames)
+                        inject = None
+                    else:
+                        # drift ramps linearly (P1-1 tracks it, only geometry catches it);
+                        # teleport applies the full offset at once.
+                        _f = (float(_i + 1) / inject["frames"]) if inject["mode"] == "drift" else 1.0
+                        xyz_cam[_j, 0] += inject["meters"] * _f
+                        conf[_j] = max(float(conf[_j]), 0.85)   # CONFIDENTLY wrong
+                        measured[_j] = True
+                        inject["i"] = _i + 1
+
+            # ---- P1-1 tracker -------------------------------------------------------
+            # Consumes the P0-smoothed metric keypoints and returns temporally-validated
+            # ones. A LOST joint has its EMIT confidence zeroed so build_body_landmarks
+            # drops it -- which hands the decision to the P0 LimbGate in Unity exactly as
+            # a real occlusion would. The tracker never writes zeros itself.
+            conf_emit = conf
+            if skel is not None:
+                t_track0 = time.perf_counter()
+                pos_in, cnf_in, dv_in = {}, {}, {}
+                for _j in skel.indices:
+                    pos_in[_j] = (float(xyz_cam[_j, 0]), float(xyz_cam[_j, 1]), float(xyz_cam[_j, 2]))
+                    cnf_in[_j] = float(conf[_j]) if bool(measured[_j]) else 0.0
+                    dv_in[_j] = bool(measured[_j])
+                res = skel.update(pos_in, cnf_in, time.time(), depth_valid=dv_in,
+                                  collect_events=(holds_f is not None))
+                # ---- P1-4: skeleton constraints + long-horizon recovery -----------------
+                # Consumes P1-1's output and repairs joints that are geometrically wrong or
+                # have outlived P1-1's prediction horizon. Healthy joints pass through
+                # unchanged. Result keeps P1-1's tuple shape plus an observation code.
+                if recovery is not None:
+                    rec_out = recovery.apply(res, pos_in,
+                                             collect_events=(holds_f is not None))
+                    res = dict((k, v[:6]) for k, v in rec_out.items())
+                conf_emit = conf.copy()
+                for _j, (_x, _y, _z, _c, _st, _usable) in res.items():
+                    if _usable:
+                        xyz_cam[_j, 0] = _x
+                        xyz_cam[_j, 1] = _y
+                        xyz_cam[_j, 2] = _z
+                        measured[_j] = True
+                    else:
+                        measured[_j] = False
+                        conf_emit[_j] = 0.0      # LOST -> drop -> P0 LimbGate holds
+                track_ms = (time.perf_counter() - t_track0) * 1000.0
+                if holds_f is not None and skel.events:
+                    for _e in skel.events:
+                        _e["seq"] = frames
+                        holds_f.write(json.dumps(_e) + chr(10))
+                    del skel.events[:]
+                if holds_f is not None and recovery is not None:
+                    if recovery.events:
+                        for _e in recovery.events:
+                            _e["seq"] = frames
+                            _e["stage"] = "P1-4"
+                            holds_f.write(json.dumps(_e) + chr(10))
+                        del recovery.events[:]
+                    # periodic aggregate only -- never per frame (P1-4 Part 15)
+                    if frames % 300 == 0:
+                        _t = recovery.telemetry()
+                        _t["seq"] = frames
+                        _t["event"] = "P1-4_TELEMETRY"
+                        holds_f.write(json.dumps(_t) + chr(10))
+            else:
+                track_ms = 0.0
+
+            # ---- F-22: elbow/knee biomechanical validation --------------------------------------
+            # Runs on the FINAL post-P1-1/P1-4 geometry (whatever is about to be sent), evaluating
+            # the angular dimension P1-1 never touches. A REJECTED/HELD chain zeros ONLY that
+            # chain's own elbow/knee conf_emit slot - reusing P1-1's own established contract
+            # ("LOST -> drop -> P0 LimbGate holds", identical comment two lines up) - so a bad elbow
+            # never suppresses the wrist, the other arm, the torso, or the legs.
+            if pose_validator is not None:
+                pv_out = pose_validator.update(xyz_cam, measured, conf_emit, time.time())
+                for _j, (_state, _reason, _bend, _rate) in pv_out.items():
+                    if _state != PV.VALID:
+                        conf_emit[_j] = 0.0
+                for _e in pose_validator.drain_events():
+                    if pose_log_f is not None:
+                        _e["seq"] = frames
+                        _e["sid"] = SESSION_ID
+                        _e["t"] = round(time.time(), 4)
+                        pose_log_f.write(json.dumps(_e) + "\n")
+
+            lm, src = build_body_landmarks(uv, xyz_cam, measured, conf_emit, zrel, zrel_hip, mid_hip, hip_z,
                                            intr, args.conf, args.flatten_trunk, args.zrel_fallback)
             lm = [[round(v, 4) for v in p] for p in lm]
             lh = build_hand(uv, xyz_cam, measured, conf, zrel, zrel_hip, mid_hip, hip_z, intr, 91,
@@ -305,6 +943,7 @@ def main():
                         round(float(mid_hip[2] * 1000.0), 1)],
                 "src": src,
                 "seq": frames,                 # monotonic frame id (aligns sender/recv/model logs)
+                "sid": SESSION_ID,             # F-20A: per-PROCESS id; seq is only monotonic within it
                 "t": round(time.time(), 4),    # send epoch seconds
             }
             # H7: only include a hand when confidently tracked. Unity treats a missing lh/rh as
@@ -343,8 +982,23 @@ def main():
                 # Key signals for pipeline diffing: shoulders(11,12), hips(23,24), wrists(15,16) xyz, plus the
                 # palm-basis hand points (0 wrist, 9 middle-MCP) so a wrist-spin can be traced to its source.
                 rec = {"seq": frames, "t": round(time.time(), 4),
+                       # DIAG-ONLY (S16) per-stage millisecond costs + true sensor->host latency.
+                       "camLatMs": round(_cam_lat_ms, 2),
+                       "capToPoseMs": round((t_pose - t_cap) * 1000.0, 2),
+                       "poseToDepthMs": round((t_backproj - t_pose) * 1000.0, 2),
+                       "depthWaitMs": round((t_depth_ready - t_cap) * 1000.0, 2),
+                       "capToSendMs": round((time.time() - t_cap) * 1000.0, 2),
+                       "trackerMs": round(track_ms, 3),   # P1-1 cost, measured not estimated
+                       # P1-2 freshness diagnostics (permanent):
+                       "frameAgeMs": round(_cam_lat_ms, 2),      # host processing - camera timestamp
+                       "queueDepth": _rgb_dropped + 1,           # packets waiting when we sampled
+                       "staleDropped": _rgb_dropped,             # discarded this iteration
+                       "rgbDepthSyncMs": round(_sync_ms, 2),     # RGB/depth pairing error
                        "sh": [lm[11][:3], lm[12][:3]], "el": [lm[13][:3], lm[14][:3]],
                        "hip": [lm[23][:3], lm[24][:3]], "wr": [lm[15][:3], lm[16][:3]],
+                       # P1-2 Phase 6: knees/ankles were never in sender_log, so the leg jitter
+                       # regression could not be measured sidecar-side.
+                       "kn": [lm[25][:3], lm[26][:3]], "an": [lm[27][:3], lm[28][:3]],
                        "hipZ": round(hip_z, 3), "cov": int(sum(src))}  # distance (m) + measured-coverage (0-33)
                 if lh is not None:
                     rec["lh"] = [lh[0], lh[9]]
@@ -355,29 +1009,236 @@ def main():
             if time.time() - t_log > 2.0:
                 cov = int(sum(src))
                 # LOW-D: fps uses the windowed counter; `frames` stays a monotonic total.
-                print("[wb] frames=%d sent=%d hip_z=%.2fm measured_body=%d/33 fps~%.1f"
-                      % (frames, sent, hip_z, cov, win_frames / (time.time() - t_log + 1e-6)))
+                print("[wb] frames=%d sent=%d hip_z=%.2fm measured_body=%d/33 fps~%.1f age=%.0fms stale=%d"
+                      % (frames, sent, hip_z, cov, win_frames / (time.time() - t_log + 1e-6),
+                         _cam_lat_ms, stale_rgb))
+                # F-08 periodic depth-quality aggregate (per tick, never per frame).
+                _tot = sum(v[1] for v in dq_agg.values())
+                if _tot > 0:
+                    _q = sum(v[0] for v in dq_agg.values()) / _tot
+                    _mc = 100.0 * sum(v[7] for v in dq_agg.values()) / _tot
+                    _ws = sum(v[5] for v in dq_agg.values()) / _tot
+                    print("[wb] depthQuality mean=%.3f multiSurface=%.1f%% winSpread=%.0fmm (%s)"
+                          % (_q, _mc, _ws, "surface-aware" if args.surface_depth else "LEGACY"))
+                    if audit_f is not None:
+                        audit_f.write(json.dumps({"seq": frames, "t": time.time(),
+                                                  "event": "F08_DEPTH_AGGREGATE",
+                                                  "surfaceAware": bool(args.surface_depth),
+                                                  "joints": dict(
+                                                      (k, {"depthQuality": round(v[0] / v[1], 4),
+                                                           "clusterCount": round(v[2] / v[1], 3),
+                                                           "selectedClusterOccupancy": round(v[3] / v[1], 3),
+                                                           "selectedClusterSpread": round(v[4] / v[1], 1),
+                                                           "depthWindowSpread": round(v[5] / v[1], 1),
+                                                           "validPixelCount": round(v[6] / v[1], 2),
+                                                           "multiSurfacePct": round(100.0 * v[7] / v[1], 2)})
+                                                      for k, v in dq_agg.items() if v[1])}) + chr(10))
+                    for _v in dq_agg.values():
+                        for _i2 in range(8):
+                            _v[_i2] = 0.0
                 win_frames = 0
                 t_log = time.time()
 
             if args.show:
-                _preview(frame, uv, conf, args.conf, frames, sent, "hip %.2fm" % hip_z)
+                _preview(frame, uv, conf, args.conf, frames, sent, "hip %.2fm" % hip_z,
+                         ownership=_own_snap, candidate_count=int(raw_hip_valid), cue=_cue)
                 if cv2.waitKey(1) in (27, ord("q")):
                     break
 
     sock.close()
     if log_f is not None:
         log_f.close()
+    if holds_f is not None:
+        holds_f.close()
+    if audit_f is not None:
+        audit_f.close()
+    if target_log_f is not None:
+        target_log_f.close()
+    if pose_log_f is not None:
+        pose_log_f.close()
     print("[wb] stopped.")
 
 
-def _preview(frame, uv, conf, thr, frames, sent, status):
+_OWNERSHIP_COLOURS = {
+    TO.NO_TARGET: (150, 150, 150), TO.ACQUIRING: (0, 190, 255), TO.LOCKED: (90, 230, 90),
+    TO.TEMPORARILY_LOST: (0, 140, 255), TO.REACQUIRING: (0, 190, 255), TO.RELEASED: (60, 60, 255),
+}
+
+
+def _read_cue(path):
+    """Live-protocol phase cue, written by f21_live_protocol.py. Read fresh every preview frame (a
+    few hundred bytes - cheap) so instructions stay in sync with the countdown. The writer does an
+    atomic replace, but a read can still race a rare partial write; any failure here just means the
+    banner keeps showing the last cue for one more frame, never a crash."""
+    try:
+        with io.open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _wrap_text(text, font, scale, thickness, max_w):
+    words = text.split()
+    lines = []
+    cur = ""
+    for word in words:
+        trial = (cur + " " + word).strip()
+        (tw, _), _ = cv2.getTextSize(trial, font, scale, thickness)
+        if tw > max_w and cur:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def _draw_cue(view, cue):
+    """Large, high-contrast phase banner across the TOP of the same window the F-21 HUD draws on -
+    so instructions and live ownership state are in exactly one place. Lesson from the first live
+    F-21 session: printed console instructions are unreadable while physically coordinating two
+    people and watching a camera preview at the same time (same class of issue the
+    live-capture-subject-needs-visible-feedback memory already flagged for a single subject - worse
+    with two). Returns the y-pixel below the banner, so the HUD below can avoid overlapping it."""
+    if not cue:
+        return 0
+    h, w = view.shape[:2]
+    lines = _wrap_text(cue.get("instruction", ""), cv2.FONT_HERSHEY_SIMPLEX, 0.55, 1, w - 20)[:3]
+    banner_h = 46 + 22 * len(lines)
+    overlay = view.copy()
+    cv2.rectangle(overlay, (0, 0), (w, banner_h), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.65, view, 0.35, 0, view)
+    cv2.putText(view, cue.get("title", ""), (10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+                (0, 255, 255), 2, cv2.LINE_AA)
+    secs = cue.get("seconds_left")
+    if secs is not None:
+        txt = "%.0fs" % max(0.0, secs)
+        (tw, _), _ = cv2.getTextSize(txt, cv2.FONT_HERSHEY_SIMPLEX, 0.75, 2)
+        cv2.putText(view, txt, (w - tw - 10, 26), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
+                    (0, 220, 255), 2, cv2.LINE_AA)
+    y = 46
+    for line in lines:
+        cv2.putText(view, line, (10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1, cv2.LINE_AA)
+        y += 22
+    return banner_h + 4
+
+
+# F-21 S32: set from --cue-panel. False keeps _preview on its original path exactly.
+_CUE_PANEL = False
+_PANEL_CANVAS = (1900, 1000)      # fits a 1920x1080 desktop with the taskbar showing
+_PANEL_CACHE = None               # last rendered cue panel (see _compose_cue_panel)
+_PANEL_KEY = None                 # the cue fields it was rendered for
+_PANEL_OUT = None                 # preallocated composite canvas
+
+
+def _compose_cue_panel(view, cue, ownership, candidate_count, frames, sent, status):
+    """ONE window: the big cue panel on the left, the camera feed upscaled on the right.
+
+    The subjects need an instruction they can read from the cross (2-3 m away); the operator needs
+    the F-21 HUD; the screen recording needs BOTH on one clock so wrong-person frames can be
+    reviewed by eye afterwards against what the protocol was asking for at that moment. Two separate
+    windows satisfied none of those well - the operator had to watch two things and a fullscreen cue
+    would have covered the feed entirely on this single-monitor machine.
+
+    The panel renderer is imported HERE, not at module scope: under the default (no --cue-panel)
+    this function is never called, so the live-critical import graph is unchanged. An import failure
+    degrades to the original small banner rather than taking the camera loop down."""
+    try:
+        import f21_cue_display as CUE
+    except ImportError:
+        return None
+    cw, ch = _PANEL_CANVAS
+    fh, fw = view.shape[:2]
+    feed_w = max(1, int(round(fw * float(ch) / fh)))
+    panel_w = max(320, cw - feed_w)
+
+    # The panel costs 2.74 ms to draw and is IDENTICAL between consecutive frames except when the
+    # countdown's whole second ticks - measured: composite 4.29 ms vs 0.62 ms for the small banner,
+    # +3.67 ms = 11 % of a 30 fps budget, which is real money against a producer whose DURATIONS
+    # this protocol is measuring. Cached on exactly the fields that change what is drawn, so it is
+    # rebuilt ~1x/s instead of ~30x/s. The canvas is allocated once and written through slices, so
+    # the steady state does no per-frame allocation at all.
+    global _PANEL_CACHE, _PANEL_KEY, _PANEL_OUT
+    key = None
+    if cue:
+        secs = cue.get("seconds_left")
+        key = (panel_w, ch, cue.get("title"), cue.get("actor"), cue.get("instruction"),
+               cue.get("detail"), cue.get("case"), cue.get("rep"),
+               None if secs is None else int(secs), cue.get("seconds_total"))
+    if key is None or key != _PANEL_KEY or _PANEL_CACHE is None:
+        _PANEL_CACHE = CUE.render(panel_w, ch, cue)
+        _PANEL_KEY = key
+
+    if _PANEL_OUT is None or _PANEL_OUT.shape[:2] != (ch, panel_w + feed_w):
+        _PANEL_OUT = np.empty((ch, panel_w + feed_w, 3), np.uint8)
+    _PANEL_OUT[:, :panel_w] = _PANEL_CACHE
+    feed = _PANEL_OUT[:, panel_w:]
+    cv2.resize(view, (feed_w, ch), dst=feed, interpolation=cv2.INTER_LINEAR)
+
+    # HUD on the FEED half, scaled for the bigger canvas - it belongs against the picture it
+    # describes, and it is diagnostic only (drawn from ownership.snapshot(), never fed back).
+    # Dark strip behind the HUD: it is drawn over a live camera image, and against a bright ceiling
+    # the thin coloured text was unreadable in the first recording - which matters because this HUD
+    # is what the eye review reads ownership state from, frame by frame, after the session.
+    cv2.rectangle(feed, (0, 0), (feed.shape[1], 112), (0, 0, 0), -1)
+    cv2.putText(feed, "sent=%d %s" % (sent, status), (10, 26), cv2.FONT_HERSHEY_PLAIN, 1.5,
+                (0, 255, 255), 2)
+    if ownership is not None:
+        colour = _OWNERSHIP_COLOURS.get(ownership["state"], (255, 255, 255))
+        cv2.putText(feed, "F21 %s" % ownership["state"], (10, 54), cv2.FONT_HERSHEY_PLAIN, 1.7,
+                    colour, 2)
+        cv2.putText(feed, "owner=%s switches=%d cand=%s conf=%.2f"
+                    % (ownership["target_id"], ownership["switch_count"], candidate_count,
+                       ownership["owner_confidence"]),
+                    (10, 78), cv2.FONT_HERSHEY_PLAIN, 1.3, colour, 1)
+        line = ""
+        if ownership["owner_age_s"] is not None:
+            line += "age=%.1fs " % ownership["owner_age_s"]
+        if ownership["loss_duration_s"] is not None:
+            line += "lost=%.1fs release_in=%.1fs " % (ownership["loss_duration_s"],
+                                                      ownership["release_remaining_s"])
+        if ownership["acquire_needed"] is not None:
+            line += "acquire=%d/%d" % (ownership["acquire_progress"], ownership["acquire_needed"])
+        if line:
+            cv2.putText(feed, line, (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.3, colour, 1)
+
+    return _PANEL_OUT
+
+
+def _preview(frame, uv, conf, thr, frames, sent, status, ownership=None, candidate_count=None,
+             cue=None):
     view = frame.copy()
     for i in range(uv.shape[0]):
         if conf[i] > thr:
             cv2.circle(view, (int(uv[i, 0]), int(uv[i, 1])), 2,
                        (0, 255, 0) if i < 91 else (255, 0, 255), -1)
-    cv2.putText(view, "sent=%d %s" % (sent, status), (8, 20), cv2.FONT_HERSHEY_PLAIN, 1.2, (0, 255, 255), 1)
+    if _CUE_PANEL:
+        composed = _compose_cue_panel(view, cue, ownership, candidate_count, frames, sent, status)
+        if composed is not None:
+            cv2.imshow("whole-body OAK sidecar", composed)
+            return
+    y0 = _draw_cue(view, cue)
+    cv2.putText(view, "sent=%d %s" % (sent, status), (8, y0 + 16), cv2.FONT_HERSHEY_PLAIN, 1.2,
+                (0, 255, 255), 1)
+    # ---- F-21 HUD (SS17) - diagnostic only, drawn from ownership.snapshot(); never fed back into
+    # tracking behaviour. STATE / OWNER / CANDIDATE COUNT / OWNER CONFIDENCE / OWNER AGE / LOSS
+    # TIMER / RELEASE TIMER / ACQUISITION TIMER / SWITCH COUNT, exactly the required field list.
+    # CANDIDATE COUNT is honestly 0 or 1 here, never more - see target_ownership.py's module doc.
+    if ownership is not None:
+        colour = _OWNERSHIP_COLOURS.get(ownership["state"], (255, 255, 255))
+        cv2.putText(view, "F21 %s  owner=%s  switches=%d"
+                    % (ownership["state"], ownership["target_id"], ownership["switch_count"]),
+                    (8, y0 + 38), cv2.FONT_HERSHEY_PLAIN, 1.2, colour, 1)
+        line2 = "cand=%s conf=%.2f" % (candidate_count, ownership["owner_confidence"])
+        if ownership["owner_age_s"] is not None:
+            line2 += "  age=%.1fs" % ownership["owner_age_s"]
+        if ownership["loss_duration_s"] is not None:
+            line2 += "  lost=%.1fs release_in=%.1fs" % (ownership["loss_duration_s"],
+                                                          ownership["release_remaining_s"])
+        if ownership["acquire_needed"] is not None:
+            line2 += "  acquire=%d/%d" % (ownership["acquire_progress"], ownership["acquire_needed"])
+        cv2.putText(view, line2, (8, y0 + 58), cv2.FONT_HERSHEY_PLAIN, 1.1, colour, 1)
     cv2.imshow("whole-body OAK sidecar", view)
 
 

@@ -1,0 +1,114 @@
+============================================================================================================
+ A) ELBOW ANGLE -- does the avatar reproduce the LANDMARK elbow, or invent its own?
+    Both numbers come from the SAME trace line: want=landmarks, got=avatar bone.
+    180 deg = straight arm.  |diff| is the RETARGETING error; a large landmark bend
+    with a small |diff| is an UPSTREAM tracking fault, not a retargeting fault.
+============================================================================================================
+   motion                     side   | LANDMARK elbow mean/min | AVATAR elbow mean/min  | |diff| mean/p95/max
+   1 RELAXED ARMS             left   |    121.7     66.7      |    121.6     66.7      |    0.1    0.7     0.9  (n=55)
+   1 RELAXED ARMS             right  |    124.4     43.5      |    124.4     42.1      |    0.4    1.6     3.4  (n=55)
+   2 ONE ARM HORIZONTAL       left   |    148.5     85.1      |    148.5     85.3      |    0.1    0.6     1.0  (n=86)
+   2 ONE ARM HORIZONTAL       right  |    123.6    106.8      |    123.6    106.9      |    0.0    0.1     0.8  (n=86)
+   3 BOTH ARMS HORIZONTAL     left   |    116.0     34.5      |    116.1     35.0      |    0.2    0.7     1.7  (n=64)
+   3 BOTH ARMS HORIZONTAL     right  |    161.0    140.4      |    161.0    140.4      |    0.1    0.5     0.8  (n=64)
+   4 ONE ARM OVERHEAD         left   |     65.0     41.4      |     65.6     41.4      |    0.8    1.1    29.8  (n=84)
+   4 ONE ARM OVERHEAD         right  |    123.8     46.5      |    123.8     46.6      |    0.2    0.7     1.0  (n=84)
+   5 BOTH ARMS OVERHEAD       left   |     56.3     44.1      |     56.3     44.6      |    0.0    0.0     0.6  (n=62)
+   5 BOTH ARMS OVERHEAD       right  |     47.3     46.2      |     47.3     45.7      |    0.0    0.1     0.8  (n=62)
+   6 FAST WAVING              left   |    138.4     73.7      |    138.4     73.6      |    0.4    1.3     2.5  (n=81)
+   6 FAST WAVING              right  |    140.7     33.0      |    140.7     34.2      |    0.4    1.3     1.9  (n=81)
+   7 ARM CIRCLES              left   |    108.5     42.4      |    108.6     41.5      |    0.6    1.4     9.6  (n=81)
+   7 ARM CIRCLES              right  |    120.0     37.5      |    119.9     37.0      |    0.6    1.8     2.0  (n=81)
+   8 ASYMMETRIC ARM POSES     left   |    131.8     58.5      |    131.9     58.5      |    0.2    0.8     3.5  (n=81)
+   8 ASYMMETRIC ARM POSES     right  |    122.3     41.6      |    122.3     41.6      |    0.2    0.8     1.3  (n=81)
+   9 DANCE                    left   |    102.4     29.2      |    102.4     29.7      |    0.4    0.8     2.7  (n=101)
+   9 DANCE                    right  |    107.0     56.7      |    106.9     56.7      |    0.4    1.3     2.8  (n=101)
+   1 RELAXED ARMS             left   |    148.3    127.8      |    153.9    140.2      |    5.7    6.7    12.4  (n=61)
+   1 RELAXED ARMS             right  |    122.0    115.5      |    136.0    131.6      |   13.9   16.4    16.6  (n=61)
+   2 ONE ARM HORIZONTAL       left   |     24.3      1.7      |    167.6    118.7      |  143.2  172.4   173.6  (n=82)
+   2 ONE ARM HORIZONTAL       right  |    115.3     61.8      |    131.5    110.1      |   16.3   46.5    65.0  (n=82)
+   3 BOTH ARMS HORIZONTAL     left   |    167.3    135.0      |    164.3    144.8      |    4.9    8.4     9.9  (n=62)
+   3 BOTH ARMS HORIZONTAL     right  |    159.6    126.7      |    160.5    139.9      |    2.4   10.3    13.2  (n=62)
+   4 ONE ARM OVERHEAD         left   |    150.4    128.4      |    121.9    111.6      |   31.6   44.2    46.2  (n=81)
+   4 ONE ARM OVERHEAD         right  |    130.5    103.9      |    125.9    116.6      |    8.0   11.3    19.5  (n=81)
+   5 BOTH ARMS OVERHEAD       left   |     96.8     57.3      |    113.4     98.7      |   17.4   40.2    74.8  (n=61)
+   5 BOTH ARMS OVERHEAD       right  |    108.5     73.1      |    118.8    102.6      |   12.1   16.8    53.5  (n=61)
+   6 FAST WAVING              left   |    124.1     17.7      |    122.7    102.0      |   13.1   24.7   114.8  (n=82)
+   6 FAST WAVING              right  |    134.6     14.9      |    137.6    100.6      |    8.8   20.2   137.8  (n=82)
+   7 ARM CIRCLES              left   |    114.5     70.8      |    128.7    102.0      |   14.3   24.9    49.8  (n=82)
+   7 ARM CIRCLES              right  |    111.6     47.2      |    130.6    100.9      |   19.4   60.2    77.0  (n=82)
+   8 ASYMMETRIC ARM POSES     left   |    154.6     70.8      |    151.7    111.7      |   10.4   32.2    56.9  (n=82)
+   8 ASYMMETRIC ARM POSES     right  |    143.0     73.8      |    140.5    112.5      |   21.1   41.8    44.6  (n=82)
+   9 DANCE                    left   |    116.5     37.8      |    137.0    100.2      |   20.9   69.6    95.1  (n=100)
+   9 DANCE                    right  |    127.9     34.0      |    142.5    100.4      |   15.0   43.8    90.0  (n=100)
+   D1 ARM CIRCLES  (dense tr  left   |    150.2     52.1      |    150.2     52.3      |    0.4    1.2     3.3  (n=498)
+   D1 ARM CIRCLES  (dense tr  right  |    138.8     67.6      |    138.8     68.1      |    0.4    1.1     2.8  (n=498)
+   D2 STRAIGHT ARMS HELD OUT  left   |    171.3    133.8      |    171.2    133.8      |    0.1    0.6     1.0  (n=495)
+   D2 STRAIGHT ARMS HELD OUT  right  |    148.1    142.7      |    148.1    142.7      |    0.1    0.5     1.1  (n=495)
+   D3 FAST WAVING  (dense tr  left   |     63.5     31.8      |     63.5     31.8      |    0.3    0.8     2.4  (n=467)
+   D3 FAST WAVING  (dense tr  right  |     59.1     43.2      |     59.1     43.2      |    0.2    0.7     2.0  (n=467)
+   ------------------------------------------------------------------------------------------------------
+   NEW        elbow reproduction error |diff|: mean=0.31  p95=1.03  max=29.78  (n=1390)
+   OLD        elbow reproduction error |diff|: mean=21.98  p95=123.77  max=173.60  (n=1386)
+   DENSE      elbow reproduction error |diff|: mean=0.24  p95=0.84  max=3.31  (n=2920)
+
+============================================================================================================
+ B) OUTLIERS -- every arm-bone retarget error above 10 deg in the NEW/DENSE variants,
+    with the ARM-V1-TRACE state and the LimbGate state at that instant.
+============================================================================================================
+   -- 4 ONE ARM OVERHEAD (new)  : 8 of 336 arm samples over 10 deg (2.38%)
+      09:40:18.164  frame=18060   leftLowerArm   errDeg= 148.7 | bend= 32.2 roll=    0.3 src=ElbowPlane | gate hLArm=243 hRArm=0
+      09:40:17.895  frame=18000   leftLowerArm   errDeg=  79.8 | bend= 63.7 roll=   35.4 src=ElbowPlane | gate hLArm=183 hRArm=0
+      09:40:18.164  frame=18060   leftUpperArm   errDeg=  77.4 | bend= 32.2 roll=    0.3 src=ElbowPlane | gate hLArm=243 hRArm=0
+      09:40:17.665  frame=17940   leftLowerArm   errDeg=  77.2 | bend= 62.7 roll=   71.8 src=ElbowPlane | gate hLArm=123 hRArm=0
+      09:40:17.437  frame=17880   leftLowerArm   errDeg=  75.1 | bend= 32.0 roll=   79.0 src=ElbowPlane | gate hLArm=63 hRArm=0
+      09:40:17.895  frame=18000   leftUpperArm   errDeg=  73.0 | bend= 63.7 roll=   35.4 src=ElbowPlane | gate hLArm=183 hRArm=0
+      09:40:17.665  frame=17940   leftUpperArm   errDeg=  60.4 | bend= 62.7 roll=   71.8 src=ElbowPlane | gate hLArm=123 hRArm=0
+      09:40:17.436  frame=17880   leftUpperArm   errDeg=  36.7 | bend= 32.0 roll=   79.0 src=ElbowPlane | gate hLArm=63 hRArm=0
+
+============================================================================================================
+ C) ROLL STABILITY vs ELBOW BEND (dense trace only, ~40 Hz -- the only sampling rate
+    at which a per-step roll number means anything). BendSinMin=0.2 ~= 11.5 deg.
+============================================================================================================
+   leftArm
+      straight <15     n=  510  roll step mean=  2.97 p95=  7.50 p99=130.90 max= 176.9  >90deg: 6
+      shallow 15-40    n=  374  roll step mean=  4.39 p95= 13.20 p99= 18.80 max=  87.5  >90deg: 0
+      bent >40         n=  575  roll step mean=  1.63 p95=  5.00 p99= 10.20 max=  23.8  >90deg: 0
+      straight <15     normalSource: ElbowPlane=14%, Held=86%
+      shallow 15-40    normalSource: ElbowPlane=100%
+      bent >40         normalSource: ElbowPlane=100%
+   rightArm
+      straight <15     n=   98  roll step mean=  9.73 p95= 70.70 p99=134.10 max= 165.3  >90deg: 4
+      shallow 15-40    n=  687  roll step mean=  1.42 p95=  6.60 p99= 13.50 max=  24.3  >90deg: 0
+      bent >40         n=  674  roll step mean=  1.39 p95=  4.30 p99=  7.30 max=  13.1  >90deg: 0
+      straight <15     normalSource: ElbowPlane=35%, Held=65%
+      shallow 15-40    normalSource: ElbowPlane=100%
+      bent >40         normalSource: ElbowPlane=100%
+
+============================================================================================================
+ D) SINGLE-FRAME AVATAR POPS (model_log, every render frame ~250 fps). A step this
+    large in one render frame is a visible snap, not motion.
+============================================================================================================
+   motion                     variant  | forearm dir steps: n  >5deg  >20deg  >45deg   max
+   1 RELAXED ARMS             new      |   6654      7       2       1     72.4
+   2 ONE ARM HORIZONTAL       new      |  10322      7       3       1     61.3
+   3 BOTH ARMS HORIZONTAL     new      |   7654      9       4       2     67.2
+   4 ONE ARM OVERHEAD         new      |  10026      5       1       0     24.0
+   5 BOTH ARMS OVERHEAD       new      |   7430      0       0       0      1.3
+   6 FAST WAVING              new      |   9738     90      15       4     79.4
+   7 ARM CIRCLES              new      |   9752     43      12       4     83.5
+   8 ASYMMETRIC ARM POSES     new      |   9712     49      14       5     87.7
+   9 DANCE                    new      |  12076     64      12       4     77.8
+   1 RELAXED ARMS             old      |   7368      0       0       0      1.1
+   2 ONE ARM HORIZONTAL       old      |   9934      0       0       0      2.9
+   3 BOTH ARMS HORIZONTAL     old      |   7426      0       0       0      2.8
+   4 ONE ARM OVERHEAD         old      |   9686      3       0       0     19.4
+   5 BOTH ARMS OVERHEAD       old      |   7374      7       0       0     14.7
+   6 FAST WAVING              old      |   9820     23       0       0     14.9
+   7 ARM CIRCLES              old      |   9770      3       0       0      8.0
+   8 ASYMMETRIC ARM POSES     old      |   9768      0       0       0      3.4
+   9 DANCE                    old      |  11982     84       3       0     32.8
+   D1 ARM CIRCLES  (dense tr  dense    |   5974     91      20       7     85.4
+   D2 STRAIGHT ARMS HELD OUT  dense    |   5942     12       6       3     67.2
+   D3 FAST WAVING  (dense tr  dense    |   5610      4       0       0      9.1
+

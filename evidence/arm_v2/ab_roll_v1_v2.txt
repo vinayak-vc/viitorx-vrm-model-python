@@ -1,0 +1,17 @@
+========================================================================================================
+ ROLL STATE MACHINE A/B -- V1 vs V2 on IDENTICAL recorded video input (n=8022 frames)
+========================================================================================================
+ arm    variant                                  n     p50     p95     p99     max     >45     >90
+ left   V1 (single threshold sin 0.20)        4010    0.00    1.15    8.19  145.56      10       6
+                                         bend at the >45 deg events: min=10.5 p50=11.4 max=48.4
+                                         sources: ElbowPlane=93.5%, Held=6.5%
+ left   V2 (hysteresis 0.35/0.15 + guard)     4010    0.00    0.96    7.66   65.29       3       0
+                                         bend at the >45 deg events: min=19.2 p50=35.6 max=48.4
+                                         sources: ElbowPlane=88.1%, Guarded=0.6%, Held=10.8%, RestCarried=0.3%, Slewed=0.1%
+ right  V1 (single threshold sin 0.20)        4010    0.00    1.05    6.73   23.85       0       0
+                                         sources: ElbowPlane=94.7%, Held=5.0%, RestCarried=0.3%
+ right  V2 (hysteresis 0.35/0.15 + guard)     4010    0.00    1.10    6.97   24.26       0       0
+                                         sources: ElbowPlane=95.1%, Held=4.5%, RestCarried=0.3%, Slewed=0.0%
+--------------------------------------------------------------------------------------------------------
+ TOTAL V1 (single threshold sin 0.20)           frames=  8020  >45deg= 10  >90deg=  6  max step= 145.56
+ TOTAL V2 (hysteresis 0.35/0.15 + guard)        frames=  8020  >45deg=  3  >90deg=  0  max step=  65.29

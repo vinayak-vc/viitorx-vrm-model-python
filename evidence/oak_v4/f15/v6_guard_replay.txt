@@ -1,0 +1,82 @@
+V6 GUARD VALIDATION -- the SHIPPED C# TorsoYawGuard replayed over the real F-15 recorded frames
+(run inside the Unity Editor by reflection; 20,783 frames, 816.3 s, 25.5 fps)
+
+EDITMODE SUITE
+  145 passed, 0 failed   (94 pre-existing V5/Arm tests + 51 new TorsoYawGuardTests)
+
+HOLD STATISTICS
+  frames held (wrap guard) :  896 = 4.31 %
+  out-of-range (clamped)   : 1710 = 8.23 %
+  longest hold             :  314 frames = 12.33 s     <-- WORSE than the ~3 s flagged in F-15
+  hold runs                :   11
+  average hold             : 81.45 frames = 3.19 s
+
+CONTINUITY   (V5 = raw yaw, no guard;  V6 = guarded + clamped; both measured BEFORE DampYaw)
+  max frame-to-frame step   V5 359.9 deg  ->  V6  38.4 deg
+  steps > 30 deg            V5   32       ->  V6      1
+  sign flips                V5  142 (0.17/s) -> V6  120 (0.15/s)
+  NOTE the guard output feeds the existing ADR-027 conditioner, which rate-limits at 140 deg/s
+  = 5.5 deg/frame at 25.5 fps, so the avatar cannot see even the 38.4 deg step.
+
+PER-BLOCK (guard output; error vs ground truth CLAMPED to the +-60 envelope)
+block                 gt      n   sign ok      MAE*  maxErr*    held%  longHold   maxStep
+h_0                    0     96        --       1.6      5.3      0.0         0       1.3
+h_p30                 30     90    100.0%      18.7     20.9      0.0         0       0.2
+h_p45                 45     87    100.0%       3.8      9.2      0.0         0       2.2
+h_p60                 60     89    100.0%      25.4     53.0      0.0         0       6.6
+h_p90                 90     90    100.0%      51.9     51.9    100.0       210       0.0
+h_0b                   0     73        --       3.0      6.4      0.0         0       1.6
+h_m30                -30     97    100.0%      14.8     20.7      0.0         0       1.3
+h_m45                -45     99     27.3%      44.7     46.9      0.0         0       2.0
+h_m60                -60     93    100.0%      41.6     43.5      0.0         0       1.3
+h_m90                -90     96      0.0%     108.9    108.9    100.0       169       0.0
+h_0c                   0     74        --       1.7      4.0      0.0         0       1.4
+dc_body45R_face0      45    115    100.0%       5.8      8.9      0.0         0       1.6
+dc_body45L_face0     -45    112      0.0%      93.5     99.2      0.0         0       0.9
+dc_body0_head45R       0    130        --       0.0      0.0      0.0         0       0.0
+dc_body0_head45L       0    133        --       0.0      0.0      0.0         0       0.0
+tw_rigid_p45          45     91    100.0%       2.7      4.9      0.0         0       0.7
+tw_sh_p45             45     97    100.0%       3.8      9.6      0.0         0       1.6
+tw_sh_m45            -45     88     95.5%      37.2     44.2      0.0         0       1.7
+m_slow                --    132        --        --       --      0.0         0       3.7
+m_normal              --    113        --        --       --      0.0         0       2.1
+m_fast                --    126        --        --       --      0.0         0       5.0
+m_rev_lr              --    136        --        --       --      3.7         5      13.9
+m_rev_rl              --    117        --        --       --      0.0         0       7.1
+m_180                 --    147        --        --       --    100.0       173       0.0
+m_turn_arms           --    128        --        --       --      0.0         0       6.1
+m_turn_still          --    124        --        --       --      0.0         0       3.9
+
+  * MAE is scored against the ground truth CLAMPED to +-60, because inside the envelope V6 must
+    track and outside it must saturate. It is also a WEAK metric here: subject B's actual rotations
+    differ from the commanded labels (F-15 measured h_p30 at 54.4 deg and h_m60 at 37.0 deg of real
+    |yaw2D|), so MAE-vs-label largely measures the subject, not the estimator. SIGN is the metric.
+
+WHY h_m45 AND dc_body45L LOOK BAD -- raw Kalidokit yaw3D per block, no guard involved
+block                 gt      n   sign ok    yaw p50    yaw p90
+h_p30                 30     90     100.0%       48.3       50.1
+h_p45                 45     87     100.0%       41.3       50.7
+h_p60                 60     89     100.0%       39.7       51.4
+h_p90                 90     90      24.4%        0.0      180.0
+h_m30                -30     97     100.0%      -14.9      -11.9
+h_m45                -45     99      58.6%       -0.1        1.4      <-- yaw3D reads ~0 for a real turn
+h_m60                -60     93     100.0%      -18.6      -17.4
+h_m90                -90     96       0.0%      180.0      180.0      <-- the wrap, caught by the guard
+dc_body45R_face0      45    115     100.0%       50.4       53.1
+dc_body45L_face0     -45    112       0.0%       47.3       53.5      <-- +47 for a block labelled -45
+tw_rigid_p45          45     91     100.0%       46.6       49.3
+tw_sh_p45             45     97     100.0%       40.6       45.7
+tw_sh_m45            -45     88     100.0%       -9.0       -1.3
+
+  h_m45: yaw3D reads -0.1 deg (p90 +1.4) while F-15 measured |yaw2D| = 58.6 deg. The depth-derived
+  yaw does not register that turn AT ALL -- the F-09 under-resolution root cause, not a V6 defect.
+  V6 cannot invent a sign for a measurement that reads zero.
+
+  dc_body45L_face0: yaw3D reads +47.3 and the nose offset reads -0.284, i.e. the SAME side as every
+  +45 block, while |yaw2D| confirms a genuine ~50 deg turn. TWO INDEPENDENT SIGNALS say the subject
+  turned RIGHT during a block labelled LEFT. This strengthens the mislabelled-block reading that
+  F-15 left open, but it is still not proof.
+
+  ALSO: the block-MAJORITY metric F-15 used marks a block CORRECT whenever >50 % of frames agree.
+  h_m45 is 58.6 % at frame level -- a coin flip -- and F-15 recorded it as CORRECT. Block majority
+  hides frame-level instability. F-15's "+-60 validated, 6/6 blocks" should be read with that caveat.

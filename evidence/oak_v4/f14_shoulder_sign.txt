@@ -1,0 +1,283 @@
+====================================================================================================================
+ F-14 -- RAW SHOULDER DEPTH-DIFFERENCE SIGN   (offline; no production code touched)
+====================================================================================================================
+  F-10  pipeline_logs_f10_near  32974 frames ->  2478 labelled | fx=258.0 px  K=91.2   [marks RECOVERED]
+  F-11  pipeline_logs_f11       22389 frames ->  1457 labelled | fx=248.3 px  K=88.8
+
+  main scored population : 1320 frames (whole-body + body-turned blocks)
+  twist robustness group :  333 frames (tw_*, shoulders turned, COMPROMISED protocol --
+                                 scored separately, never pooled into a headline)
+  true-zero population   : 1000 frames
+
+  polarity inferred per candidate from the main group: dzCtr=-1, dzEmit=-1, dzP30=-1, dzP50=-1, yaw3Dsig=+1
+
+====================================================================================================================
+ (5) STATIC SIGN ACCURACY vs shoulder ground truth   (main group; 0 deg excluded)
+====================================================================================================================
+ id  signal    defined  coverage   overall  positive  negative       +90       -90   ALL frm
+ A   dzP30         854     64.7%    99.88%    99.79%   100.00%    98.92%   100.00%    64.62%
+ B   dzP50         879     66.6%    99.77%    99.59%   100.00%    98.18%   100.00%    66.44%
+ C   dzCtr         876     66.4%    99.66%    99.39%   100.00%    97.25%   100.00%    66.19%
+ D   dzEmit       1157     87.7%   100.00%   100.00%   100.00%   100.00%   100.00%    87.65%
+ E   yaw3Dsig     1229     93.1%    94.14%   100.00%    87.46%   100.00%    64.53%    87.65%
+     A   dzP30     RAW p30(L-sh) - p30(R-sh), mm, pre-smoothing
+     B   dzP50     RAW p50(L-sh) - p50(R-sh), mm, pre-smoothing
+     C   dzCtr     RAW centre-pixel depth difference, mm
+     D   dzEmit    EMITTED shL.z - shR.z, mm, POST one-euro smoothing
+     E   yaw3Dsig  sign(yaw3D) -- the F-10 baseline that failed
+
+  ALL frm counts an undefined sign as wrong -- the production-facing number.
+
+ TWIST ROBUSTNESS GROUP (compromised protocol; separate, not pooled)
+   A   dzP30     n= 333  coverage  91.9%  overall   81.70%  ALL   75.08%
+   B   dzP50     n= 333  coverage  91.6%  overall   82.30%  ALL   75.38%
+   C   dzCtr     n= 333  coverage  91.9%  overall   82.03%  ALL   75.38%
+   D   dzEmit    n= 333  coverage 100.0%  overall   79.58%  ALL   79.58%
+   E   yaw3Dsig  n= 333  coverage 100.0%  overall   79.58%  ALL   79.58%
+
+ PER-HEADING COVERAGE x ACCURACY -- where the pooled row hides an empty cell
+ signal     head        n  defined   coverage acc|defined
+ dzP30      +45       380      380     100.0%    100.00%
+ dzP30      -45       371      370      99.7%    100.00%
+ dzP30      +90       275       93      33.8%     98.92%
+ dzP30      -90       294       11       3.7%    100.00%
+
+ dzP50      +45       380      380     100.0%    100.00%
+ dzP50      -45       371      371     100.0%    100.00%
+ dzP50      +90       275      110      40.0%     98.18%
+ dzP50      -90       294       18       6.1%    100.00%
+
+ dzCtr      +45       379      379     100.0%    100.00%
+ dzCtr      -45       371      371     100.0%    100.00%
+ dzCtr      +90       275      109      39.6%     97.25%
+ dzCtr      -90       294       17       5.8%    100.00%
+
+ dzEmit     +45       380      380     100.0%    100.00%
+ dzEmit     -45       371      371     100.0%    100.00%
+ dzEmit     +90       275      275     100.0%    100.00%
+ dzEmit     -90       294      131      44.6%    100.00%
+
+ yaw3Dsig   +45       380      380     100.0%    100.00%
+ yaw3Dsig   -45       371      371     100.0%    100.00%
+ yaw3Dsig   +90       275      275     100.0%    100.00%
+ yaw3Dsig   -90       294      203      69.0%     64.53%
+
+====================================================================================================================
+ (6) BLOCK-LEVEL EVIDENCE -- the primary unit; frames inside a held pose are duplicates
+====================================================================================================================
+ cap    block              true  grp    | RAW p30 dz                     | EMITTED dz                    
+ F-10   h_m45              -45   main   | CORRECT   106/ 106 def, 100% agree | CORRECT   106/ 106 def, 100% agree
+ F-10   h_m90              -90   main   | NO SIGNAL (0 frames defined)   | NO SIGNAL (0 frames defined)  
+ F-10   h_p45              45    main   | CORRECT   111/ 111 def, 100% agree | CORRECT   111/ 111 def, 100% agree
+ F-10   h_p90              90    main   | CORRECT    30/ 140 def, 100% agree | CORRECT   140/ 140 def, 100% agree
+ F-10   tw_rigid_p45       45    twist  | CORRECT   105/ 105 def, 100% agree | CORRECT   105/ 105 def, 100% agree
+ F-10   tw_sh_m45          -45   twist  | WRONG      87/ 114 def,  64% agree | WRONG     114/ 114 def,  60% agree
+ F-10   tw_sh_p45          45    twist  | CORRECT   114/ 114 def, 100% agree | CORRECT   114/ 114 def, 100% agree
+ F-11   dc_body45L_face0   -45   main   | CORRECT   150/ 150 def, 100% agree | CORRECT   150/ 150 def, 100% agree
+ F-11   dc_body45R_face0   45    main   | CORRECT   148/ 148 def, 100% agree | CORRECT   148/ 148 def, 100% agree
+ F-11   h_m45              -45   main   | CORRECT   114/ 115 def, 100% agree | CORRECT   115/ 115 def, 100% agree
+ F-11   h_m90              -90   main   | CORRECT    11/ 147 def, 100% agree | CORRECT   131/ 147 def, 100% agree
+ F-11   h_p45              45    main   | CORRECT   121/ 121 def, 100% agree | CORRECT   121/ 121 def, 100% agree
+ F-11   h_p90              90    main   | CORRECT    63/ 135 def,  98% agree | CORRECT   135/ 135 def, 100% agree
+
+ main group                 correct    wrong   no signal
+ RAW p30 dz                       9        0           1   (of 10 blocks)
+ EMITTED dz                       9        0           1   (of 10 blocks)
+ sign(yaw3D)  [F-10]              9        1           0   (of 10 blocks)
+ twist group                correct    wrong   no signal
+ RAW p30 dz                       2        1           0   (of 3 blocks)
+ EMITTED dz                       2        1           0   (of 3 blocks)
+ sign(yaw3D)  [F-10]              2        1           0   (of 3 blocks)
+
+====================================================================================================================
+ (7) RAW SHOULDER DEPTH DISTRIBUTIONS per true heading   (p30, mm)
+====================================================================================================================
+ heading       n |   zL p50   zR p50 |   dz p10   dz p25   dz p50   dz p75   dz p90   dz sd   zero%
+ 0          1000 |   1415.0   1516.0 |   -136.0   -101.0    -89.0      0.0      0.0    57.1   46.8%
+ +45         380 |   1326.0   1516.0 |   -252.0   -252.0   -190.0   -167.0    -78.0    58.2    0.0%
+ -45         371 |   1516.0   1326.0 |     89.0     89.0    190.0    217.0    217.0    52.9    0.3%
+ +90         275 |   1415.0   1415.0 |   -101.0    -78.0      0.0      0.0      0.0    40.9   66.2%
+ -90         294 |   1326.0   1248.0 |      0.0      0.0      0.0      0.0      0.0    14.2   96.3%
+
+ MIRRORED-POSE SEPARABILITY (rank AUC; 0.500 = indistinguishable)
+   +45 vs -45 : AUC 0.000  -> separability 100.0%
+   +90 vs -90 : AUC 0.322  -> separability 67.8%
+
+====================================================================================================================
+ (8) GEOMETRY AND QUANTISATION -- is the shoulder baseline big enough?
+====================================================================================================================
+   depth rungs near the torso: 1248, 1326, 1415, 1516, 1632, 1768, 1929 mm
+   f*B = 21216 mm.px (re-derived here, matching F-13). At 1326 mm, d=16, ONE STEP = 78-88 mm (mean 83).
+
+   effective shoulder width, measured FRONT-ON (where cos(yaw)=1): 359 mm
+   theta    dz = W sin th disparity steps   vs hips (F-13)
+   15 deg        92.9 mm          1.12           2.76x
+   30 deg       179.5 mm          2.16           2.76x
+   45 deg       253.8 mm          3.05           2.76x
+   60 deg       310.8 mm          3.74           2.76x
+   90 deg       358.9 mm          4.31           2.76x
+
+   The hips gave 1.11 steps at 45 deg (F-13). The shoulders give 3.05.
+
+====================================================================================================================
+ (9) THE +-90 TEST -- does raw dz keep a sign where yaw3D wraps?
+====================================================================================================================
+ heading      n  uSpan px   |yaw3D|   raw cov  raw acc  emit cov  emit acc  measured
+ 0         1000      67.6       9.6     53.2%   none       69.6%   none      100.0%
+ +45        380      39.8      47.7    100.0%  100.00%    100.0%  100.00%    100.0%
+ -45        371      46.5      38.5     99.7%  100.00%    100.0%  100.00%    100.0%
+ +90        275      12.9      38.3     33.8%   98.92%    100.0%  100.00%    100.0%
+ -90        294       7.0       1.6      3.7%  100.00%     44.6%  100.00%    100.0%
+
+   Occlusion check at +-90 -- is a shoulder disappearing?
+ heading    conf p50   conf p10 valid px p50    dsd p50
+ +45           0.709      0.587         25       41.5
+ -45           0.729      0.627         25       32.8
+ +90           0.532      0.494         25       32.6
+ -90           0.508      0.493         25        0.0
+
+====================================================================================================================
+ (10) TRUE-ZERO SAFETY -- and the question that actually matters, the ANGLE error
+====================================================================================================================
+ cap    block                   n   defined   |dz| p50   |dz| p95   flips/s |yaw2D| p50
+ F-10   h_0                   139    100.0%      136.0      136.0      0.00         1.8
+ F-10   h_0b                  111     18.9%        0.0      116.0      0.00         3.8
+ F-10   h_0c                  109      9.2%        0.0       92.8      0.00         0.0
+ F-11   h_0                   136    100.0%      101.0      101.0      0.00         0.0
+ F-11   h_0b                   90    100.0%      101.0      101.0      0.00         4.2
+ F-11   h_0c                  117      0.0%        0.0        0.0      0.00         4.2
+ F-11   dc_body0_head45R      147     92.5%       89.0       89.0      0.00         4.5
+ F-11   dc_body0_head45L      151      0.0%        0.0        0.0      0.00         9.9
+
+   An arbitrary sign at a square torso is only a defect if it moves the AVATAR.
+   Hypothetical signed angle at true 0, i.e. |sign(dz) * |yaw2D| - 0|:
+ estimator                       MAE     RMSE      p50      p95      max
+ sign(RAW dz) * |yaw2D|         1.60     3.31     0.00     7.68    12.15
+ sign(EMITTED dz) * |yaw2D|     2.03     3.67     0.00     7.94    12.15
+ production yaw3D               8.72    12.24     9.64    21.15    21.24
+
+====================================================================================================================
+ (11) DYNAMIC BEHAVIOUR -- no instantaneous truth, so behaviour only
+====================================================================================================================
+ block              n |  raw cov  raw f/s emit f/s  longest | raw dz sd emit dz sd
+ m_slow           172 |    80.2%     1.01     0.84       29 |     158.8       86.5
+ m_normal         138 |    76.8%     1.41     1.41       31 |     148.9       82.5
+ m_fast           130 |    66.9%     0.60     0.60       35 |     149.1      108.3
+ m_rev_lr         113 |    78.8%     0.40     0.40       40 |     160.4       99.6
+ m_rev_rl         114 |    75.4%     1.61     1.01       27 |     159.5       61.9
+ m_180            139 |    36.0%     0.67     0.67       12 |     101.8       52.1
+ m_turn_arms      124 |    80.6%     2.21     1.61       13 |     222.5       69.3
+ m_turn_still     124 |    91.9%     1.82     0.81       27 |     252.3      137.0
+
+   Reference only: a subject physically reverses at most ~0.5 times/second (F-12).
+
+====================================================================================================================
+ (12) RAW vs SMOOTHED -- does the one-euro filter carry information or manufacture it?
+====================================================================================================================
+   where RAW is defined (854 frames): emitted agrees with raw on 99.88%
+   where RAW is UNDEFINED (466 frames): emitted supplies a sign on 303 of them (65.0%),
+     and that supplied sign is CORRECT on 100.00% -- this is the coverage the filter adds.
+
+   Smoothing recovers sub-rung information by averaging a quantised signal over a HELD
+   pose (classic dithering) -- legitimate when static. In motion the same filter lags;
+   compare the flips/s columns in section 11 for the cost.
+
+====================================================================================================================
+ (13) AGAINST yaw3D -- does the composition destroy a sign the depth had?
+====================================================================================================================
+   ALL turned headings  (n=854, frames where raw dz is defined)
+                         yaw3D correct    yaw3D wrong
+     raw dz correct                853              0
+     raw dz wrong                    1              0
+
+   ISOLATED to |heading| = 90  (n=104, frames where raw dz is defined)
+                         yaw3D correct    yaw3D wrong
+     raw dz correct                103              0
+     raw dz wrong                    1              0
+
+   raw dz right where yaw3D is wrong : 0 frames
+   raw dz wrong where yaw3D is right : 1 frames
+   at |heading|=90 specifically      : 0 rescued, 1 lost
+
+   frames where |yaw3D| > 150 (the wrap signature): 143 of 1320 = 10.8%
+     by heading: -90 deg: 72, +90 deg: 71
+   of those wrapped frames, raw dz is ALSO undefined on 128 = 89.5%
+   -> raw dz does not RESCUE the wrap; it goes SILENT in the same place.
+
+====================================================================================================================
+ (14) HYPOTHETICAL HYBRIDS -- NOT implemented
+====================================================================================================================
+ estimator                             MAE     RMSE      p50      p95      max wrong sign
+ shoulder RAW dz (hold on 0)          8.96    14.50     7.29    18.65   172.24      0.38%
+ shoulder RAW dz (no hold)           44.71    81.49    11.10   178.85   180.00     21.59%
+ shoulder SMOOTHED dz (hold)          8.34     9.96     7.29    18.55    22.76      0.00%
+ production yaw3D (signed)           45.78    78.45    11.76   270.00   270.00        n/a
+ yaw2D magnitude alone (unsigned)     8.34     9.96     7.29    18.55    22.76        n/a
+
+   published references on their own populations: F-10 depth-sign hybrid 13.09,
+   F-11 face-sign 31.60, F-12 temporal 9.92 (unstable), F-13 hip-sign 72.46.
+
+====================================================================================================================
+ (14b) THE FAIR COMPARISON -- give EVERY estimator the same hold, including yaw3D
+====================================================================================================================
+ Section 14 compares a HELD depth sign against an UNHELD yaw3D, which is not a fair
+ test: F-10 itself proposed a wrap guard (hold the last sign when |yaw3D| > 150).
+ Scoring that guard on the same frames is the experiment that decides F-14.
+
+ population       estimator                               MAE     RMSE     wrong
+ main only        sign(RAW dz), hold                     8.96    14.50     0.38%
+ main only        sign(EMITTED dz), hold                 8.34     9.96     0.00%
+ main only        sign(yaw3D) + F-10 WRAP GUARD          8.34     9.96     0.00%
+ main only        PERFECT-SIGN CEILING (|yaw2D|)         8.34     9.96        --
+
+ main + twist     sign(RAW dz), hold                    12.08    21.23     4.05%
+ main + twist     sign(EMITTED dz), hold                11.87    19.71     4.11%
+ main + twist     sign(yaw3D) + F-10 WRAP GUARD         11.87    19.71     4.11%
+ main + twist     PERFECT-SIGN CEILING (|yaw2D|)         9.30    12.34        --
+
+ twist only       sign(RAW dz), hold                    24.44    37.47    18.62%
+ twist only       sign(EMITTED dz), hold                25.85    39.17    20.42%
+ twist only       sign(yaw3D) + F-10 WRAP GUARD         25.85    39.17    20.42%
+ twist only       PERFECT-SIGN CEILING (|yaw2D|)        13.09    19.04        --
+
+   If the guarded yaw3D matches the depth sign to the decimal, they are the SAME
+   information and F-14's hypothesis -- that the composition destroys a sign the depth
+   retains -- is refuted.
+====================================================================================================================
+ (14c) SESSION DEPENDENCE -- acceptance criterion 12
+====================================================================================================================
+ cap    signal                       n  coverage    acc|def    ALL frm
+ F-10   RAW p30 dz                 504     49.0%    100.00%     49.01%
+ F-10   EMITTED dz                 504     70.8%    100.00%     70.83%
+ F-10   sign(yaw3D)                504     85.1%     83.22%     70.83%
+
+ F-11   RAW p30 dz                 816     74.4%     99.84%     74.26%
+ F-11   EMITTED dz                 816     98.0%    100.00%     98.04%
+ F-11   sign(yaw3D)                816     98.0%    100.00%     98.04%
+
+   Two captures of the SAME subject at the SAME distance on the SAME day. A large gap
+   here means the headline numbers are session-conditioned, not a property of the rig.
+
+====================================================================================================================
+ (15) THE >90 LIMIT -- unchanged by any sign result
+====================================================================================================================
+   m_180: |yaw2D| p50 18.2  p95 74.2  MAX 83.7 deg over 139 frames
+   SIGN and MAGNITUDE-BEYOND-90 are separate problems. A working sign gives
+   -90..+90 only; acos() cannot represent 120 deg. Do not conflate them.
+
+====================================================================================================================
+ (16) FALSIFICATION
+====================================================================================================================
+   A  true +45 but raw dz undefined or wrong                      0/380   =   0.0%
+   B  true -45 but raw dz undefined or wrong                      1/371   =   0.3%
+   C  +-90 give same sign or no signal                        +90 def 93, -90 def 11
+                                                              +90 -> +1, -90 -> -1  (DISTINCT)
+   D  true 0 with |dz| >= one disparity step                    525/1000  =  52.5%
+   E  raw sign changes during a STABLE pose                   0 flips over 5 held blocks
+   F  raw CORRECT but smoothing makes it WRONG                    0/854   =   0.0%
+   G  yaw3D and raw dz disagree at edge-on poses              see section 13 (0 frames rescued at |90|)
+   H  same heading, different block-level sign                 -90 deg -> 1 block(s), signs [-1]
+                                                               -45 deg -> 3 block(s), signs [-1]
+                                                               +45 deg -> 3 block(s), signs [1]
+                                                               +90 deg -> 2 block(s), signs [1]
+      0 of 4 headings show a block-level sign disagreement.

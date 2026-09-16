@@ -1,0 +1,535 @@
+{"seq": 1, "t": 1789371099.1886, "joint": "right_shoulder", "confidence": 0.649, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 1, "t": 1789371099.1886, "joint": "left_elbow", "confidence": 0.46, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 1, "t": 1789371099.1886, "joint": "left_wrist", "confidence": 0.496, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 1, "t": 1789371099.1886, "joint": "left_knee", "confidence": 0.601, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 1, "t": 1789371099.1886, "joint": "left_ankle", "confidence": 0.541, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"frame": 1, "t": 1789371099.1901186, "joint": "left_shoulder", "event": "LOST->TRACKED", "confidence": 0.672, "reason": "", "seq": 1}
+{"frame": 1, "t": 1789371099.1901186, "joint": "left_hip", "event": "LOST->TRACKED", "confidence": 0.544, "reason": "", "seq": 1}
+{"frame": 1, "t": 1789371099.1901186, "joint": "right_hip", "event": "LOST->TRACKED", "confidence": 0.535, "reason": "", "seq": 1}
+{"frame": 1, "t": 1789371099.1901186, "joint": "right_elbow", "event": "LOST->TRACKED", "confidence": 0.574, "reason": "", "seq": 1}
+{"frame": 1, "t": 1789371099.1901186, "joint": "right_wrist", "event": "LOST->TRACKED", "confidence": 0.534, "reason": "", "seq": 1}
+{"frame": 1, "t": 1789371099.1901186, "joint": "right_knee", "event": "LOST->TRACKED", "confidence": 0.674, "reason": "", "seq": 1}
+{"frame": 1, "t": 1789371099.1901186, "joint": "right_ankle", "event": "LOST->TRACKED", "confidence": 0.802, "reason": "", "seq": 1}
+{"seq": 2, "t": 1789371099.287, "joint": "left_shoulder", "confidence": 0.678, "displacement": 0.0, "depthValid": false, "action": "HOLD", "reason": "DEPTH_DROPOUT_HOLD"}
+{"seq": 2, "t": 1789371099.287, "joint": "right_shoulder", "confidence": 0.648, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 2, "t": 1789371099.287, "joint": "left_elbow", "confidence": 0.469, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 2, "t": 1789371099.287, "joint": "right_elbow", "confidence": 0.568, "displacement": 0.0, "depthValid": false, "action": "HOLD", "reason": "DEPTH_DROPOUT_HOLD"}
+{"seq": 2, "t": 1789371099.287, "joint": "left_wrist", "confidence": 0.613, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 2, "t": 1789371099.287, "joint": "left_hip", "confidence": 0.539, "displacement": 32.4046, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 2, "t": 1789371099.287, "joint": "left_knee", "confidence": 0.594, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"seq": 2, "t": 1789371099.287, "joint": "left_ankle", "confidence": 0.531, "displacement": 0.0, "depthValid": false, "action": "DROP", "reason": "MEASUREMENT_INVALID"}
+{"frame": 2, "t": 1789371099.2879555, "joint": "left_hip", "event": "TRACKED->PREDICTED", "confidence": 0.539, "reason": "residual(0.277>0.050)", "seq": 2}
+{"seq": 3, "t": 1789371099.3188, "joint": "left_shoulder", "confidence": 0.581, "displacement": 3.9806, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 3, "t": 1789371099.3188, "joint": "left_hip", "confidence": 0.544, "displacement": 4.2201, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 3, "t": 1789371099.3197672, "joint": "left_shoulder", "event": "TRACKED->PREDICTED", "confidence": 0.581, "reason": "speed(9.6m/s)", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "right_shoulder", "event": "LOST->TRACKED", "confidence": 0.609, "reason": "", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "left_hip", "event": "PREDICTED->WEAK", "confidence": 0.544, "reason": "reacquire(err=0.006m)", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "left_elbow", "event": "LOST->TRACKED", "confidence": 0.434, "reason": "", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "right_elbow", "event": "TRACKED->WEAK", "confidence": 0.401, "reason": "ok", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "left_wrist", "event": "LOST->TRACKED", "confidence": 0.321, "reason": "", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.282, "reason": "low_conf", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "left_knee", "event": "LOST->TRACKED", "confidence": 0.665, "reason": "", "seq": 3}
+{"frame": 3, "t": 1789371099.3197672, "joint": "left_ankle", "event": "LOST->TRACKED", "confidence": 0.725, "reason": "", "seq": 3}
+{"seq": 4, "t": 1789371099.3494, "joint": "left_shoulder", "confidence": 0.667, "displacement": 3.6887, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 4, "t": 1789371099.3494, "joint": "left_hip", "confidence": 0.53, "displacement": 3.9478, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 4, "t": 1789371099.3503635, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.667, "position": [1.72, -0.7279, 3.5045], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.8m/s)", "seq": 4}
+{"frame": 4, "t": 1789371099.3503635, "joint": "left_hip", "event": "WEAK->PREDICTED", "confidence": 0.53, "reason": "speed(9.1m/s)", "seq": 4}
+{"frame": 4, "t": 1789371099.3503635, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.419, "reason": "ok", "seq": 4}
+{"frame": 4, "t": 1789371099.3503635, "joint": "right_elbow", "event": "WEAK->TRACKED", "confidence": 0.632, "reason": "ok", "seq": 4}
+{"frame": 4, "t": 1789371099.3503635, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.389, "reason": "ok", "seq": 4}
+{"frame": 4, "t": 1789371099.3503635, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.594, "reason": "ok", "seq": 4}
+{"seq": 5, "t": 1789371099.3802, "joint": "left_shoulder", "confidence": 0.696, "displacement": 3.3895, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 5, "t": 1789371099.3812, "joint": "left_wrist", "confidence": 0.376, "displacement": 0.3543, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 5, "t": 1789371099.3812, "joint": "left_hip", "confidence": 0.542, "displacement": 3.6578, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 5, "t": 1789371099.3811789, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.696, "position": [1.52, -0.677, 3.2774], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.8m/s)", "seq": 5}
+{"frame": 5, "t": 1789371099.3811789, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.542, "position": [1.0, 1.2367, 3.7662], "velocity": [0.006, -0.048, 0.028], "reason": "reacquire_rejected_speed(9.1m/s)", "seq": 5}
+{"seq": 6, "t": 1789371099.4153, "joint": "left_shoulder", "confidence": 0.692, "displacement": 3.0991, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 6, "t": 1789371099.4153, "joint": "left_hip", "confidence": 0.547, "displacement": 3.3799, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 6, "t": 1789371099.4162722, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.692, "position": [1.328, -0.625, 3.0461], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.5m/s)", "seq": 6}
+{"frame": 6, "t": 1789371099.4162722, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.547, "position": [0.9202, 1.1241, 3.523], "velocity": [0.005, -0.038, 0.022], "reason": "reacquire_rejected_speed(8.7m/s)", "seq": 6}
+{"frame": 6, "t": 1789371099.4162722, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.483, "reason": "ok", "seq": 6}
+{"seq": 7, "t": 1789371099.4483, "joint": "left_shoulder", "confidence": 0.693, "displacement": 2.8052, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 7, "t": 1789371099.4493, "joint": "left_hip", "confidence": 0.551, "displacement": 3.1023, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 7, "t": 1789371099.4493382, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.693, "position": [1.1476, -0.5723, 2.8102], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.4m/s)", "seq": 7}
+{"frame": 7, "t": 1789371099.4493382, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.551, "position": [0.8407, 1.0144, 3.2778], "velocity": [0.004, -0.031, 0.018], "reason": "reacquire_rejected_speed(8.6m/s)", "seq": 7}
+{"frame": 7, "t": 1789371099.4493382, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.468, "reason": "ok", "seq": 7}
+{"seq": 8, "t": 1789371099.4816, "joint": "left_shoulder", "confidence": 0.699, "displacement": 2.5112, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 8, "t": 1789371099.4816, "joint": "left_hip", "confidence": 0.558, "displacement": 2.8237, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 8, "t": 1789371099.4815729, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.699, "position": [0.9809, -0.5197, 2.5694], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.4m/s)", "seq": 8}
+{"frame": 8, "t": 1789371099.4815729, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.558, "position": [0.7628, 0.9079, 3.0304], "velocity": [0.003, -0.025, 0.014], "reason": "reacquire_rejected_speed(8.6m/s)", "seq": 8}
+{"frame": 8, "t": 1789371099.4815729, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.379, "reason": "ok", "seq": 8}
+{"seq": 9, "t": 1789371099.5135, "joint": "left_shoulder", "confidence": 0.706, "displacement": 2.2231, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 9, "t": 1789371099.5135, "joint": "left_hip", "confidence": 0.57, "displacement": 2.5591, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 9, "t": 1789371099.5144827, "joint": "left_shoulder", "event": "PREDICTED->LOST", "confidence": 0.706, "reason": "reacquire_rejected_speed(9.3m/s)", "seq": 9}
+{"frame": 9, "t": 1789371099.5144827, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.57, "position": [0.6854, 0.8061, 2.7808], "velocity": [0.002, -0.02, 0.011], "reason": "reacquire_rejected_speed(8.6m/s)", "seq": 9}
+{"frame": 9, "t": 1789371099.5144827, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.513, "reason": "ok", "seq": 9}
+{"seq": 10, "t": 1789371099.5479, "joint": "left_shoulder", "confidence": 0.708, "displacement": 1.9447, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 10, "t": 1789371099.5479, "joint": "left_hip", "confidence": 0.564, "displacement": 2.2765, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 10, "t": 1789371099.5478551, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.708, "position": [0.6988, -0.4116, 2.0737], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.2m/s)", "seq": 10}
+{"frame": 10, "t": 1789371099.5478551, "joint": "left_hip", "event": "PREDICTED->LOST", "confidence": 0.564, "reason": "reacquire_rejected_speed(8.6m/s)", "seq": 10}
+{"seq": 11, "t": 1789371099.5805, "joint": "left_shoulder", "confidence": 0.703, "displacement": 1.6592, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 11, "t": 1789371099.5805, "joint": "left_hip", "confidence": 0.573, "displacement": 1.9987, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 11, "t": 1789371099.581582, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.703, "position": [0.5842, -0.3574, 1.8191], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(9.1m/s)", "seq": 11}
+{"frame": 11, "t": 1789371099.581582, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.573, "position": [0.5374, 0.6192, 2.2739], "velocity": [0.002, -0.02, 0.011], "reason": "reacquire_rejected_speed(8.5m/s)", "seq": 11}
+{"frame": 11, "t": 1789371099.581582, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.521, "reason": "segment(43%)", "seq": 11}
+{"seq": 12, "t": 1789371099.6134, "joint": "left_hip", "confidence": 0.573, "displacement": 1.7106, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 12, "t": 1789371099.614431, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.702, "position": [0.4975, -0.3088, 1.5926], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(8.9m/s)", "seq": 12}
+{"frame": 12, "t": 1789371099.614431, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.573, "position": [0.4674, 0.5333, 2.0169], "velocity": [0.002, -0.02, 0.011], "reason": "reacquire_rejected_speed(8.5m/s)", "seq": 12}
+{"frame": 13, "t": 1789371099.648171, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.7, "position": [0.4404, -0.2726, 1.4239], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(8.6m/s)", "seq": 13}
+{"frame": 13, "t": 1789371099.648171, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.582, "position": [0.404, 0.4602, 1.7746], "velocity": [0.002, -0.02, 0.011], "reason": "reacquire_rejected_speed(8.4m/s)", "seq": 13}
+{"frame": 14, "t": 1789371099.6838212, "joint": "left_shoulder", "event": "SUSPICIOUS", "confidence": 0.703, "position": [0.4015, -0.2454, 1.2954], "velocity": [0.0, 0.0, 0.0], "reason": "reacquire_rejected_speed(8.1m/s)", "seq": 14}
+{"frame": 14, "t": 1789371099.6838212, "joint": "left_hip", "event": "SUSPICIOUS", "confidence": 0.586, "position": [0.3585, 0.4086, 1.5966], "velocity": [0.002, -0.02, 0.011], "reason": "reacquire_rejected_speed(8.1m/s)", "seq": 14}
+{"frame": 15, "t": 1789371099.7135577, "joint": "left_shoulder", "event": "LOST->WEAK", "confidence": 0.705, "reason": "reacquire(err=3.319m)", "seq": 15}
+{"frame": 15, "t": 1789371099.7135577, "joint": "left_hip", "event": "LOST->WEAK", "confidence": 0.584, "reason": "reacquire(err=3.109m)", "seq": 15}
+{"frame": 15, "t": 1789371099.7135577, "joint": "left_knee", "event": "TRACKED->WEAK", "confidence": 0.711, "reason": "frozen(12f,parent+0.62m)", "seq": 15}
+{"frame": 16, "t": 1789371099.7465138, "joint": "left_shoulder", "event": "WEAK->LOST", "confidence": 0.706, "reason": "residual_hard(1.78m)", "seq": 16}
+{"frame": 16, "t": 1789371099.7465138, "joint": "left_hip", "event": "WEAK->LOST", "confidence": 0.584, "reason": "residual_hard(1.63m)", "seq": 16}
+{"frame": 17, "t": 1789371099.7815113, "joint": "left_shoulder", "event": "LOST->WEAK", "confidence": 0.703, "reason": "reacquire(err=2.801m)", "seq": 17}
+{"frame": 17, "t": 1789371099.7815113, "joint": "left_hip", "event": "LOST->WEAK", "confidence": 0.586, "reason": "reacquire(err=2.689m)", "seq": 17}
+{"frame": 17, "t": 1789371099.7815113, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.502, "reason": "ok", "seq": 17}
+{"frame": 18, "t": 1789371099.814909, "joint": "left_shoulder", "event": "WEAK->LOST", "confidence": 0.708, "reason": "residual_hard(0.93m)", "seq": 18}
+{"frame": 18, "t": 1789371099.814909, "joint": "left_hip", "event": "WEAK->LOST", "confidence": 0.59, "reason": "residual_hard(0.88m)", "seq": 18}
+{"frame": 19, "t": 1789371099.8480995, "joint": "left_shoulder", "event": "LOST->WEAK", "confidence": 0.704, "reason": "reacquire(err=2.339m)", "seq": 19}
+{"frame": 19, "t": 1789371099.8480995, "joint": "left_hip", "event": "LOST->WEAK", "confidence": 0.584, "reason": "reacquire(err=2.279m)", "seq": 19}
+{"frame": 20, "t": 1789371099.8813086, "joint": "left_shoulder", "event": "WEAK->LOST", "confidence": 0.696, "reason": "residual_hard(0.49m)", "seq": 20}
+{"frame": 20, "t": 1789371099.8813086, "joint": "left_hip", "event": "WEAK->LOST", "confidence": 0.576, "reason": "residual_hard(0.48m)", "seq": 20}
+{"frame": 21, "t": 1789371099.9143052, "joint": "left_shoulder", "event": "LOST->WEAK", "confidence": 0.703, "reason": "reacquire(err=1.942m)", "seq": 21}
+{"frame": 21, "t": 1789371099.9143052, "joint": "left_hip", "event": "LOST->WEAK", "confidence": 0.576, "reason": "reacquire(err=1.914m)", "seq": 21}
+{"frame": 21, "t": 1789371099.9143052, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.503, "reason": "segment(47%)", "seq": 21}
+{"frame": 22, "t": 1789371099.9480395, "joint": "left_shoulder", "event": "WEAK->PREDICTED", "confidence": 0.697, "reason": "accel(252m/s2)", "seq": 22}
+{"frame": 22, "t": 1789371099.9480395, "joint": "left_hip", "event": "WEAK->LOST", "confidence": 0.575, "reason": "accel(252m/s2)", "seq": 22}
+{"frame": 23, "t": 1789371099.9812963, "joint": "left_shoulder", "event": "PREDICTED->WEAK", "confidence": 0.696, "reason": "reacquire(err=0.244m)", "seq": 23}
+{"frame": 23, "t": 1789371099.9812963, "joint": "left_hip", "event": "LOST->WEAK", "confidence": 0.579, "reason": "reacquire(err=1.600m)", "seq": 23}
+{"frame": 24, "t": 1789371100.0141258, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.704, "reason": "segment(68%)", "seq": 24}
+{"frame": 25, "t": 1789371100.0478299, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.501, "reason": "segment(88%)", "seq": 25}
+{"frame": 25, "t": 1789371100.0478299, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.449, "reason": "ok", "seq": 25}
+{"frame": 25, "t": 1789371100.0478299, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.709, "reason": "reacquire(err=0.001m)", "seq": 25}
+{"frame": 26, "t": 1789371100.0807831, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.51, "reason": "reacquire(err=0.001m)", "seq": 26}
+{"frame": 26, "t": 1789371100.0807831, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.703, "reason": "segment(88%)", "seq": 26}
+{"frame": 27, "t": 1789371100.115311, "joint": "left_shoulder", "event": "WEAK->TRACKED", "confidence": 0.707, "reason": "ok", "seq": 27}
+{"frame": 27, "t": 1789371100.115311, "joint": "left_hip", "event": "WEAK->TRACKED", "confidence": 0.593, "reason": "ok", "seq": 27}
+{"frame": 27, "t": 1789371100.115311, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.494, "reason": "segment(88%)", "seq": 27}
+{"frame": 27, "t": 1789371100.115311, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.721, "reason": "reacquire(err=0.000m)", "seq": 27}
+{"frame": 28, "t": 1789371100.1481266, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.5, "reason": "reacquire(err=0.001m)", "seq": 28}
+{"frame": 28, "t": 1789371100.1481266, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.456, "reason": "ok", "seq": 28}
+{"frame": 28, "t": 1789371100.1481266, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.707, "reason": "segment(89%)", "seq": 28}
+{"frame": 29, "t": 1789371100.18176, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.525, "reason": "segment(88%)", "seq": 29}
+{"frame": 29, "t": 1789371100.18176, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.706, "reason": "reacquire(err=0.000m)", "seq": 29}
+{"frame": 30, "t": 1789371100.2145536, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.506, "reason": "reacquire(err=0.001m)", "seq": 30}
+{"frame": 30, "t": 1789371100.2145536, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.702, "reason": "segment(90%)", "seq": 30}
+{"frame": 31, "t": 1789371100.249614, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.497, "reason": "segment(89%)", "seq": 31}
+{"frame": 31, "t": 1789371100.249614, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.7, "reason": "reacquire(err=0.000m)", "seq": 31}
+{"frame": 32, "t": 1789371100.2817066, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.482, "reason": "reacquire(err=0.001m)", "seq": 32}
+{"frame": 32, "t": 1789371100.2817066, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.698, "reason": "segment(90%)", "seq": 32}
+{"frame": 33, "t": 1789371100.3147042, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.498, "reason": "segment(89%)", "seq": 33}
+{"frame": 33, "t": 1789371100.3147042, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.703, "reason": "reacquire(err=0.000m)", "seq": 33}
+{"frame": 34, "t": 1789371100.3476062, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.508, "reason": "reacquire(err=0.001m)", "seq": 34}
+{"frame": 34, "t": 1789371100.3476062, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.707, "reason": "segment(89%)", "seq": 34}
+{"frame": 35, "t": 1789371100.381337, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.504, "reason": "segment(89%)", "seq": 35}
+{"frame": 35, "t": 1789371100.381337, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.706, "reason": "reacquire(err=0.000m)", "seq": 35}
+{"frame": 36, "t": 1789371100.4149594, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.498, "reason": "reacquire(err=0.001m)", "seq": 36}
+{"frame": 36, "t": 1789371100.4149594, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.696, "reason": "segment(89%)", "seq": 36}
+{"frame": 37, "t": 1789371100.4475627, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.504, "reason": "segment(89%)", "seq": 37}
+{"frame": 37, "t": 1789371100.4475627, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.703, "reason": "reacquire(err=0.000m)", "seq": 37}
+{"frame": 38, "t": 1789371100.4811363, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.503, "reason": "reacquire(err=0.001m)", "seq": 38}
+{"frame": 38, "t": 1789371100.4811363, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.703, "reason": "segment(89%)", "seq": 38}
+{"frame": 39, "t": 1789371100.5137177, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.503, "reason": "segment(88%)", "seq": 39}
+{"frame": 39, "t": 1789371100.5137177, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.709, "reason": "reacquire(err=0.001m)", "seq": 39}
+{"frame": 40, "t": 1789371100.5473638, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.499, "reason": "reacquire(err=0.001m)", "seq": 40}
+{"frame": 40, "t": 1789371100.5473638, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.695, "reason": "segment(89%)", "seq": 40}
+{"frame": 41, "t": 1789371100.5812597, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.497, "reason": "segment(88%)", "seq": 41}
+{"frame": 41, "t": 1789371100.5812597, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.694, "reason": "reacquire(err=0.001m)", "seq": 41}
+{"frame": 42, "t": 1789371100.61419, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.501, "reason": "reacquire(err=0.001m)", "seq": 42}
+{"frame": 42, "t": 1789371100.61419, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.704, "reason": "segment(88%)", "seq": 42}
+{"frame": 43, "t": 1789371100.6483505, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.498, "reason": "segment(88%)", "seq": 43}
+{"frame": 43, "t": 1789371100.6483505, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.704, "reason": "reacquire(err=0.000m)", "seq": 43}
+{"frame": 44, "t": 1789371100.6810212, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.503, "reason": "reacquire(err=0.000m)", "seq": 44}
+{"frame": 44, "t": 1789371100.6810212, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.447, "reason": "ok", "seq": 44}
+{"frame": 44, "t": 1789371100.6810212, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.712, "reason": "segment(88%)", "seq": 44}
+{"frame": 45, "t": 1789371100.7146766, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.501, "reason": "segment(88%)", "seq": 45}
+{"frame": 45, "t": 1789371100.7146766, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.504, "reason": "ok", "seq": 45}
+{"frame": 45, "t": 1789371100.7146766, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.703, "reason": "reacquire(err=0.000m)", "seq": 45}
+{"frame": 46, "t": 1789371100.7477062, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.502, "reason": "reacquire(err=0.001m)", "seq": 46}
+{"frame": 46, "t": 1789371100.7477062, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.698, "reason": "segment(87%)", "seq": 46}
+{"frame": 46, "t": 1789371100.7477062, "joint": "right_knee", "event": "TRACKED->WEAK", "confidence": 0.733, "reason": "frozen(26f,parent+0.05m)", "seq": 46}
+{"frame": 47, "t": 1789371100.781801, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.501, "reason": "segment(87%)", "seq": 47}
+{"frame": 47, "t": 1789371100.781801, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.697, "reason": "reacquire(err=0.001m)", "seq": 47}
+{"frame": 48, "t": 1789371100.8142173, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.516, "reason": "reacquire(err=0.001m)", "seq": 48}
+{"frame": 48, "t": 1789371100.8142173, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.713, "reason": "segment(87%)", "seq": 48}
+{"frame": 49, "t": 1789371100.8485987, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.514, "reason": "segment(87%)", "seq": 49}
+{"frame": 49, "t": 1789371100.8485987, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.706, "reason": "reacquire(err=0.001m)", "seq": 49}
+{"frame": 50, "t": 1789371100.8843267, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.522, "reason": "reacquire(err=0.001m)", "seq": 50}
+{"frame": 50, "t": 1789371100.8843267, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.698, "reason": "segment(86%)", "seq": 50}
+{"frame": 51, "t": 1789371100.9166949, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.509, "reason": "segment(86%)", "seq": 51}
+{"frame": 51, "t": 1789371100.9166949, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.702, "reason": "reacquire(err=0.000m)", "seq": 51}
+{"frame": 52, "t": 1789371100.9495344, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.507, "reason": "reacquire(err=0.002m)", "seq": 52}
+{"frame": 52, "t": 1789371100.9495344, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.716, "reason": "segment(86%)", "seq": 52}
+{"frame": 53, "t": 1789371100.981652, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.513, "reason": "segment(86%)", "seq": 53}
+{"frame": 53, "t": 1789371100.981652, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.701, "reason": "reacquire(err=0.000m)", "seq": 53}
+{"frame": 54, "t": 1789371101.0136974, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.509, "reason": "reacquire(err=0.001m)", "seq": 54}
+{"frame": 54, "t": 1789371101.0136974, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.707, "reason": "segment(85%)", "seq": 54}
+{"frame": 55, "t": 1789371101.048343, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.504, "reason": "segment(85%)", "seq": 55}
+{"frame": 55, "t": 1789371101.048343, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.7, "reason": "reacquire(err=0.000m)", "seq": 55}
+{"frame": 56, "t": 1789371101.0811026, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.52, "reason": "reacquire(err=0.001m)", "seq": 56}
+{"frame": 56, "t": 1789371101.0811026, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.702, "reason": "segment(85%)", "seq": 56}
+{"frame": 57, "t": 1789371101.114363, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.511, "reason": "segment(85%)", "seq": 57}
+{"frame": 57, "t": 1789371101.114363, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.713, "reason": "reacquire(err=0.001m)", "seq": 57}
+{"frame": 58, "t": 1789371101.1477556, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.519, "reason": "reacquire(err=0.001m)", "seq": 58}
+{"frame": 58, "t": 1789371101.1477556, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.707, "reason": "segment(84%)", "seq": 58}
+{"frame": 59, "t": 1789371101.1808906, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.523, "reason": "segment(84%)", "seq": 59}
+{"frame": 59, "t": 1789371101.1808906, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.699, "reason": "reacquire(err=0.001m)", "seq": 59}
+{"frame": 60, "t": 1789371101.2135537, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.482, "reason": "reacquire(err=0.000m)", "seq": 60}
+{"frame": 60, "t": 1789371101.2135537, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.701, "reason": "segment(83%)", "seq": 60}
+{"frame": 61, "t": 1789371101.248737, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.509, "reason": "segment(84%)", "seq": 61}
+{"frame": 61, "t": 1789371101.248737, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.447, "reason": "ok", "seq": 61}
+{"frame": 61, "t": 1789371101.248737, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.703, "reason": "reacquire(err=0.001m)", "seq": 61}
+{"frame": 62, "t": 1789371101.2808695, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.519, "reason": "reacquire(err=0.000m)", "seq": 62}
+{"frame": 62, "t": 1789371101.2808695, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.5, "reason": "ok", "seq": 62}
+{"frame": 62, "t": 1789371101.2808695, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.706, "reason": "segment(83%)", "seq": 62}
+{"frame": 63, "t": 1789371101.3131812, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.534, "reason": "segment(83%)", "seq": 63}
+{"frame": 63, "t": 1789371101.3131812, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.703, "reason": "reacquire(err=0.001m)", "seq": 63}
+{"frame": 64, "t": 1789371101.3477151, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.516, "reason": "reacquire(err=0.002m)", "seq": 64}
+{"frame": 64, "t": 1789371101.3477151, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.712, "reason": "segment(82%)", "seq": 64}
+{"frame": 65, "t": 1789371101.3813784, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.535, "reason": "segment(82%)", "seq": 65}
+{"frame": 65, "t": 1789371101.3813784, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.704, "reason": "reacquire(err=0.001m)", "seq": 65}
+{"frame": 66, "t": 1789371101.415177, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.54, "reason": "reacquire(err=0.001m)", "seq": 66}
+{"frame": 66, "t": 1789371101.415177, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.705, "reason": "segment(81%)", "seq": 66}
+{"frame": 67, "t": 1789371101.4481523, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.527, "reason": "segment(82%)", "seq": 67}
+{"frame": 67, "t": 1789371101.4481523, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.706, "reason": "reacquire(err=0.000m)", "seq": 67}
+{"frame": 68, "t": 1789371101.4813368, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.527, "reason": "reacquire(err=0.000m)", "seq": 68}
+{"frame": 68, "t": 1789371101.4813368, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.712, "reason": "segment(80%)", "seq": 68}
+{"frame": 69, "t": 1789371101.514055, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.541, "reason": "segment(81%)", "seq": 69}
+{"frame": 69, "t": 1789371101.514055, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.707, "reason": "reacquire(err=0.000m)", "seq": 69}
+{"frame": 70, "t": 1789371101.547408, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.514, "reason": "reacquire(err=0.000m)", "seq": 70}
+{"frame": 70, "t": 1789371101.547408, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.725, "reason": "segment(79%)", "seq": 70}
+{"frame": 71, "t": 1789371101.5805588, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.538, "reason": "segment(80%)", "seq": 71}
+{"frame": 71, "t": 1789371101.5805588, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.42, "reason": "ok", "seq": 71}
+{"frame": 71, "t": 1789371101.5805588, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.723, "reason": "reacquire(err=0.001m)", "seq": 71}
+{"frame": 72, "t": 1789371101.6123943, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.532, "reason": "reacquire(err=0.001m)", "seq": 72}
+{"frame": 72, "t": 1789371101.6123943, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.54, "reason": "ok", "seq": 72}
+{"frame": 72, "t": 1789371101.6123943, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.711, "reason": "segment(78%)", "seq": 72}
+{"frame": 73, "t": 1789371101.648979, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.522, "reason": "segment(79%)", "seq": 73}
+{"frame": 73, "t": 1789371101.648979, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.705, "reason": "reacquire(err=0.001m)", "seq": 73}
+{"frame": 74, "t": 1789371101.681689, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.509, "reason": "reacquire(err=0.000m)", "seq": 74}
+{"frame": 74, "t": 1789371101.681689, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.719, "reason": "segment(78%)", "seq": 74}
+{"frame": 75, "t": 1789371101.7132857, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.522, "reason": "segment(79%)", "seq": 75}
+{"frame": 75, "t": 1789371101.7132857, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.722, "reason": "reacquire(err=0.000m)", "seq": 75}
+{"frame": 76, "t": 1789371101.7476044, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.53, "reason": "reacquire(err=0.001m)", "seq": 76}
+{"frame": 76, "t": 1789371101.7476044, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.721, "reason": "segment(77%)", "seq": 76}
+{"frame": 77, "t": 1789371101.7809935, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.517, "reason": "segment(78%)", "seq": 77}
+{"frame": 77, "t": 1789371101.7809935, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.718, "reason": "reacquire(err=0.001m)", "seq": 77}
+{"frame": 78, "t": 1789371101.8145847, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.515, "reason": "reacquire(err=0.001m)", "seq": 78}
+{"frame": 78, "t": 1789371101.8145847, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.715, "reason": "segment(76%)", "seq": 78}
+{"frame": 79, "t": 1789371101.8482625, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.543, "reason": "segment(77%)", "seq": 79}
+{"frame": 79, "t": 1789371101.8482625, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.722, "reason": "reacquire(err=0.001m)", "seq": 79}
+{"frame": 80, "t": 1789371101.883206, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.533, "reason": "reacquire(err=0.000m)", "seq": 80}
+{"frame": 80, "t": 1789371101.883206, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.718, "reason": "segment(75%)", "seq": 80}
+{"frame": 81, "t": 1789371101.9152098, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.54, "reason": "segment(76%)", "seq": 81}
+{"frame": 81, "t": 1789371101.9152098, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.723, "reason": "reacquire(err=0.000m)", "seq": 81}
+{"frame": 82, "t": 1789371101.9485345, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.527, "reason": "reacquire(err=0.001m)", "seq": 82}
+{"frame": 82, "t": 1789371101.9485345, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.426, "reason": "ok", "seq": 82}
+{"frame": 82, "t": 1789371101.9485345, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.723, "reason": "segment(74%)", "seq": 82}
+{"frame": 83, "t": 1789371101.9817555, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.521, "reason": "segment(75%)", "seq": 83}
+{"frame": 83, "t": 1789371101.9817555, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.712, "reason": "reacquire(err=0.001m)", "seq": 83}
+{"frame": 84, "t": 1789371102.0146806, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.527, "reason": "reacquire(err=0.000m)", "seq": 84}
+{"frame": 84, "t": 1789371102.0146806, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.452, "reason": "ok", "seq": 84}
+{"frame": 84, "t": 1789371102.0146806, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.716, "reason": "segment(73%)", "seq": 84}
+{"frame": 85, "t": 1789371102.0473313, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.522, "reason": "segment(75%)", "seq": 85}
+{"frame": 85, "t": 1789371102.0473313, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.723, "reason": "reacquire(err=0.000m)", "seq": 85}
+{"frame": 86, "t": 1789371102.0806708, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.533, "reason": "reacquire(err=0.000m)", "seq": 86}
+{"frame": 86, "t": 1789371102.0806708, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.408, "reason": "ok", "seq": 86}
+{"frame": 86, "t": 1789371102.0806708, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.722, "reason": "segment(72%)", "seq": 86}
+{"seq": 87, "t": 1789371102.1164, "joint": "left_wrist", "confidence": 0.456, "displacement": 0.3596, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 87, "t": 1789371102.1175678, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.526, "reason": "segment(74%)", "seq": 87}
+{"frame": 87, "t": 1789371102.1175678, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.456, "reason": "ok", "seq": 87}
+{"frame": 87, "t": 1789371102.1175678, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.72, "reason": "reacquire(err=0.001m)", "seq": 87}
+{"seq": 88, "t": 1789371102.1489, "joint": "left_wrist", "confidence": 0.432, "displacement": 0.3695, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 88, "t": 1789371102.149424, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.538, "reason": "reacquire(err=0.000m)", "seq": 88}
+{"frame": 88, "t": 1789371102.149424, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.432, "reason": "ok", "seq": 88}
+{"frame": 88, "t": 1789371102.149424, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.728, "reason": "segment(71%)", "seq": 88}
+{"frame": 89, "t": 1789371102.1811454, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.538, "reason": "segment(73%)", "seq": 89}
+{"frame": 89, "t": 1789371102.1811454, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.725, "reason": "reacquire(err=0.000m)", "seq": 89}
+{"frame": 90, "t": 1789371102.2160027, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.524, "reason": "reacquire(err=0.000m)", "seq": 90}
+{"frame": 90, "t": 1789371102.2160027, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.721, "reason": "segment(70%)", "seq": 90}
+{"frame": 91, "t": 1789371102.2489135, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.538, "reason": "segment(72%)", "seq": 91}
+{"frame": 91, "t": 1789371102.2489135, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.484, "reason": "ok", "seq": 91}
+{"frame": 91, "t": 1789371102.2489135, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.719, "reason": "reacquire(err=0.001m)", "seq": 91}
+{"frame": 92, "t": 1789371102.2820563, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.525, "reason": "reacquire(err=0.001m)", "seq": 92}
+{"frame": 92, "t": 1789371102.2820563, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.722, "reason": "segment(69%)", "seq": 92}
+{"frame": 93, "t": 1789371102.3142083, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.534, "reason": "segment(71%)", "seq": 93}
+{"frame": 93, "t": 1789371102.3142083, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.433, "reason": "ok", "seq": 93}
+{"frame": 93, "t": 1789371102.3142083, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.724, "reason": "reacquire(err=0.000m)", "seq": 93}
+{"frame": 94, "t": 1789371102.351965, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.517, "reason": "reacquire(err=0.000m)", "seq": 94}
+{"frame": 94, "t": 1789371102.351965, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.487, "reason": "ok", "seq": 94}
+{"frame": 94, "t": 1789371102.351965, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.717, "reason": "segment(68%)", "seq": 94}
+{"frame": 95, "t": 1789371102.382047, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.519, "reason": "segment(70%)", "seq": 95}
+{"frame": 95, "t": 1789371102.382047, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.711, "reason": "reacquire(err=0.000m)", "seq": 95}
+{"frame": 96, "t": 1789371102.4151752, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.521, "reason": "reacquire(err=0.001m)", "seq": 96}
+{"frame": 96, "t": 1789371102.4151752, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.719, "reason": "segment(67%)", "seq": 96}
+{"frame": 97, "t": 1789371102.4478757, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.537, "reason": "segment(69%)", "seq": 97}
+{"frame": 97, "t": 1789371102.4478757, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.424, "reason": "ok", "seq": 97}
+{"frame": 97, "t": 1789371102.4478757, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.723, "reason": "reacquire(err=0.000m)", "seq": 97}
+{"frame": 98, "t": 1789371102.480961, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.523, "reason": "reacquire(err=0.000m)", "seq": 98}
+{"frame": 98, "t": 1789371102.480961, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.507, "reason": "ok", "seq": 98}
+{"frame": 98, "t": 1789371102.480961, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.718, "reason": "segment(66%)", "seq": 98}
+{"frame": 99, "t": 1789371102.5145075, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.522, "reason": "segment(67%)", "seq": 99}
+{"frame": 99, "t": 1789371102.5145075, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.412, "reason": "ok", "seq": 99}
+{"frame": 99, "t": 1789371102.5145075, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.727, "reason": "reacquire(err=0.000m)", "seq": 99}
+{"frame": 100, "t": 1789371102.5480142, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.515, "reason": "reacquire(err=0.001m)", "seq": 100}
+{"frame": 100, "t": 1789371102.5480142, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.521, "reason": "ok", "seq": 100}
+{"frame": 100, "t": 1789371102.5480142, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.718, "reason": "segment(64%)", "seq": 100}
+{"frame": 101, "t": 1789371102.5813346, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.516, "reason": "segment(66%)", "seq": 101}
+{"frame": 101, "t": 1789371102.5813346, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.714, "reason": "reacquire(err=0.001m)", "seq": 101}
+{"frame": 102, "t": 1789371102.6157868, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.519, "reason": "reacquire(err=0.001m)", "seq": 102}
+{"frame": 102, "t": 1789371102.6157868, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.72, "reason": "segment(63%)", "seq": 102}
+{"frame": 103, "t": 1789371102.6479614, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.516, "reason": "segment(65%)", "seq": 103}
+{"frame": 103, "t": 1789371102.6479614, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.714, "reason": "reacquire(err=0.001m)", "seq": 103}
+{"frame": 104, "t": 1789371102.6815705, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.514, "reason": "reacquire(err=0.001m)", "seq": 104}
+{"frame": 104, "t": 1789371102.6815705, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.709, "reason": "segment(62%)", "seq": 104}
+{"frame": 105, "t": 1789371102.712983, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.524, "reason": "segment(63%)", "seq": 105}
+{"frame": 105, "t": 1789371102.712983, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.448, "reason": "ok", "seq": 105}
+{"frame": 105, "t": 1789371102.712983, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.716, "reason": "reacquire(err=0.001m)", "seq": 105}
+{"frame": 106, "t": 1789371102.74814, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.517, "reason": "reacquire(err=0.002m)", "seq": 106}
+{"frame": 106, "t": 1789371102.74814, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.715, "reason": "segment(61%)", "seq": 106}
+{"frame": 107, "t": 1789371102.7814484, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.529, "reason": "segment(62%)", "seq": 107}
+{"frame": 107, "t": 1789371102.7814484, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.517, "reason": "ok", "seq": 107}
+{"frame": 107, "t": 1789371102.7814484, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.72, "reason": "reacquire(err=0.000m)", "seq": 107}
+{"frame": 108, "t": 1789371102.8137515, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.534, "reason": "reacquire(err=0.001m)", "seq": 108}
+{"frame": 108, "t": 1789371102.8137515, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.396, "reason": "ok", "seq": 108}
+{"frame": 108, "t": 1789371102.8137515, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.709, "reason": "segment(59%)", "seq": 108}
+{"frame": 109, "t": 1789371102.8489513, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.514, "reason": "segment(61%)", "seq": 109}
+{"frame": 109, "t": 1789371102.8489513, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.487, "reason": "ok", "seq": 109}
+{"frame": 109, "t": 1789371102.8489513, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.702, "reason": "reacquire(err=0.000m)", "seq": 109}
+{"frame": 110, "t": 1789371102.88148, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.518, "reason": "reacquire(err=0.000m)", "seq": 110}
+{"frame": 110, "t": 1789371102.88148, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.718, "reason": "segment(58%)", "seq": 110}
+{"frame": 111, "t": 1789371102.913899, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.527, "reason": "segment(60%)", "seq": 111}
+{"frame": 111, "t": 1789371102.913899, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.705, "reason": "reacquire(err=0.000m)", "seq": 111}
+{"frame": 112, "t": 1789371102.947885, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.527, "reason": "reacquire(err=0.000m)", "seq": 112}
+{"frame": 112, "t": 1789371102.947885, "joint": "left_knee", "event": "WEAK->PREDICTED", "confidence": 0.712, "reason": "segment(57%)", "seq": 112}
+{"frame": 113, "t": 1789371102.9847367, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.534, "reason": "segment(58%)", "seq": 113}
+{"frame": 113, "t": 1789371102.9847367, "joint": "left_knee", "event": "PREDICTED->WEAK", "confidence": 0.717, "reason": "reacquire(err=0.000m)", "seq": 113}
+{"frame": 114, "t": 1789371103.0151677, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.527, "reason": "reacquire(err=0.000m)", "seq": 114}
+{"seq": 115, "t": 1789371103.0469, "joint": "left_wrist", "confidence": 0.472, "displacement": 10.6944, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 115, "t": 1789371103.0484483, "joint": "left_elbow", "event": "WEAK->PREDICTED", "confidence": 0.534, "reason": "segment(57%)", "seq": 115}
+{"frame": 116, "t": 1789371103.0813413, "joint": "left_elbow", "event": "PREDICTED->WEAK", "confidence": 0.522, "reason": "reacquire(err=0.000m)", "seq": 116}
+{"frame": 117, "t": 1789371103.11365, "joint": "left_knee", "event": "WEAK->TRACKED", "confidence": 0.71, "reason": "segment(52%)", "seq": 117}
+{"frame": 118, "t": 1789371103.1486666, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.442, "reason": "ok", "seq": 118}
+{"frame": 118, "t": 1789371103.1486666, "joint": "left_knee", "event": "TRACKED->WEAK", "confidence": 0.719, "reason": "segment(50%)", "seq": 118}
+{"frame": 119, "t": 1789371103.1815493, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.509, "reason": "ok", "seq": 119}
+{"frame": 120, "t": 1789371103.2146566, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.534, "reason": "segment(52%)", "seq": 120}
+{"frame": 121, "t": 1789371103.2486405, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.53, "reason": "segment(51%)", "seq": 121}
+{"frame": 121, "t": 1789371103.2486405, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.388, "reason": "ok", "seq": 121}
+{"frame": 122, "t": 1789371103.280604, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.497, "reason": "ok", "seq": 122}
+{"frame": 138, "t": 1789371103.8150218, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.383, "reason": "ok", "seq": 138}
+{"frame": 139, "t": 1789371103.848693, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.453, "reason": "ok", "seq": 139}
+{"frame": 140, "t": 1789371103.8808215, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.439, "reason": "ok", "seq": 140}
+{"frame": 141, "t": 1789371103.912854, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.495, "reason": "ok", "seq": 141}
+{"frame": 144, "t": 1789371104.012547, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.443, "reason": "ok", "seq": 144}
+{"frame": 145, "t": 1789371104.0485508, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.586, "reason": "ok", "seq": 145}
+{"frame": 147, "t": 1789371104.1129525, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.439, "reason": "ok", "seq": 147}
+{"frame": 148, "t": 1789371104.148294, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.466, "reason": "ok", "seq": 148}
+{"frame": 161, "t": 1789371104.581296, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.427, "reason": "ok", "seq": 161}
+{"frame": 162, "t": 1789371104.615025, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.561, "reason": "ok", "seq": 162}
+{"frame": 166, "t": 1789371104.7486172, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.433, "reason": "ok", "seq": 166}
+{"frame": 167, "t": 1789371104.7924237, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.511, "reason": "ok", "seq": 167}
+{"frame": 181, "t": 1789371105.249027, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.415, "reason": "ok", "seq": 181}
+{"frame": 182, "t": 1789371105.281018, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.56, "reason": "ok", "seq": 182}
+{"frame": 233, "t": 1789371106.9818008, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.598, "reason": "frozen(218f,parent+0.05m)", "seq": 233}
+{"frame": 239, "t": 1789371107.181216, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.43, "reason": "ok", "seq": 239}
+{"seq": 240, "t": 1789371107.2142, "joint": "left_wrist", "confidence": 0.429, "displacement": 0.0, "depthValid": false, "action": "HOLD", "reason": "DEPTH_DROPOUT_HOLD"}
+{"frame": 240, "t": 1789371107.2141955, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.603, "reason": "ok", "seq": 240}
+{"frame": 242, "t": 1789371107.282609, "joint": "right_knee", "event": "WEAK->TRACKED", "confidence": 0.752, "reason": "ok", "seq": 242}
+{"frame": 243, "t": 1789371107.3133855, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.481, "reason": "ok", "seq": 243}
+{"frame": 243, "t": 1789371107.3133855, "joint": "right_knee", "event": "TRACKED->WEAK", "confidence": 0.756, "reason": "frozen(223f,parent+0.05m)", "seq": 243}
+{"frame": 244, "t": 1789371107.3481984, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.602, "reason": "frozen(229f,parent+0.05m)", "seq": 244}
+{"frame": 246, "t": 1789371107.4144077, "joint": "right_knee", "event": "WEAK->TRACKED", "confidence": 0.763, "reason": "ok", "seq": 246}
+{"frame": 247, "t": 1789371107.4484198, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.59, "reason": "ok", "seq": 247}
+{"frame": 259, "t": 1789371107.8471951, "joint": "right_knee", "event": "TRACKED->WEAK", "confidence": 0.746, "reason": "frozen(239f,parent+0.05m)", "seq": 259}
+{"frame": 265, "t": 1789371108.0483491, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.384, "reason": "ok", "seq": 265}
+{"frame": 266, "t": 1789371108.0812879, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.536, "reason": "ok", "seq": 266}
+{"frame": 268, "t": 1789371108.147696, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.533, "reason": "ok", "seq": 268}
+{"seq": 269, "t": 1789371108.18, "joint": "left_ankle", "confidence": 0.753, "displacement": 0.4443, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 274, "t": 1789371108.3485563, "joint": "right_knee", "event": "WEAK->TRACKED", "confidence": 0.683, "reason": "ok", "seq": 274}
+{"frame": 278, "t": 1789371108.4813259, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.769, "reason": "segment(40%)", "seq": 278}
+{"seq": 282, "t": 1789371108.6136, "joint": "left_ankle", "confidence": 0.788, "displacement": 0.0, "depthValid": false, "action": "HOLD", "reason": "DEPTH_DROPOUT_HOLD"}
+{"frame": 282, "t": 1789371108.613611, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.802, "reason": "ok", "seq": 282}
+{"frame": 282, "t": 1789371108.613611, "joint": "left_knee", "event": "WEAK->TRACKED", "confidence": 0.724, "reason": "ok", "seq": 282}
+{"seq": 284, "t": 1789371108.6822, "joint": "left_ankle", "confidence": 0.791, "displacement": 0.7238, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 285, "t": 1789371108.7148, "joint": "left_ankle", "confidence": 0.81, "displacement": 0.7824, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 285, "t": 1789371108.7148373, "joint": "left_ankle", "event": "TRACKED->WEAK", "confidence": 0.81, "reason": "segment(44%)", "seq": 285}
+{"frame": 286, "t": 1789371108.7489545, "joint": "left_ankle", "event": "WEAK->TRACKED", "confidence": 0.82, "reason": "ok", "seq": 286}
+{"seq": 291, "t": 1789371108.9143, "joint": "right_ankle", "confidence": 0.844, "displacement": 0.4392, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 298, "t": 1789371109.1486, "joint": "left_ankle", "confidence": 0.846, "displacement": 0.4173, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 299, "t": 1789371109.181, "joint": "left_ankle", "confidence": 0.848, "displacement": 0.3789, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 301, "t": 1789371109.2478, "joint": "left_ankle", "confidence": 0.831, "displacement": 0.422, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 302, "t": 1789371109.2816, "joint": "left_ankle", "confidence": 0.839, "displacement": 0.5228, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 303, "t": 1789371109.3125, "joint": "left_ankle", "confidence": 0.838, "displacement": 0.5014, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 304, "t": 1789371109.3474, "joint": "left_ankle", "confidence": 0.828, "displacement": 0.423, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 305, "t": 1789371109.3794, "joint": "left_ankle", "confidence": 0.814, "displacement": 0.3937, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 306, "t": 1789371109.4146, "joint": "left_ankle", "confidence": 0.847, "displacement": 0.4048, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 307, "t": 1789371109.4474, "joint": "left_ankle", "confidence": 0.849, "displacement": 0.3938, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 307, "t": 1789371109.4484236, "joint": "left_ankle", "event": "TRACKED->WEAK", "confidence": 0.849, "reason": "segment(41%)", "seq": 307}
+{"seq": 308, "t": 1789371109.4807, "joint": "left_ankle", "confidence": 0.858, "displacement": 0.3665, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 309, "t": 1789371109.5128, "joint": "left_ankle", "confidence": 0.85, "displacement": 0.4265, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 311, "t": 1789371109.5807, "joint": "left_ankle", "confidence": 0.857, "displacement": 0.3784, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 312, "t": 1789371109.6133, "joint": "left_ankle", "confidence": 0.849, "displacement": 0.3509, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 319, "t": 1789371109.8485918, "joint": "left_ankle", "event": "WEAK->TRACKED", "confidence": 0.834, "reason": "ok", "seq": 319}
+{"seq": 320, "t": 1789371109.8815, "joint": "left_wrist", "confidence": 0.819, "displacement": 0.351, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 321, "t": 1789371109.9126, "joint": "left_wrist", "confidence": 0.802, "displacement": 0.3638, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 322, "t": 1789371109.9485, "joint": "left_wrist", "confidence": 0.806, "displacement": 0.3713, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 323, "t": 1789371109.9821, "joint": "left_wrist", "confidence": 0.807, "displacement": 0.3706, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 324, "t": 1789371110.0134, "joint": "left_wrist", "confidence": 0.815, "displacement": 0.3728, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 325, "t": 1789371110.048, "joint": "left_wrist", "confidence": 0.816, "displacement": 0.3827, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 393, "t": 1789371112.3137045, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.405, "reason": "ok", "seq": 393}
+{"seq": 394, "t": 1789371112.3481, "joint": "left_wrist", "confidence": 0.472, "displacement": 0.6176, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 394, "t": 1789371112.3486364, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.49, "reason": "ok", "seq": 394}
+{"seq": 395, "t": 1789371112.382, "joint": "left_wrist", "confidence": 0.476, "displacement": 0.5166, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 396, "t": 1789371112.4147, "joint": "right_elbow", "confidence": 0.655, "displacement": 0.3542, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 396, "t": 1789371112.415835, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.418, "reason": "ok", "seq": 396}
+{"seq": 397, "t": 1789371112.448, "joint": "right_elbow", "confidence": 0.702, "displacement": 0.3685, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 397, "t": 1789371112.448, "joint": "left_wrist", "confidence": 0.478, "displacement": 0.6157, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 397, "t": 1789371112.4480422, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.454, "reason": "ok", "seq": 397}
+{"seq": 398, "t": 1789371112.4831, "joint": "left_wrist", "confidence": 0.481, "displacement": 0.5941, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 399, "t": 1789371112.5146, "joint": "left_wrist", "confidence": 0.417, "displacement": 0.8258, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 399, "t": 1789371112.514577, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.417, "reason": "ok", "seq": 399}
+{"seq": 400, "t": 1789371112.5479, "joint": "left_wrist", "confidence": 0.402, "displacement": 0.3668, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 400, "t": 1789371112.5479112, "joint": "left_ankle", "event": "TRACKED->WEAK", "confidence": 0.792, "reason": "frozen(12f,parent+0.06m)", "seq": 400}
+{"frame": 401, "t": 1789371112.581637, "joint": "left_ankle", "event": "WEAK->TRACKED", "confidence": 0.777, "reason": "ok", "seq": 401}
+{"frame": 402, "t": 1789371112.615193, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.476, "reason": "ok", "seq": 402}
+{"frame": 404, "t": 1789371112.681622, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.42, "reason": "ok", "seq": 404}
+{"frame": 405, "t": 1789371112.711968, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.567, "reason": "ok", "seq": 405}
+{"seq": 407, "t": 1789371112.7815, "joint": "right_wrist", "confidence": 0.608, "displacement": 0.3613, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 409, "t": 1789371112.8488536, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.634, "reason": "segment(43%)", "seq": 409}
+{"seq": 410, "t": 1789371112.8802, "joint": "right_wrist", "confidence": 0.742, "displacement": 0.3533, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 411, "t": 1789371112.9136288, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.74, "reason": "ok", "seq": 411}
+{"seq": 413, "t": 1789371112.9821, "joint": "left_wrist", "confidence": 0.65, "displacement": 0.3704, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 414, "t": 1789371113.0142, "joint": "left_wrist", "confidence": 0.616, "displacement": 0.3817, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 415, "t": 1789371113.0496, "joint": "left_elbow", "confidence": 0.648, "displacement": 0.4334, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 415, "t": 1789371113.0496, "joint": "left_wrist", "confidence": 0.49, "displacement": 2.818, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 416, "t": 1789371113.0813, "joint": "left_wrist", "confidence": 0.375, "displacement": 0.4244, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 416, "t": 1789371113.0817583, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.375, "reason": "ok", "seq": 416}
+{"seq": 417, "t": 1789371113.1146, "joint": "left_elbow", "confidence": 0.607, "displacement": 0.4945, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 417, "t": 1789371113.1146, "joint": "left_wrist", "confidence": 0.39, "displacement": 0.0, "depthValid": false, "action": "HOLD", "reason": "DEPTH_DROPOUT_HOLD"}
+{"seq": 418, "t": 1789371113.1478, "joint": "left_wrist", "confidence": 0.474, "displacement": 0.7166, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 418, "t": 1789371113.1488519, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.474, "reason": "ok", "seq": 418}
+{"seq": 419, "t": 1789371113.1826, "joint": "left_wrist", "confidence": 0.51, "displacement": 0.6702, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 419, "t": 1789371113.1826, "joint": "right_wrist", "confidence": 0.506, "displacement": 0.6109, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 420, "t": 1789371113.2143, "joint": "left_wrist", "confidence": 0.528, "displacement": 0.6254, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 420, "t": 1789371113.2143, "joint": "right_wrist", "confidence": 0.354, "displacement": 0.5832, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 420, "t": 1789371113.2152953, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.354, "reason": "ok", "seq": 420}
+{"seq": 421, "t": 1789371113.2484, "joint": "right_elbow", "confidence": 0.512, "displacement": 0.468, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 421, "t": 1789371113.2484, "joint": "left_wrist", "confidence": 0.579, "displacement": 0.6158, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 421, "t": 1789371113.2484, "joint": "right_wrist", "confidence": 0.422, "displacement": 0.6563, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 422, "t": 1789371113.2815, "joint": "right_elbow", "confidence": 0.363, "displacement": 0.4119, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 422, "t": 1789371113.2815, "joint": "left_wrist", "confidence": 0.565, "displacement": 0.5566, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 422, "t": 1789371113.2815, "joint": "right_wrist", "confidence": 0.293, "displacement": 0.6072, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 422, "t": 1789371113.2825468, "joint": "right_elbow", "event": "TRACKED->WEAK", "confidence": 0.363, "reason": "ok", "seq": 422}
+{"seq": 423, "t": 1789371113.3133, "joint": "right_elbow", "confidence": 0.58, "displacement": 0.3899, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 423, "t": 1789371113.3133, "joint": "left_wrist", "confidence": 0.575, "displacement": 0.4994, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 423, "t": 1789371113.3133, "joint": "right_wrist", "confidence": 0.631, "displacement": 0.7159, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 423, "t": 1789371113.3133218, "joint": "right_elbow", "event": "WEAK->TRACKED", "confidence": 0.58, "reason": "ok", "seq": 423}
+{"frame": 423, "t": 1789371113.3133218, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.631, "reason": "ok", "seq": 423}
+{"seq": 424, "t": 1789371113.3477, "joint": "right_elbow", "confidence": 0.679, "displacement": 0.3679, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 424, "t": 1789371113.3477, "joint": "left_wrist", "confidence": 0.553, "displacement": 0.4709, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 424, "t": 1789371113.3477, "joint": "right_wrist", "confidence": 0.71, "displacement": 0.6505, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 425, "t": 1789371113.3808, "joint": "left_wrist", "confidence": 0.622, "displacement": 0.4267, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 425, "t": 1789371113.3808, "joint": "right_wrist", "confidence": 0.732, "displacement": 0.6512, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 426, "t": 1789371113.4143, "joint": "left_wrist", "confidence": 0.654, "displacement": 0.3759, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 426, "t": 1789371113.4153, "joint": "right_wrist", "confidence": 0.644, "displacement": 0.6505, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 427, "t": 1789371113.4484, "joint": "right_wrist", "confidence": 0.596, "displacement": 0.5695, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 428, "t": 1789371113.4814, "joint": "right_wrist", "confidence": 0.786, "displacement": 0.5174, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 429, "t": 1789371113.5128, "joint": "right_wrist", "confidence": 0.83, "displacement": 0.4726, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 430, "t": 1789371113.5478, "joint": "right_wrist", "confidence": 0.854, "displacement": 0.4923, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 431, "t": 1789371113.5817, "joint": "right_elbow", "confidence": 0.744, "displacement": 0.375, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 431, "t": 1789371113.5817, "joint": "right_wrist", "confidence": 0.896, "displacement": 0.5501, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 432, "t": 1789371113.6132, "joint": "right_elbow", "confidence": 0.731, "displacement": 0.3691, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 432, "t": 1789371113.6132, "joint": "right_wrist", "confidence": 0.801, "displacement": 0.6075, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 433, "t": 1789371113.6484, "joint": "right_elbow", "confidence": 0.724, "displacement": 0.395, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 433, "t": 1789371113.6484, "joint": "right_wrist", "confidence": 0.848, "displacement": 0.6668, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 434, "t": 1789371113.6809, "joint": "right_elbow", "confidence": 0.699, "displacement": 0.4735, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 434, "t": 1789371113.6809, "joint": "right_wrist", "confidence": 0.812, "displacement": 0.6931, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 435, "t": 1789371113.7122, "joint": "right_elbow", "confidence": 0.708, "displacement": 0.5841, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 435, "t": 1789371113.7122, "joint": "right_wrist", "confidence": 0.708, "displacement": 0.7056, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 436, "t": 1789371113.7476, "joint": "right_elbow", "confidence": 0.614, "displacement": 0.7256, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 436, "t": 1789371113.7476, "joint": "right_wrist", "confidence": 0.506, "displacement": 1.211, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 437, "t": 1789371113.7814, "joint": "right_elbow", "confidence": 0.587, "displacement": 0.8751, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 437, "t": 1789371113.7814, "joint": "right_wrist", "confidence": 0.277, "displacement": 0.8141, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 437, "t": 1789371113.7829149, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.277, "reason": "low_conf", "seq": 437}
+{"seq": 438, "t": 1789371113.8151, "joint": "right_elbow", "confidence": 0.599, "displacement": 0.7348, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 438, "t": 1789371113.8151, "joint": "right_wrist", "confidence": 0.554, "displacement": 1.0231, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 438, "t": 1789371113.8151, "joint": "left_hip", "confidence": 0.631, "displacement": 0.0, "depthValid": false, "action": "HOLD", "reason": "DEPTH_DROPOUT_HOLD"}
+{"frame": 438, "t": 1789371113.8161244, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.554, "reason": "ok", "seq": 438}
+{"seq": 439, "t": 1789371113.8481, "joint": "right_elbow", "confidence": 0.599, "displacement": 0.6331, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 439, "t": 1789371113.8481, "joint": "left_wrist", "confidence": 0.707, "displacement": 0.6251, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 439, "t": 1789371113.8481, "joint": "right_wrist", "confidence": 0.608, "displacement": 0.9871, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 440, "t": 1789371113.8831, "joint": "left_elbow", "confidence": 0.689, "displacement": 0.391, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 440, "t": 1789371113.8831, "joint": "right_elbow", "confidence": 0.634, "displacement": 0.5803, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 440, "t": 1789371113.8831, "joint": "left_wrist", "confidence": 0.538, "displacement": 0.4941, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 440, "t": 1789371113.8831, "joint": "right_wrist", "confidence": 0.701, "displacement": 0.9349, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 441, "t": 1789371113.912, "joint": "right_elbow", "confidence": 0.673, "displacement": 0.5245, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 441, "t": 1789371113.912, "joint": "left_wrist", "confidence": 0.366, "displacement": 0.3531, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 441, "t": 1789371113.912, "joint": "right_wrist", "confidence": 0.748, "displacement": 0.8706, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 441, "t": 1789371113.9131274, "joint": "right_elbow", "event": "TRACKED->WEAK", "confidence": 0.673, "reason": "segment(42%)", "seq": 441}
+{"frame": 441, "t": 1789371113.9131274, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.366, "reason": "ok", "seq": 441}
+{"seq": 442, "t": 1789371113.9489, "joint": "right_elbow", "confidence": 0.651, "displacement": 0.4569, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 442, "t": 1789371113.9489, "joint": "right_wrist", "confidence": 0.737, "displacement": 0.786, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 443, "t": 1789371113.9811, "joint": "right_elbow", "confidence": 0.708, "displacement": 0.3567, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 443, "t": 1789371113.9811, "joint": "right_wrist", "confidence": 0.717, "displacement": 0.6831, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 443, "t": 1789371113.982237, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.514, "reason": "ok", "seq": 443}
+{"seq": 444, "t": 1789371114.0142, "joint": "right_wrist", "confidence": 0.629, "displacement": 0.5799, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 444, "t": 1789371114.0142279, "joint": "right_elbow", "event": "WEAK->TRACKED", "confidence": 0.66, "reason": "ok", "seq": 444}
+{"frame": 444, "t": 1789371114.0142279, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.435, "reason": "ok", "seq": 444}
+{"seq": 445, "t": 1789371114.0487, "joint": "right_wrist", "confidence": 0.686, "displacement": 0.4695, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 445, "t": 1789371114.0502403, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.392, "reason": "ok", "seq": 445}
+{"frame": 445, "t": 1789371114.0502403, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.535, "reason": "ok", "seq": 445}
+{"seq": 446, "t": 1789371114.0813, "joint": "right_wrist", "confidence": 0.629, "displacement": 0.3934, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 446, "t": 1789371114.0823522, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.398, "reason": "ok", "seq": 446}
+{"seq": 447, "t": 1789371114.1139, "joint": "right_wrist", "confidence": 0.693, "displacement": 0.3545, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 447, "t": 1789371114.113915, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.535, "reason": "ok", "seq": 447}
+{"frame": 448, "t": 1789371114.1489582, "joint": "left_elbow", "event": "TRACKED->WEAK", "confidence": 0.305, "reason": "ok", "seq": 448}
+{"frame": 450, "t": 1789371114.2152314, "joint": "left_wrist", "event": "WEAK->PREDICTED", "confidence": 0.279, "reason": "low_conf", "seq": 450}
+{"frame": 451, "t": 1789371114.2502313, "joint": "left_wrist", "event": "PREDICTED->TRACKED", "confidence": 0.254, "reason": "coherent_fast_motion", "seq": 451}
+{"frame": 452, "t": 1789371114.2823312, "joint": "left_wrist", "event": "TRACKED->WEAK", "confidence": 0.317, "reason": "segment(76%)", "seq": 452}
+{"frame": 455, "t": 1789371114.3814762, "joint": "left_elbow", "event": "WEAK->TRACKED", "confidence": 0.526, "reason": "ok", "seq": 455}
+{"frame": 455, "t": 1789371114.3814762, "joint": "left_wrist", "event": "WEAK->TRACKED", "confidence": 0.655, "reason": "ok", "seq": 455}
+{"seq": 457, "t": 1789371114.4488, "joint": "right_wrist", "confidence": 0.552, "displacement": 0.3627, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 457, "t": 1789371114.4488366, "joint": "left_ankle", "event": "TRACKED->WEAK", "confidence": 0.786, "reason": "frozen(19f,parent+0.05m)", "seq": 457}
+{"seq": 458, "t": 1789371114.4813, "joint": "left_wrist", "confidence": 0.754, "displacement": 0.3825, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 458, "t": 1789371114.4813, "joint": "right_wrist", "confidence": 0.595, "displacement": 0.4088, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 459, "t": 1789371114.5119, "joint": "left_elbow", "confidence": 0.736, "displacement": 0.3509, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 459, "t": 1789371114.5119, "joint": "right_wrist", "confidence": 0.636, "displacement": 0.4713, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 460, "t": 1789371114.5477, "joint": "right_wrist", "confidence": 0.626, "displacement": 0.4961, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 460, "t": 1789371114.5490289, "joint": "left_ankle", "event": "WEAK->TRACKED", "confidence": 0.833, "reason": "ok", "seq": 460}
+{"seq": 461, "t": 1789371114.5812, "joint": "right_wrist", "confidence": 0.729, "displacement": 0.5181, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 462, "t": 1789371114.6123, "joint": "right_wrist", "confidence": 0.422, "displacement": 0.5182, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 462, "t": 1789371114.6132634, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.422, "reason": "ok", "seq": 462}
+{"seq": 463, "t": 1789371114.6471, "joint": "right_wrist", "confidence": 0.534, "displacement": 0.5141, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 463, "t": 1789371114.6486292, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.534, "reason": "ok", "seq": 463}
+{"seq": 464, "t": 1789371114.6807, "joint": "right_wrist", "confidence": 0.562, "displacement": 0.5007, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 465, "t": 1789371114.7128, "joint": "right_wrist", "confidence": 0.569, "displacement": 0.4707, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 466, "t": 1789371114.7477, "joint": "right_wrist", "confidence": 0.519, "displacement": 0.4628, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 466, "t": 1789371114.7487283, "joint": "right_wrist", "event": "TRACKED->WEAK", "confidence": 0.519, "reason": "segment(42%)", "seq": 466}
+{"seq": 467, "t": 1789371114.781, "joint": "right_wrist", "confidence": 0.518, "displacement": 0.4336, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 468, "t": 1789371114.815, "joint": "right_wrist", "confidence": 0.508, "displacement": 0.4124, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 469, "t": 1789371114.8475, "joint": "right_wrist", "confidence": 0.58, "displacement": 0.3772, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"frame": 471, "t": 1789371114.912641, "joint": "right_wrist", "event": "WEAK->TRACKED", "confidence": 0.753, "reason": "ok", "seq": 471}
+{"seq": 476, "t": 1789371115.0812, "joint": "right_wrist", "confidence": 0.797, "displacement": 0.3642, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 477, "t": 1789371115.1127, "joint": "right_wrist", "confidence": 0.757, "displacement": 0.3727, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 478, "t": 1789371115.1485, "joint": "right_elbow", "confidence": 0.779, "displacement": 0.3531, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 478, "t": 1789371115.1485, "joint": "right_wrist", "confidence": 0.743, "displacement": 0.3805, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 479, "t": 1789371115.1815, "joint": "right_elbow", "confidence": 0.788, "displacement": 0.3524, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 479, "t": 1789371115.1815, "joint": "right_wrist", "confidence": 0.743, "displacement": 0.4266, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 480, "t": 1789371115.2146, "joint": "right_elbow", "confidence": 0.794, "displacement": 0.3517, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 480, "t": 1789371115.2157, "joint": "right_wrist", "confidence": 0.753, "displacement": 0.456, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 481, "t": 1789371115.2485, "joint": "right_wrist", "confidence": 0.748, "displacement": 0.4638, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 482, "t": 1789371115.2807, "joint": "right_wrist", "confidence": 0.737, "displacement": 0.471, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 483, "t": 1789371115.3121, "joint": "left_wrist", "confidence": 0.763, "displacement": 0.351, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 483, "t": 1789371115.3121, "joint": "right_wrist", "confidence": 0.721, "displacement": 0.4963, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 484, "t": 1789371115.3472, "joint": "left_wrist", "confidence": 0.787, "displacement": 0.3547, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 484, "t": 1789371115.3472, "joint": "right_wrist", "confidence": 0.731, "displacement": 0.5049, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 485, "t": 1789371115.3808, "joint": "left_wrist", "confidence": 0.801, "displacement": 0.3739, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 485, "t": 1789371115.3808, "joint": "right_wrist", "confidence": 0.751, "displacement": 0.4965, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 486, "t": 1789371115.4148, "joint": "right_wrist", "confidence": 0.764, "displacement": 0.4696, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 487, "t": 1789371115.4473, "joint": "right_wrist", "confidence": 0.771, "displacement": 0.4441, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 488, "t": 1789371115.4807, "joint": "right_wrist", "confidence": 0.774, "displacement": 0.4291, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}
+{"seq": 489, "t": 1789371115.5134, "joint": "right_wrist", "confidence": 0.727, "displacement": 0.3606, "depthValid": true, "action": "RATE_LIMIT", "reason": "DISPLACEMENT_OUTLIER"}

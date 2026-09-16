@@ -1,0 +1,56 @@
+============================================================================================================
+F-17 MULTI-BASELINE ANALYSIS
+============================================================================================================
+capture: oak_v4_evidence/f17/raw/sweep1   frame sets: 402
+matcher: SGBM blockSize 9, 192 disparities, MODE_HH, CLAHE - IDENTICAL for both pairs
+  host BC   B   74.992 mm  f_rect  252.725 px  f*B   18952.3
+  host AC   B   37.641 mm  f_rect  245.763 px  f*B    9250.7
+  device BC B   74.992 mm  fx     282.995 px  f*B   21222.2   (sub-pixel 1/8)
+  usable frames: 402
+
+------------------------------------------------------------------------------------------------------------
+PER-DISTANCE, PER-SOURCE
+------------------------------------------------------------------------------------------------------------
+block   source       n    cov%     Z mm     dz mm   |dx| mm  med|yaw|  p95|yaw|    dd px
+d124    deviceBC    80   100.0     1254      75.0     333.1     12.70     15.67    1.005
+d124    hostBC      80   100.0     1236      59.7     339.3      9.97     12.14    0.737
+d124    hostAC      80   100.0     1696     308.4     456.3     33.95     35.22    0.992
+d133    deviceBC    81   100.0     1381      78.0     342.6     12.88     14.93    0.878
+d133    hostBC      81   100.0     1379      56.7     349.9      9.17     11.26    0.562
+d133    hostAC      81   100.0     2046     415.3     519.6     38.98     41.00    0.928
+d150    deviceBC    80   100.0     1573      88.0     347.4     14.26     16.55    0.755
+d150    hostBC      80   100.0     1563      32.2     353.8      5.20     12.49    0.250
+d150    hostAC      80   100.0     2518     550.1     561.9     44.57     49.08    0.803
+d180    deviceBC    80   100.0     1912     129.0     353.5     20.12     23.42    0.745
+d180    hostBC      80   100.0     1890      69.4     354.1     11.10     16.84    0.375
+d180    hostAC      80   100.0     3542    1014.9     682.3     56.07     61.97    0.742
+d200    deviceBC    81   100.0     2152     138.0     351.3     21.54     28.62    0.627
+d200    hostBC      81   100.0     2138     106.1     355.6     16.50     23.96    0.437
+d200    hostAC      81   100.0     3921    1407.7     631.0     65.67     67.05    0.847
+
+============================================================================================================
+SECTION 9 - DOES THE SYSTEMATIC DISPARITY BIAS SURVIVE A BASELINE CHANGE?
+============================================================================================================
+CASE A: dd unchanged, dz doubles when the baseline halves -> PIXEL-domain bias,
+        a wider baseline divides the angular error proportionally.
+CASE B: dz unchanged, dd halves -> DEPTH-domain bias, a wider baseline buys nothing.
+
+block      dz_BC mm    dz_AC mm     ratio      dd_BC px    dd_AC px     ratio
+d124           59.7       308.4     5.166         0.737       0.992     1.346
+d133           56.7       415.3     7.329         0.562       0.928     1.650
+d150           32.2       550.1    17.066         0.250       0.803     3.212
+d180           69.4      1014.9    14.634         0.375       0.742     1.979
+d200          106.1      1407.7    13.270         0.437       0.847     1.937
+
+  median dz ratio (AC/BC) = 13.270    CASE A predicts ~2.0, CASE B predicts ~1.0
+  median dd ratio (AC/BC) = 1.937    CASE A predicts ~1.0, CASE B predicts ~0.5
+
+------------------------------------------------------------------------------------------------------------
+SECTION 10 - SHOULDER WINDOW SPREAD (does a different baseline change the edge problem?)
+------------------------------------------------------------------------------------------------------------
+block    device spread  hostBC spread  hostAC spread
+d124           19.0 mm        49.3 mm        47.4 mm
+d133           35.0 mm        66.9 mm        68.0 mm
+d150           62.0 mm        52.8 mm       219.3 mm
+d180           71.0 mm       140.8 mm       784.9 mm
+d200           59.0 mm       166.6 mm       580.4 mm

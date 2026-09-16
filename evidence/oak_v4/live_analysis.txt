@@ -1,0 +1,17 @@
+﻿====================================================================================================
+ LIVE OAK-D TRACE -- 10139 samples, 0 sampler errors, 40.0 s
+ harness: frameCount delta p50=1.0  wall dt p50=0.0038 s  -> 263.2 fps sampled
+ (V4 sec 4c's void test showed frameCount delta == 1 against ~0.86 s of wall clock;
+  a delta of 1 against a ~1/60 s dt here means the editor is running normally.)
+====================================================================================================
+
+   blk  scale | srcSh p50 srcSh sd  avSh sd |     gain err mean |   hipsY  spineY  chestY    uchY | armErr p50 armErr max
+     0   0.00 |    16.20     7.05     0.14 |   -0.000    14.52 |    0.00   -0.00   -0.00    0.00 |     0.1708    61.2103
+     1   0.25 |    20.67     0.93     0.82 |    0.201    16.66 |   -0.66   -2.30   -1.28    0.00 |     0.0789     0.6510
+     2   0.50 |    21.03     0.96     0.92 |    0.380    13.01 |   -0.84   -4.60   -2.55    0.00 |     0.0674     0.7775
+     3   0.75 |    17.83     8.95     3.01 |    0.522     8.75 |   -3.71   -3.52   -1.96    0.00 |     0.0570     0.4884
+     4   1.00 |    19.97    12.24     9.92 |    1.194     8.12 |  -13.23   -6.18   -3.43    0.00 |     0.1059     0.7547
+
+ KEY: 'avSh sd' is how much the avatar's shoulder line MOVES. At scale 0 it must be ~0.
+      'armErr' is source -> ACTUAL SKINNED bone direction; it must stay ~0 at EVERY scale,
+      which is the ARM V2 parent-division regression test while the torso rotates.

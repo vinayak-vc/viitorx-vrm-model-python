@@ -1,0 +1,44 @@
+====================================================================================================
+F-16 OCCLUSION-EDGE CHECK
+====================================================================================================
+Hypothesis: the shoulder that reads FARTHER does so because its 5x5 depth window straddles
+the body/background edge. If true, the farther window is the wider / lower-quality one.
+
+----------------------------------------------------------------------------------------------------
+sub-pixel distance sweep   (n=1799)
+----------------------------------------------------------------------------------------------------
+  frames where the FARTHER shoulder had the WIDER depth window :  1154  (69.5 %)
+  frames where it had the NARROWER window                      :   461  (27.8 %)
+  ties                                                         :    45  (2.7 %)
+  window spread (mm)   farther p50    31.0   nearer p50    17.0
+  F-08 depth quality   farther p50   0.925   nearer p50   0.955
+
+----------------------------------------------------------------------------------------------------
+config sweep 1.33 m   (n=2031)
+----------------------------------------------------------------------------------------------------
+  frames where the FARTHER shoulder had the WIDER depth window :   684  (50.0 %)
+  frames where it had the NARROWER window                      :   673  (49.2 %)
+  ties                                                         :    12  (0.9 %)
+  window spread (mm)   farther p50    25.0   nearer p50    28.0
+  F-08 depth quality   farther p50   0.940   nearer p50   0.940
+
+----------------------------------------------------------------------------------------------------
+pose protocol 1.33 m   (n=2741)
+----------------------------------------------------------------------------------------------------
+  frames where the FARTHER shoulder had the WIDER depth window :  1907  (75.2 %)
+  frames where it had the NARROWER window                      :   553  (21.8 %)
+  ties                                                         :    76  (3.0 %)
+  window spread (mm)   farther p50    35.0   nearer p50    13.0
+  F-08 depth quality   farther p50   0.940   nearer p50   0.970
+
+====================================================================================================
+WHICH ANATOMICAL SIDE READS FARTHER, AND DOES IT TRACK THE IMAGE SIDE?
+====================================================================================================
+block        L at u      dz_p50  farther is         n
+sq_a          right        35.0 anat-R image-LEFT       258
+sq_b          right        66.0 anat-R image-LEFT       257
+sq_c          right        45.0 anat-R image-LEFT       257
+back           left        19.0 anat-R image-RIGHT       257
+
+If 'farther' keeps the same ANATOMICAL side across the 180 deg turn but swaps IMAGE side,
+the bias is tied to the body, not to the sensor's left/right. The reverse means the opposite.

@@ -1,0 +1,322 @@
+==============================================================================
+P0 ACCEPTANCE ANALYSIS   dir=pipeline_logs   P0 HUMAN ACCEPTANCE 2026-09-08
+==============================================================================
+rows: sender=680 recv=4312 model=102968 holds=1281
+recv  DIAG (kn/an/cf/tSend/tRecv): PRESENT
+model DIAG (gate/boneLen/tApply) : PRESENT
+
+== WHOLE CAPTURE ==
+  tracked frames 680/680 (100.0%)   max joints 21/33   distance median 2.34 m
+
+-- per-joint frame-to-frame displacement (m) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (m)
+  L-shoulder     0.0103   0.0037   0.0304   0.0866   2.2786    4311
+  R-shoulder     0.0090   0.0041   0.0265   0.0587   1.3790    4311
+  L-elbow        0.0130   0.0088   0.0361   0.0541   0.5732    4311
+  R-elbow        0.0135   0.0092   0.0376   0.0582   1.1183    4311
+  L-wrist        0.0174   0.0104   0.0561   0.0707   1.1036    4294
+  R-wrist        0.0190   0.0111   0.0589   0.0724   1.0055    4308
+  L-hip          0.0035   0.0011   0.0137   0.0351   0.3063    4311
+  R-hip          0.0035   0.0011   0.0137   0.0351   0.3063    4311
+  L-knee         0.0090   0.0035   0.0296   0.0545   1.3315    4311
+  R-knee         0.0082   0.0026   0.0286   0.0525   1.2592    4309
+  L-ankle        0.0116   0.0049   0.0391   0.0641   1.5075    4295
+  R-ankle        0.0108   0.0041   0.0386   0.0616   1.2950    4307
+
+-- palm / wrist rotation delta (deg) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (deg)
+  L-palm         4.6318   2.8000  14.9833  15.0417  17.6327    4032
+  R-palm         4.1583   2.3283  14.9712  15.0415  17.0857    4059
+
+-- per-limb confidence reaching the Unity gate --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (0..1)
+  lArm           0.6965   0.7098   0.8070   0.8261   0.8631    4312
+  rArm           0.6781   0.6804   0.8209   0.8489   0.8838    4312
+  lLeg           0.6470   0.6518   0.7209   0.7544   0.8552    4312
+  rLeg           0.5850   0.6111   0.7125   0.7538   0.8407    4312
+
+-- UNITY LimbGate (P0-1 proof: gate's own state at apply time) --
+  limb     applied      held    holds    reacq  longest  hold-run lengths
+  lArm      102968        21        1        1       21  {'12+': 1}
+  rArm      102968       106        6        6       38  {'12+': 2, '9-11': 4}
+  lLeg      102968        19        2        2       10  {'9-11': 2}
+  rLeg      102968       104        5        5       46  {'12+': 3, '9-11': 2}
+  TOTAL holds=14  reacquires=14
+  >>> UNITY GATE FIRED (14 hold events) <<<
+
+-- P0-2 sidecar events (rate-limit / hold / drop) --
+  joint            RATE_LIM    HOLD   DROP   rate-limited displacement (m)
+  left_ankle            150       0      0   median 0.523  p95 1.440  max 2.143
+  left_elbow            130       0      0   median 0.488  p95 1.231  max 2.942
+  left_knee              69       0      0   median 0.589  p95 1.339  max 1.441
+  left_wrist            248       0      0   median 0.520  p95 1.282  max 4.871
+  right_ankle           138       0      0   median 0.482  p95 1.364  max 2.008
+  right_elbow           132       0      0   median 0.509  p95 1.222  max 3.284
+  right_knee             79       0      0   median 0.524  p95 1.329  max 1.413
+  right_wrist           335       0      0   median 0.509  p95 1.439  max 2.128
+
+== BONE LENGTH (squash vs rotation) ==
+  femur    min 0.70000  max 0.70000  spread 0.000000 m  -> CONSTANT (no squash)
+  shin     min 0.66000  max 0.66000  spread 0.000000 m  -> CONSTANT (no squash)
+  upArm    min 0.54000  max 0.54000  spread 0.000000 m  -> CONSTANT (no squash)
+  foreArm  min 0.52000  max 0.52000  spread 0.000000 m  -> CONSTANT (no squash)
+
+== PACKET LOSS / ORDER ==
+  window seq 1..680   sent=680 received=680 missing=0 (0.00%) out-of-order=5 duplicates=3353
+
+== END-TO-END LATENCY ==
+  camera sensor -> host        median  131.36  p95  146.50  max   147.96 ms  (n=680)
+  host frame -> pose solved    median   21.21  p95   21.99  max   158.91 ms  (n=680)
+  pose -> depth backprojection median    9.94  p95   10.94  max    13.08 ms  (n=680)
+  host frame -> UDP sent       median   32.39  p95   33.41  max   171.25 ms  (n=680)
+  UDP send -> Unity receive    median    0.70  p95    1.80  max    23.10 ms  (n=4312)
+  Unity receive -> avatar      median    2.00  p95    2.00  max     2.00 ms  (n=2)
+
+==============================================================================
+PER-BLOCK BREAKDOWN
+==============================================================================
+
+== BLOCK E - HAND BEHIND TORSO  (45.0s) ==
+
+-- per-joint frame-to-frame displacement (m) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (m)
+  L-shoulder     0.0025   0.0008   0.0131   0.0290   0.1810     958
+  R-shoulder     0.0021   0.0007   0.0127   0.0198   0.0715     958
+  L-elbow        0.0053   0.0024   0.0316   0.0337   0.0527     958
+  R-elbow        0.0017   0.0007   0.0039   0.0193   0.1172     958
+  L-wrist        0.0021   0.0009   0.0127   0.0195   0.0362     958
+  R-wrist        0.0018   0.0009   0.0047   0.0191   0.0331     958
+  L-hip          0.0014   0.0005   0.0036   0.0188   0.0196     958
+  R-hip          0.0014   0.0005   0.0036   0.0188   0.0196     958
+  L-knee         0.0019   0.0009   0.0048   0.0192   0.0496     958
+  R-knee         0.0016   0.0007   0.0039   0.0191   0.0302     958
+  L-ankle        0.0016   0.0008   0.0043   0.0188   0.0196     958
+  R-ankle        0.0022   0.0007   0.0143   0.0273   0.0481     958
+
+-- palm / wrist rotation delta (deg) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (deg)
+  L-palm         0.6646   0.4702   1.8379   4.4925  12.2592     958
+  R-palm         0.9911   0.8374   3.0917   5.7660  15.0205     958
+
+-- per-limb confidence reaching the Unity gate --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (0..1)
+  lArm           0.6274   0.6289   0.6626   0.6722   0.7062     959
+  rArm           0.6178   0.6172   0.6407   0.6788   0.7778     959
+  lLeg           0.6581   0.6593   0.6702   0.6782   0.7085     959
+  rLeg           0.4757   0.4764   0.4915   0.5083   0.6184     959
+
+-- UNITY LimbGate (P0-1 proof: gate's own state at apply time) --
+  limb     applied      held    holds    reacq  longest  hold-run lengths
+  lArm       11807         0        0        0        0  -
+  rArm       11807         0        0        0        0  -
+  lLeg       11807         0        0        0        0  -
+  rLeg       11807         0        0        0        0  -
+  TOTAL holds=0  reacquires=0
+  *** UNITY GATE NEVER FIRED in this window ***
+
+== BLOCK G+I - SIDE-ON + OUT OF FRAME  (45.0s) ==
+
+-- per-joint frame-to-frame displacement (m) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (m)
+  L-shoulder     0.0050   0.0009   0.0172   0.0866   0.2746     956
+  R-shoulder     0.0047   0.0018   0.0218   0.0419   0.1163     956
+  L-elbow        0.0054   0.0021   0.0201   0.0320   0.1174     956
+  R-elbow        0.0087   0.0059   0.0242   0.0321   0.1186     956
+  L-wrist        0.0106   0.0035   0.0390   0.0575   0.1189     945
+  R-wrist        0.0130   0.0056   0.0488   0.0609   0.1163     956
+  L-hip          0.0016   0.0004   0.0072   0.0125   0.1164     956
+  R-hip          0.0016   0.0004   0.0072   0.0125   0.1164     956
+  L-knee         0.0026   0.0006   0.0096   0.0294   0.1163     956
+  R-knee         0.0029   0.0007   0.0144   0.0297   0.1164     956
+  L-ankle        0.0028   0.0008   0.0126   0.0265   0.1163     956
+  R-ankle        0.0037   0.0008   0.0157   0.0534   0.1163     956
+
+-- palm / wrist rotation delta (deg) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (deg)
+  L-palm         3.4833   1.8412  13.3912  14.9835  17.6327     761
+  R-palm         3.3573   1.9948  12.8806  15.0495  15.0874     732
+
+-- per-limb confidence reaching the Unity gate --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (0..1)
+  lArm           0.7230   0.7657   0.8189   0.8312   0.8438     957
+  rArm           0.6744   0.7102   0.8126   0.8338   0.8540     957
+  lLeg           0.6329   0.6332   0.7040   0.7564   0.7872     957
+  rLeg           0.6167   0.6114   0.6899   0.7368   0.7685     957
+
+-- UNITY LimbGate (P0-1 proof: gate's own state at apply time) --
+  limb     applied      held    holds    reacq  longest  hold-run lengths
+  lArm       12145         0        0        0        0  -
+  rArm       12145        74        3        3       38  {'12+': 2, '9-11': 1}
+  lLeg       12145         0        0        0        0  -
+  rLeg       12145         0        0        0        0  -
+  TOTAL holds=3  reacquires=3
+  >>> UNITY GATE FIRED (3 hold events) <<<
+
+== BLOCK C - FAST ARMS  (28.0s) ==
+
+-- per-joint frame-to-frame displacement (m) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (m)
+  L-shoulder     0.0102   0.0051   0.0309   0.0764   0.2021     594
+  R-shoulder     0.0090   0.0056   0.0250   0.0580   0.2593     594
+  L-elbow        0.0200   0.0186   0.0404   0.0501   0.0630     594
+  R-elbow        0.0162   0.0145   0.0408   0.0475   0.0603     594
+  L-wrist        0.0234   0.0202   0.0665   0.0708   0.0746     592
+  R-wrist        0.0248   0.0236   0.0658   0.0696   0.0734     594
+  L-hip          0.0014   0.0005   0.0076   0.0145   0.0206     594
+  R-hip          0.0014   0.0005   0.0076   0.0145   0.0206     594
+  L-knee         0.0088   0.0061   0.0271   0.0341   0.0455     594
+  R-knee         0.0037   0.0014   0.0143   0.0345   0.0475     594
+  L-ankle        0.0116   0.0099   0.0300   0.0454   0.0584     588
+  R-ankle        0.0080   0.0041   0.0288   0.0409   0.0458     594
+
+-- palm / wrist rotation delta (deg) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (deg)
+  L-palm         6.8682   5.9701  15.0231  15.0557  15.0957     572
+  R-palm         5.8931   4.8466  14.9975  15.0415  15.0547     594
+
+-- per-limb confidence reaching the Unity gate --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (0..1)
+  lArm           0.6904   0.7059   0.8081   0.8353   0.8514     595
+  rArm           0.6936   0.6986   0.8312   0.8581   0.8712     595
+  lLeg           0.6316   0.6396   0.7207   0.7463   0.7520     595
+  rLeg           0.5548   0.6348   0.7124   0.7456   0.7578     595
+
+-- UNITY LimbGate (P0-1 proof: gate's own state at apply time) --
+  limb     applied      held    holds    reacq  longest  hold-run lengths
+  lArm        7935         0        0        0        0  -
+  rArm        7935        11        1        1       11  {'9-11': 1}
+  lLeg        7935         0        0        0        0  -
+  rLeg        7935        37        2        2       21  {'12+': 2}
+  TOTAL holds=3  reacquires=3
+  >>> UNITY GATE FIRED (3 hold events) <<<
+
+== BLOCK D - FAST LEGS  (28.0s) ==
+
+-- per-joint frame-to-frame displacement (m) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (m)
+  L-shoulder     0.0133   0.0091   0.0333   0.0663   0.1682     594
+  R-shoulder     0.0132   0.0105   0.0312   0.0478   0.1258     594
+  L-elbow        0.0145   0.0110   0.0380   0.0657   0.1442     594
+  R-elbow        0.0170   0.0143   0.0365   0.0660   0.1470     594
+  L-wrist        0.0168   0.0129   0.0442   0.0676   0.1442     592
+  R-wrist        0.0171   0.0132   0.0428   0.0667   0.1446     594
+  L-hip          0.0044   0.0026   0.0146   0.0215   0.0458     594
+  R-hip          0.0044   0.0026   0.0146   0.0215   0.0458     594
+  L-knee         0.0161   0.0128   0.0442   0.0773   0.1740     594
+  R-knee         0.0150   0.0109   0.0409   0.0686   0.1773     592
+  L-ankle        0.0185   0.0154   0.0469   0.0698   0.1788     592
+  R-ankle        0.0181   0.0141   0.0489   0.0677   0.1771     590
+
+-- palm / wrist rotation delta (deg) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (deg)
+  L-palm         5.4787   4.0761  14.9711  15.0258  15.0778     562
+  R-palm         4.1141   2.3439  14.9586  15.0208  15.0456     587
+
+-- per-limb confidence reaching the Unity gate --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (0..1)
+  lArm           0.7234   0.7346   0.7996   0.8150   0.8264     595
+  rArm           0.6823   0.7176   0.7982   0.8181   0.8351     595
+  lLeg           0.6331   0.6311   0.7240   0.7877   0.8306     595
+  rLeg           0.6154   0.6151   0.6956   0.7679   0.7975     595
+
+-- UNITY LimbGate (P0-1 proof: gate's own state at apply time) --
+  limb     applied      held    holds    reacq  longest  hold-run lengths
+  lArm        7982         0        0        0        0  -
+  rArm        7982        10        1        1       10  {'9-11': 1}
+  lLeg        7982        19        2        2       10  {'9-11': 2}
+  rLeg        7982        11        1        1       11  {'9-11': 1}
+  TOTAL holds=4  reacquires=4
+  >>> UNITY GATE FIRED (4 hold events) <<<
+
+== BLOCK J - DANCING (stress)  (32.0s) ==
+  tracked frames 680/680 (100.0%)   max joints 21/33   distance median 2.34 m
+
+-- per-joint frame-to-frame displacement (m) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (m)
+  L-shoulder     0.0106   0.0071   0.0294   0.0658   0.1368     679
+  R-shoulder     0.0109   0.0074   0.0280   0.0404   0.0852     679
+  L-elbow        0.0183   0.0163   0.0403   0.0588   0.0911     679
+  R-elbow        0.0206   0.0177   0.0494   0.0653   0.0905     679
+  L-wrist        0.0301   0.0279   0.0605   0.0705   0.0911     677
+  R-wrist        0.0339   0.0326   0.0661   0.0740   0.0915     676
+  L-hip          0.0043   0.0021   0.0140   0.0289   0.0776     679
+  R-hip          0.0043   0.0021   0.0140   0.0289   0.0776     679
+  L-knee         0.0125   0.0099   0.0308   0.0513   0.0907     679
+  R-knee         0.0132   0.0106   0.0336   0.0513   0.0907     679
+  L-ankle        0.0226   0.0188   0.0531   0.0684   0.0903     671
+  R-ankle        0.0202   0.0166   0.0504   0.0643   0.0905     679
+
+-- palm / wrist rotation delta (deg) --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (deg)
+  L-palm         8.3444   7.6963  15.0293  15.0508  15.0820     653
+  R-palm         7.7936   6.8404  15.0176  15.0576  17.0857     662
+
+-- per-limb confidence reaching the Unity gate --
+  joint            mean   median      p95      p99      max       n
+  ----------------------------------------------------------------   (0..1)
+  lArm           0.6949   0.7107   0.7942   0.8283   0.8631     680
+  rArm           0.6774   0.7206   0.8107   0.8361   0.8538     680
+  lLeg           0.6455   0.6456   0.7058   0.7455   0.7883     680
+  rLeg           0.6177   0.6312   0.6894   0.7178   0.7416     680
+
+-- UNITY LimbGate (P0-1 proof: gate's own state at apply time) --
+  limb     applied      held    holds    reacq  longest  hold-run lengths
+  lArm        8811        21        1        1       21  {'12+': 1}
+  rArm        8811        11        1        1       11  {'9-11': 1}
+  lLeg        8811         0        0        0        0  -
+  rLeg        8811        56        2        2       46  {'9-11': 1, '12+': 1}
+  TOTAL holds=4  reacquires=4
+  >>> UNITY GATE FIRED (4 hold events) <<<
+
+-- P0-2 sidecar events (rate-limit / hold / drop) --
+  joint            RATE_LIM    HOLD   DROP   rate-limited displacement (m)
+  left_ankle            150       0      0   median 0.523  p95 1.440  max 2.143
+  left_elbow            130       0      0   median 0.488  p95 1.231  max 2.942
+  left_knee              69       0      0   median 0.589  p95 1.339  max 1.441
+  left_wrist            248       0      0   median 0.520  p95 1.282  max 4.871
+  right_ankle           138       0      0   median 0.482  p95 1.364  max 2.008
+  right_elbow           132       0      0   median 0.509  p95 1.222  max 3.284
+  right_knee             79       0      0   median 0.524  p95 1.329  max 1.413
+  right_wrist           335       0      0   median 0.509  p95 1.439  max 2.128
+
+==============================================================================
+BEFORE (baseline pipeline_logs_baseline_audit)  vs  P0 (pipeline_logs)
+==============================================================================
+                           -- baseline --                   -- P0 --
+  joint          median      p95      max   median      p95      max   change (median)
+  L-shoulder     0.0040   0.0197   0.4989   0.0037   0.0304   2.2786      -9.0% BETTER
+  R-shoulder     0.0049   0.0189   0.4683   0.0041   0.0265   1.3790     -16.6% BETTER
+  L-elbow        0.0066   0.0252   0.5914   0.0088   0.0361   0.5732     +32.8% WORSE
+  R-elbow        0.0071   0.0237   0.4465   0.0092   0.0376   1.1183     +29.9% WORSE
+  L-wrist        0.0101   0.0577   0.4828   0.0104   0.0561   1.1036      +3.5% same
+  R-wrist        0.0114   0.1336   0.4486   0.0111   0.0589   1.0055      -2.7% same
+  L-hip          0.0014   0.0092   0.2694   0.0011   0.0137   0.3063     -17.5% BETTER
+  R-hip          0.0014   0.0092   0.2694   0.0011   0.0137   0.3063     -17.5% BETTER
+  L-knee              -        -        -   0.0035   0.0296   1.3315   NEW (no baseline)
+  R-knee              -        -        -   0.0026   0.0286   1.2592   NEW (no baseline)
+  L-ankle             -        -        -   0.0049   0.0391   1.5075   NEW (no baseline)
+  R-ankle             -        -        -   0.0041   0.0386   1.2950   NEW (no baseline)
+
+  TRUNK REGRESSION CHECK (must not get worse):
+    L-shoulder      -9.0%  ->  OK
+    R-shoulder     -16.6%  ->  OK
+    L-hip          -17.5%  ->  OK
+    R-hip          -17.5%  ->  OK
+

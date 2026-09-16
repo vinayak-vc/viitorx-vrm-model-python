@@ -221,3 +221,138 @@ __marimo__/
 # RTMW3D ONNX (~369 MB) is downloaded, not committed — see README / ADR-015 for the URL.
 *.onnx
 # Keep the small BlazePose .blob device models tracked (they are needed to run Phase 1).
+pipeline_logs/model_log.jsonl
+pipeline_logs/
+
+# --- capture / diagnostic output (P0..P1-3 test artifacts, regenerated on demand) ---
+# Every acceptance + A/B run writes a log dir; none of it belongs in the repo.
+pipeline_logs*/
+hw_check/
+lat_*/
+p12_*/
+p12h_*/
+p12load_*/
+p13_*.jsonl
+probe*/
+p0_human_report.txt
+
+# --- torso-yaw investigation evidence (V4/V5, F-09..F-12) ---
+# The distilled .txt reports and the capture-mark .json files ARE the published evidence and are
+# tracked. The bulk working data underneath them (per-frame traces, screenshot dumps) is kept on
+# disk for further offline testing but is far too large for the repo.
+evidence/oak_v4/*
+!evidence/oak_v4/*.txt
+!evidence/oak_v4/*.json
+!evidence/oak_v4/*.md
+# F-15 onward put their evidence in per-investigation subdirectories. The exceptions above only
+# match the top level, so without these the reports would cite files that never reach the repo.
+# The distilled analyses AND the per-frame capture logs are small enough to track (~7 MB total);
+# f17/raw/ is NOT -- it is 336 MB of synchronised PNG frame sets, kept on disk only.
+!evidence/oak_v4/f15/
+!evidence/oak_v4/f15/*.txt
+!evidence/oak_v4/f15/*.json
+!evidence/oak_v4/f15/*.csv
+!evidence/oak_v4/f16/
+!evidence/oak_v4/f16/*.txt
+!evidence/oak_v4/f16/*.json
+!evidence/oak_v4/f16/*.jsonl
+!evidence/oak_v4/f17/
+!evidence/oak_v4/f17/*.txt
+!evidence/oak_v4/f17/*.json
+evidence/oak_v4/f17/raw/
+!evidence/oak_v4/f18/
+!evidence/oak_v4/f18/*.txt
+!evidence/oak_v4/f18/*.json
+!evidence/oak_v4/f18/*.jsonl
+!evidence/oak_v4/f18/*.csv
+evidence/arm_v1/*
+!evidence/arm_v1/*.txt
+evidence/arm_v2/*
+!evidence/arm_v2/*.py
+!evidence/arm_v2/*.txt
+
+# ---- F-19 evidence -------------------------------------------------------------------
+# The rendered-bone telemetry is ~500 MB of per-frame JSONL (Unity renders at ~217 fps against a
+# 30 fps source). The ANALYSES derived from it are small and are what the report cites, so those
+# are tracked and the raw streams are not. Regenerate with f19_run/f19_session + f19_analyze_live.
+!evidence/oak_v4/f19/
+!evidence/oak_v4/f19/*.json
+!evidence/oak_v4/f19/*.txt
+!evidence/oak_v4/f19/*.png
+evidence/oak_v4/f19/bones_*.jsonl
+evidence/oak_v4/f19/live_log*/
+
+# ---- F-20A evidence ------------------------------------------------------------------
+# Same policy as F-19: the per-frame bone telemetry is large and regenerable, the analyses,
+# timelines and sidecar logs are small and are what the report cites.
+!evidence/oak_v4/f20a/
+!evidence/oak_v4/f20a/*.json
+!evidence/oak_v4/f20a/*.jsonl
+!evidence/oak_v4/f20a/*.txt
+!evidence/oak_v4/f20a/log_*/
+!evidence/oak_v4/f20a/log_*/*.jsonl
+!evidence/oak_v4/f20a/log_*/*.txt
+evidence/oak_v4/f20a/bones_*.jsonl
+
+# ---- F-20B evidence -------------------------------------------------------------------
+# Same policy as F-19/F-20A: the supervisor's own logs/events/timelines are small and are what the
+# report cites; each run's raw sidecar stdout capture (logs/run_*.txt, harness/supervisor stdout
+# dumps) is regenerable and not tracked.
+!evidence/oak_v4/f20b/
+!evidence/oak_v4/f20b/*.json
+!evidence/oak_v4/f20b/*.jsonl
+!evidence/oak_v4/f20b/*.log
+!evidence/oak_v4/f20b/*.txt
+!evidence/oak_v4/f20b/*.md
+!evidence/oak_v4/f20b/tests/
+!evidence/oak_v4/f20b/tests/*.json
+!evidence/oak_v4/f20b/tests/*/
+!evidence/oak_v4/f20b/tests/*/*.json
+!evidence/oak_v4/f20b/tests/*/*.jsonl
+!evidence/oak_v4/f20b/tests/*/*.log
+!evidence/oak_v4/f20b/live/
+!evidence/oak_v4/f20b/live/*.json
+!evidence/oak_v4/f20b/live/*.jsonl
+!evidence/oak_v4/f20b/live/*.log
+evidence/oak_v4/f20b/logs/
+evidence/oak_v4/f20b/tests/*/logs/
+evidence/oak_v4/f20b/tests/*/harness_stdout.txt
+evidence/oak_v4/f20b/live/logs/
+evidence/oak_v4/f20b/live/supervisor_stdout.txt
+
+# ---- F-21 / F-22 / offline-soak evidence (2026-09-14 offline completion pass) ----------------
+# Same policy as f18/f19/f20a above: the small ANALYSIS outputs the reports actually quote are
+# tracked, the bulk per-frame streams are not. The .png files here are the PRIMARY EVIDENCE for two
+# findings that cannot be carried by a number (ADR-056's silent hand-off, and F-22 SS26's
+# classification of every real-video rejection), so they are kept - stored at 50% scale, which is
+# still far more than enough to see which human a skeleton is drawn on. Regenerate full resolution
+# with f21_handoff_forensics.py / f22_inspect_rejections.py.
+!evidence/oak_v4/f21/
+!evidence/oak_v4/f21/**/*.json
+!evidence/oak_v4/f21/**/*.txt
+!evidence/oak_v4/f21/**/*.png
+!evidence/oak_v4/f22/
+!evidence/oak_v4/f22/**/*.json
+!evidence/oak_v4/f22/**/*.txt
+!evidence/oak_v4/f22/**/*.png
+!evidence/oak_v4/soak/
+!evidence/oak_v4/soak/*.json
+# ---- F-21 S30 hand-off-fix pass (2026-09-15) -------------------------------------------------
+!evidence/oak_v4/soak_s30/
+!evidence/oak_v4/soak_s30/*.json
+!evidence/oak_v4/soak_s30_run.txt
+!evidence/oak_v4/soak_s30_gate/
+!evidence/oak_v4/soak_s30_gate/*.json
+!evidence/oak_v4/soak_s30_gate_run.txt
+
+# per-frame streams stay out - regenerable, and large
+evidence/oak_v4/f21/**/events_*.jsonl
+evidence/oak_v4/f21/**/*_track.jsonl
+evidence/oak_v4/f21/**/target_events.jsonl
+# S30's harness names them <clip>_<ARM>_rows.jsonl / _events.jsonl, which the three patterns above
+# do not match - same policy, stated for the new names. Regenerate with f21_wrongperson_replay.py,
+# or re-score an existing run without re-inferring using f21_relabel.py.
+evidence/oak_v4/f21/**/*_rows.jsonl
+evidence/oak_v4/f21/**/*_events.jsonl
+evidence/oak_v4/f22/**/pose_events.jsonl
+evidence/oak_v4/

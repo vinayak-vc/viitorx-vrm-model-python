@@ -1,0 +1,55 @@
+﻿====================================================================================================================
+ TORSO V5 -- live rig, skinned bones. 24561 samples, 2 segments
+====================================================================================================================
+
+--------------------------------------------------------------------------------------------------------------------
+ SEGMENT 0 (VIDEO pass): 375 source frames, scale=1.00
+--------------------------------------------------------------------------------------------------------------------
+
+ TASK 6 -- composition measured on the BONE-LOCAL yaws the driver actually writes
+ condition                          n |  src hip   src sh |   Hips Y trunk sum src twist |  bodyRel
+ rigid turn      (|sh-hip|<5)     281 |    -2.89    -2.29 |     0.23      0.42      0.60 |     9.30
+ torso twist     (|sh-hip|>15)     23 |    -9.06    -8.15 |     6.67     -0.57      0.90 |    13.37
+ opposite signs  (sh*hip<0)        10 |     7.84   -13.20 |    -1.96     13.31    -21.04 |    11.72
+ ALL FRAMES                       375 |    -3.83    -3.00 |     0.80      0.33      0.83 |     9.99
+
+ THE DEFINING PROPERTY -- a rigid turn must NOT be multiplied
+   |upper-trunk twist| on rigid frames: mean 0.670 deg, p95 2.723, max 25.147  (n=281)
+   the OLD form would have written 0.70*shoulderYaw here instead of ~0.
+
+ GAIN, restricted to frames whose source clears the 22 deg dead-zone knee
+   n=10   shoulder-line gain = 0.546
+
+ TASK 4 -- arm regression, source -> ACTUAL SKINNED bone (deg)  [video.webm]
+ quantity                    p50      p95      p99      max
+ upper arm L              0.3140   1.8967   3.6706  13.4708
+ upper arm R              0.3208   1.6476   3.3493   6.6679
+ forearm L                0.6046   3.7937   6.4164  14.2113
+ forearm R                0.5539   3.3787   5.6057   7.9529
+ elbow angle err L        0.3581   3.6944   6.2618  20.1528
+ elbow angle err R        0.3319   2.9034   5.6613   9.6096
+ body-rel upper L           9.00    14.18    16.05    18.89
+ body-rel upper R           9.45    13.79    16.08    19.30
+
+--------------------------------------------------------------------------------------------------------------------
+ SEGMENT 1 (GHOST test): 599 source frames, scale=1.00
+--------------------------------------------------------------------------------------------------------------------
+
+ TASK 1 -- false-detection (ghost) behaviour
+   REAL (before)        n= 2320 | src sh  -20.00..  20.00 | Hips Y -22.26.. 18.72 | chain  -18.74..  23.34 | sd 10.50 | within 15deg of +/-90: 0
+   GHOST (no person)    n= 3588 | src sh   90.00..  90.00 | Hips Y -18.79..-18.74 | chain  -18.79.. -18.74 | sd  0.00 | within 15deg of +/-90: 0
+   REAL (after)         n= 2938 | src sh  -20.00..  17.93 | Hips Y -18.79.. 18.73 | chain  -18.79..  18.73 | sd 10.31 | within 15deg of +/-90: 0
+   gate reject reasons during ghost: ShoulderSpan=3587, YawJump=1
+   SOURCE during ghost is the +90 sentinel (mean 90.00 deg) -- that IS the poisoned input.
+   avatar chain-yaw stdev while holding: 0.0044 deg  (0 = perfectly frozen)
+
+ TASK 4 -- arm regression, source -> ACTUAL SKINNED bone (deg)  [ghost run, REAL phases only]
+ quantity                    p50      p95      p99      max
+ upper arm L              0.0396   0.0766   0.2798   3.5103
+ upper arm R              0.0396   0.0766   0.2798   3.5098
+ forearm L                0.0198   0.0485   0.1595   0.3415
+ forearm R                0.0198   0.0485   0.1607   0.3409
+ elbow angle err L        0.0114   0.0214   0.0292   3.2528
+ elbow angle err R        0.0113   0.0214   0.0292   3.2833
+ body-rel upper L         121.24   130.46   130.60   130.61
+ body-rel upper R         121.12   130.44   130.59   130.61

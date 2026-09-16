@@ -1,0 +1,37 @@
+﻿========================================================================================================
+ THE DECIDING TEST -- separating a fast LEGITIMATE turn from a BAD measurement
+========================================================================================================
+ LEGIT (image confirms the turn): 2157 frames
+ BAD   (image denies the turn)  : 553 frames
+
+ feature                 AUC |  legit p50  legit p95 |    bad p50    bad p95
+ hipLenErrOnline       0.830 |     0.0546     0.8068 |     0.4388     2.2713
+ shLenErrOnline        0.788 |     0.0660     0.7033 |     0.4067     3.7543
+ dYaw                  0.801 |     0.3000     4.5351 |     2.8207    53.7422
+ dYawRate              0.801 |     6.3294    91.2492 |    59.9613   984.8385
+ confMin               0.231 |     0.6153     0.6680 |     0.5785     0.6270
+ dsdShMax              0.554 |    27.4000   292.3000 |    37.7000   842.2000
+ rangeShMax            0.541 |    89.0000   707.0000 |   101.0000  2315.0000
+ validFracMin          0.492 |     1.0000     1.0000 |     1.0000     1.0000
+ _absTrunkDz           0.454 |   136.0000   257.5000 |   118.0000   589.5000
+ hipZ                  0.460 |     1.7300     2.2400 |     1.6530     2.7770
+ cov                   0.431 |    21.0000    21.0000 |    21.0000    21.0000
+
+ AUC near 0.5 means the feature CANNOT tell the two apart. A gate built on such a
+ feature rejects genuine turning at close to the rate it rejects bad measurements.
+
+========================================================================================================
+ ADVERSARIAL CONDITIONS derivable from the recordings
+========================================================================================================
+ condition                         frames | |yaw3D|p50 |yaw3D|p95 |  BAD rate
+ 3. standing still                    453 |      3.58      8.96 |     0.00%
+ 10. rapid legitimate turn            156 |     44.75     90.00 |     0.00%
+ 1/2. turn or twist (any)           21296 |      9.05     46.13 |     2.50%
+ 5. one shoulder low-conf             316 |     89.77    152.45 |    19.62%
+ 6. poor depth (window spread)        594 |     20.78    166.04 |    17.68%
+ 9. depth discontinuity              9627 |     12.54     56.68 |     2.92%
+ 8. partial person (low cov)          178 |     90.00    151.09 |    20.79%
+
+ Conditions 4 (partial torso occlusion) and 7 (empty room) are not separable in these
+ recordings -- an empty room produces no landmarks at all, which the shipped TrunkGate
+ already blocks (V5 report sec 5b), and no occlusion ground truth was recorded.

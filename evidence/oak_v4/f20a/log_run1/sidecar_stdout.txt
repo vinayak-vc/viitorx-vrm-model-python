@@ -1,0 +1,31 @@
+[wb] loading RTMW3D ...
+[wb] providers: ['DmlExecutionProvider', 'CPUExecutionProvider']
+[wb] ======================================================================
+[wb] CameraOrientation = PORTRAIT_CCW
+[wb]   rgb 400x640   depth 400x640
+[wb]   intrinsics  fx=284.454 fy=284.627 cx=201.530 cy=319.789
+[wb]   intrinsics(landscape, pre-rotation)  fx=284.627 fy=284.454 cx=319.211 cy=201.530
+[wb]   FOV  H 70.22 deg  V 96.70 deg
+[wb]   stereo: preset=HIGH_DENSITY subpixel=on(1/8) LR-check=on align=CAM_A mono=400p
+[wb]   depth sampling: surfaceDepth=True kwin=5 (F-08)
+[wb]   working-distance target: 0.90 m (F-18 preferred)
+[wb]   udp -> ('127.0.0.1', 8899)
+[wb]   producer session id = 269bb9cac08f  (F-20A: new on every process start)
+[wb] ======================================================================
+[wb] P1-1 joint tracker ON (predict<=6, reacquire=5)
+[wb] frames=52 sent=52 hip_z=0.81m measured_body=18/33 fps~25.7 age=15ms stale=10
+[wb] depthQuality mean=0.855 multiSurface=13.5% winSpread=152mm (surface-aware)
+[wb] frames=109 sent=109 hip_z=0.87m measured_body=19/33 fps~28.5 age=15ms stale=13
+[wb] depthQuality mean=0.850 multiSurface=8.5% winSpread=66mm (surface-aware)
+[wb] frames=170 sent=170 hip_z=0.95m measured_body=19/33 fps~30.0 age=17ms stale=13
+[wb] depthQuality mean=0.875 multiSurface=8.5% winSpread=75mm (surface-aware)
+[wb] frames=230 sent=230 hip_z=0.98m measured_body=19/33 fps~30.0 age=18ms stale=13
+[wb] depthQuality mean=0.899 multiSurface=6.9% winSpread=83mm (surface-aware)
+[wb] frames=291 sent=291 hip_z=0.98m measured_body=19/33 fps~30.0 age=17ms stale=13
+[wb] depthQuality mean=0.888 multiSurface=8.7% winSpread=66mm (surface-aware)
+[wb] frames=351 sent=351 hip_z=0.89m measured_body=21/33 fps~30.0 age=17ms stale=13
+[wb] depthQuality mean=0.914 multiSurface=4.7% winSpread=48mm (surface-aware)
+[wb] frames=412 sent=412 hip_z=1.10m measured_body=21/33 fps~30.0 age=15ms stale=13
+[wb] depthQuality mean=0.940 multiSurface=1.6% winSpread=31mm (surface-aware)
+[wb] frames=472 sent=472 hip_z=1.08m measured_body=21/33 fps~30.0 age=15ms stale=13
+[wb] depthQuality mean=0.931 multiSurface=2.1% winSpread=36mm (surface-aware)

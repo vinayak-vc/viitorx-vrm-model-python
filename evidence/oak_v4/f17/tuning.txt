@@ -1,0 +1,14 @@
+================================================================================================
+F-17 MATCHER VIABILITY / TUNING  (offline, on captured frames)
+================================================================================================
+capture : oak_v4_evidence/f17/raw/sweep1   frame sets: 402
+  pair BC   B_rect   74.992 mm   f_rect  252.7255 px   f*B    18952.3
+  pair AC   B_rect   37.641 mm   f_rect  245.7626 px   f*B     9250.7
+  evaluating 30 frames spread over d124, d133, d150, d180, d200
+
+  config             pair BC (74.99 mm)             pair AC (37.64 mm)            
+  sgbm_b5_d160       frame  82.9%  torso  87.4%        frame  43.3%  torso  35.1%
+  sgbm_b7_d192       frame  78.7%  torso  92.2%        frame  43.4%  torso  37.4%
+  sgbm_b7_clahe      frame  75.7%  torso  83.7%        frame  45.9%  torso  42.4%
+  sgbm_b9_hh         frame  77.9%  torso  88.4%        frame  48.4%  torso  41.8%
+  sgbm_b11_clahe     frame  78.2%  torso  89.0%        frame  49.1%  torso  40.9%

@@ -1,0 +1,62 @@
+V6 LIVE END-TO-END SESSION -- OAK-D + Play mode + subject A, 2026-09-10
+58,605 avatar frames over 266 s; guard evaluated 58,604 times (220.6 Hz); subject at 1.33 m
+
+GUARD STATE DISTRIBUTION (what the avatar actually ran on)
+  Valid         52350 = 89.33 %
+  OutOfRange     4877 =  8.32 %
+  WrapGuarded    1378 =  2.35 %
+
+CONTINUITY -- frame-to-frame change in the RENDERED torso yaw
+(sum of hips + spine + chest + upperChest local Y, i.e. what the viewer sees)
+  p50    0.007 deg
+  p95    0.201 deg
+  p99.9  1.157 deg
+  MAX    2.45  deg
+  steps > 10 deg : 0
+  steps > 30 deg : 0
+  V5 baseline on recorded data for comparison: max step 359.9 deg, 32 steps > 30 deg
+  max |rendered| = 61.2 deg   (envelope is 60; the 1.2 deg overshoot is Slerp/lerp dynamics
+  on the four nested bones, not a guard failure -- the guard clamps its OUTPUT to exactly 60)
+
+HOLD BEHAVIOUR  (in guard frames at 220.6 Hz)
+  hold runs        : 94
+  total held       : 7,780 frames = 13.3 %
+  median run       : 7 frames = 0.03 s
+  p95 run          : 483 frames = 2.2 s
+  LONGEST RUN      : 2,356 frames = 10.7 SECONDS
+  The offline replay predicted 12.33 s; live measured 10.7 s. The freeze is REAL and REPRODUCIBLE.
+
+REST ERROR -- the finding of the session
+  Subject standing SQUARE to the camera, t = 25..85 s, independently confirmed square by a
+  shoulder pixel span of 66.9 px (the front-on value is ~64 px):
+    rendered torso yaw : p50 -49.6 deg   p05 -53.8   p95 -44.6
+    |error| vs true 0  : 49.6 deg median, and STABLE (0.2 deg range over 150 consecutive frames)
+
+  MECHANISM, measured on the same frames:
+    raw shoulder dz            = -101 mm
+    one disparity step at 1.33 m = 89 mm
+  The two shoulders land on ADJACENT disparity rungs -- the smallest non-zero difference the
+  sensor can express -- and that single step becomes ~50 deg of commanded torso yaw.
+  It is not noise: it is a stable, confident, wrong measurement, and no filter can remove it.
+
+  THIS IS NOT A V6 DEFECT. -49.6 deg is INSIDE the +-60 envelope, so the guard correctly passes
+  it through as Valid. V6 governs the WRAP and the RANGE; it does not touch how yaw is MEASURED.
+  This is the F-09 under-resolution root cause (ADR-038), listed as V6 limitation section 10.4.
+
+  It also explains the V6 replay oddity: yaw3D read -0.1 deg for a real 58.6 deg turn on h_m45.
+  The magnitude is largely decoupled from the truth in BOTH directions.
+
+DIAGNOSTIC DEFECT FOUND BY THIS SESSION (labelling only, no behaviour change)
+  A frame held because TrunkGate reported !Fresh is currently reported as state "Valid" with a
+  growing HoldStreak (TorsoYawGuard.cs, the !trunkFresh branch). That is misleading: the timeline
+  shows 2,356-frame holds sitting under a "V100%" label. Behaviour is correct -- the yaw is held
+  either way -- but the state enum should distinguish "held because the trunk gate rejected" from
+  "fresh and in range". Fix in a follow-up; it is diagnostics, not policy.
+
+TIMELINE (5 s buckets, abridged -- the protocol is visible in it)
+  t=25..85    square baseline      torso -47..-53 deg, V100%      <- the rest error
+  t=135       past +-60            V58/O23/W20, hold 112
+  t=165..180  edge-on hold         torso 0.0, hold streak 1243 -> 2356   <- the 10.7 s freeze
+  t=200       past 90 both ways    W58%/V41%, torso swings -60..+60
+  t=215       reversals            V47/W29/O24, hold 480
+  t=245..255  slow/fast turns      V93..100%, torso -1..-6, brief holds only

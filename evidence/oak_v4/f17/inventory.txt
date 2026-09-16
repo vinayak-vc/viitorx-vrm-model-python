@@ -1,0 +1,43 @@
+
+========================================================================================
+F-17 HARDWARE INVENTORY
+========================================================================================
+depthai 2.32.0.0
+
+USB/network stereo devices visible to depthai: 1
+   name=2.3.1    mxid=14442C10F143D3D200     state=XLinkDeviceState.X_LINK_UNBOOTED protocol=XLinkProtocol.X_LINK_USB_VSC
+
+ONLY ONE STEREO DEVICE IS PRESENT. No second/wider-baseline camera is attached, so the
+brief's candidate list (OAK-D-LR, OAK-D-W, custom pair, second camera) cannot be measured
+directly. Section 4 asks for the inventory first precisely so this is stated, not assumed.
+
+========================================================================================
+DEVICE
+========================================================================================
+device name  : OAK-D-PRO-W
+board        : DM9098 rev R8M2E8   product OAK-D-PRO-W-97
+cameras      : CameraBoardSocket.CAM_A, CameraBoardSocket.CAM_B, CameraBoardSocket.CAM_C
+stereo pair set in calibration: left=CameraBoardSocket.CAM_B right=CameraBoardSocket.CAM_C
+getBaselineDistance(): 7.5000 cm = 75.00 mm
+
+========================================================================================
+MEASURED EXTRINSICS - every camera pair on this board
+========================================================================================
+pair                tx mm      ty mm      tz mm       |T| mm
+CAM_A->CAM_B       37.361     -0.190      0.331       37.363
+CAM_A->CAM_C      -37.637      0.233      0.493       37.641
+CAM_B->CAM_C      -74.989      0.451     -0.367       74.992
+
+========================================================================================
+STEREO PAIRS AVAILABLE ON THIS HARDWARE  (f*B at 640x400)
+========================================================================================
+pair                 B mm        fx px      f*B mm*px           vs B-C
+CAM_A-CAM_B        37.363     287.1571        10729.0           0.506x
+CAM_A-CAM_C        37.641     282.9949        10652.1           0.502x
+CAM_B-CAM_C        74.992     282.9949        21222.2           1.000x
+
+NOTE: only horizontally-separated, rectifiable pairs are usable for StereoDepth. The
+|ty| and |tz| components show how far each pair is from a pure horizontal baseline.
+   CAM_A-CAM_B    horizontal fraction |tx|/|T| = 0.9999   (vertical 0.0051, depth 0.0089)
+   CAM_A-CAM_C    horizontal fraction |tx|/|T| = 0.9999   (vertical 0.0062, depth 0.0131)
+   CAM_B-CAM_C    horizontal fraction |tx|/|T| = 1.0000   (vertical 0.0060, depth 0.0049)

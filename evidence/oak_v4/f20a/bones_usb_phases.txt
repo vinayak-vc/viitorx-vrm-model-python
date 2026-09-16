@@ -1,0 +1,17 @@
+F-20A phase summary: bones_usb.jsonl  (38440 records)
+
+phase                    n tracking states                      moved/f   restEnd   maxStep   snaps
+INJ_DONE              8265 StaleFailsa:8265                      0.0000      0.00     0.000       0
+USB_STARTING          6030 Live:4823,StaleFailsa:1154            0.0460     48.64     0.684       0
+USB_LIVE              3555 Live:3555                             0.0526     47.82     0.319       0
+USB_UNPLUG            2895 Live:1360,StaleFailsa:1177            0.0827      0.00     0.684       0
+USB_GAP               3060 StaleFailsa:3060                      0.0000      0.00     0.000       0
+USB_REPLUG            3780 StaleFailsa:3780                      0.0000      0.00     0.000       0
+USB_RESTART           6840 Live:4882,StaleFailsa:1906            0.1879     55.29    13.378       1
+USB_RECOVERED         3330 Live:3330                             0.1557     48.74     1.139       0
+DONE                   673 StaleHold:321,StaleFailsa:260         0.0818      4.69     0.545       0
+
+moved/f  = mean per-frame world rotation of hips+arms+head (deg); 0 = frozen
+restEnd  = mean bone LOCAL angle from the normalized rig rest pose at the phase end;
+           0.00 = the avatar reached the neutral failsafe pose exactly
+snaps    = rendered torso-yaw steps > 10 deg

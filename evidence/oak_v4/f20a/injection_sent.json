@@ -1,0 +1,15 @@
+{
+  "sid_a": "inj219482471",
+  "sid_b": "inj668cf11bd",
+  "sent": {
+    "BASELINE": 90,
+    "DUPLICATE": 20,
+    "OLD_SEQ": 20,
+    "DELAYED": 1,
+    "NEW_SESSION": 30,
+    "PREV_SESSION_PKT": 10,
+    "SEQ_JUMP": 10,
+    "TS_JUMP": 10,
+    "AFTER_LOSS": 30
+  }
+}

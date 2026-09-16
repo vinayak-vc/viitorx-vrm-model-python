@@ -1,0 +1,39 @@
+﻿========================================================================================================
+ F-11 -- candidate 2-D face sign signals, video.webm (435 of 435 frames usable)
+ NO GROUND TRUTH in a video: this tests PHYSICALITY and CONFOUNDERS, not sign accuracy.
+========================================================================================================
+
+ AVAILABILITY
+   nose conf >= 0.3      : 435 / 435 (100.0%)   conf p05=0.926 p50=0.955
+   both eyes usable (D)  : 435 / 435 (100.0%)
+   ear conf L p50=0.884  R p50=0.858
+
+ YAW MAGNITUDE in this clip (scale-invariant, faceOn ratio = 0.690)
+   |yaw2D| p50=24.0 p90=30.9 p95=32.3 max=35.9 deg
+   NOTE: this clip barely turns. Nothing here speaks to the +-90 deg behaviour that
+   F-10 showed is where the depth estimator collapses.
+
+ IS THE SIGNAL MEASURING YAW?  (F-11 sec 8) -- correlation of |candidate| with |yaw2D|
+ cand   definition                          r vs yaw r vs span
+ A      noseX - shoulderMidX  (px)             0.136    -0.038
+ B      A / shoulderSpanPx  (normalised)       0.180    -0.092
+ Dn     faceCentreX - shMidX, normalised       0.160    -0.097
+
+   'r vs span' is the confounder check: a signal that tracks the shoulder span rather
+   than the yaw would be measuring how far away / how wide the subject is, not heading.
+
+ AGREEMENT WITH AN INDEPENDENT 2-D SIGN SOURCE (ear visibility asymmetry)
+   frames where the ear asymmetry is decisive (|dConf|>0.10) and yaw2D>8 deg: 6
+
+ STABILITY of the sign, frame to frame
+   A    sign flips   28 /  434 frames ( 6.45%)   |value| near zero on 57 frames
+   B    sign flips   28 /  434 frames ( 6.45%)   |value| near zero on 137 frames
+   Dn   sign flips   23 /  434 frames ( 5.30%)   |value| near zero on 145 frames
+
+ cand          p05        p50        p95         sd
+ A         -5.9200     2.0750    12.3300     5.9560
+ B         -0.0400     0.0137     0.0833     0.0389
+ C1       -85.2900   -75.1800   -63.2900     6.7593
+ C2        66.8700    80.1800    90.1700     7.1503
+ Dn        -0.0321     0.0208     0.0864     0.0378
+ earAsym    -0.0150     0.0280     0.0697     0.0300

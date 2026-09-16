@@ -1,0 +1,102 @@
+====================================================================================================
+F-17 REQUIRED-BASELINE MODEL
+====================================================================================================
+current  B = 74.992 mm   fx = 282.995 px   f*B = 21222.4 mm*px
+measured implied disparity bias dd = 0.75 px (F-16, median over 7 distances)
+measured shoulder separation W = 333.1 mm
+
+----------------------------------------------------------------------------------------------------
+1. DOES THE IDEAL MODEL REPRODUCE THE MEASUREMENT AT THE CURRENT BASELINE?
+----------------------------------------------------------------------------------------------------
+Z m       dz measured     dz ideal     yaw meas    yaw ideal
+1.24             75.0         54.3        12.69         9.27
+1.33             78.0         62.5        13.18        10.63
+1.50             88.0         79.5        14.80        13.43
+1.80            129.0        114.5        21.17        18.97
+2.00            138.0        141.4        22.50        23.00
+
+  The ideal model reproduces the CURRENT baseline well - that is what F-16 fitted dd on.
+  It says nothing about how dd behaves when the baseline CHANGES.
+
+----------------------------------------------------------------------------------------------------
+2. IDEAL MODEL - baseline required for a square-stance error of <=5 deg and <=3 deg
+----------------------------------------------------------------------------------------------------
+Z m       B for <=5 deg  B for <=3 deg        x current
+1.24              139.8          233.4    1.86x / 3.11x
+1.33              160.9          268.5    2.15x / 3.58x
+1.50              204.6          341.6    2.73x / 4.55x
+1.80              294.6          491.9    3.93x / 6.56x
+2.00              363.8          607.3    4.85x / 8.10x
+
+  At the MINIMUM full-body distance (1.24 m) the ideal model asks for ~140 mm - about
+  2x the current 75 mm, and within reach of stock wide-baseline stereo hardware.
+
+----------------------------------------------------------------------------------------------------
+3. IDEAL MODEL - what a 150 mm baseline (a typical wide-baseline stereo head) would give
+----------------------------------------------------------------------------------------------------
+Z m             dz mm      yaw deg   <=5 deg?
+1.24             27.2         4.66       PASS
+1.33             31.3         5.36       FAIL
+1.50             39.8         6.81       FAIL
+1.80             57.2         9.75       FAIL
+2.00             70.7        11.98       FAIL
+
+----------------------------------------------------------------------------------------------------
+4. EMPIRICAL SCALING - how the bias ACTUALLY responds to a change in f*B
+----------------------------------------------------------------------------------------------------
+F-16's 1.33 m configuration sweep contains THREE pairs that differ ONLY by mono resolution,
+i.e. three independent doublings of f*B on the same subject in one continuous hold. All
+three are used; picking only the favourable one would misstate the result.
+
+comparison (f*B x2)                 dz before   dz after     ratio
+baseline -> mono800                      89.0       95.0     1.067
+sub3 -> mono800_sub3                     82.2       65.0     0.791
+sub3_rgb800 -> best                      97.0       86.0     0.887
+
+   mean ratio 0.915   median 0.887   spread 0.115
+
+   A pure PIXEL-domain bias scales away with f*B            -> ratio 0.50 per doubling
+   A pure DEPTH-domain bias (background blending) does not  -> ratio 1.00 per doubling
+   MEASURED                                                 -> ratio 0.91 per doubling
+
+   Doubling f*B moves the bias by -9 % on average, with one of the three comparisons
+   moving the WRONG WAY (+6.7 %). That is indistinguishable from no effect, and nowhere
+   near the -50 % a fixed pixel offset would give. Quantisation fell 2x in every one of
+   these pairs, so f*B certainly changed - the BIAS simply does not follow it.
+
+   CAVEAT carried into the report: these doublings come from RESOLUTION, not BASELINE. They
+   are the closest available probe of how the bias responds to f*B, not a substitute for
+   measuring a wider baseline.
+
+----------------------------------------------------------------------------------------------------
+5. IF A BASELINE CHANGE SCALES THE WAY THESE f*B CHANGES DID
+----------------------------------------------------------------------------------------------------
+B mm        doublings     dz @1.33          yaw   <=5 deg?
+75               0.00         78.0        13.18       FAIL
+100              0.42         75.2        12.72       FAIL
+150              1.00         71.4        12.09       FAIL
+200              1.42         68.8        11.67       FAIL
+300              2.00         65.3        11.09       FAIL
+400              2.42         62.9        10.70       FAIL
+600              3.00         59.7        10.17       FAIL
+
+   Under this scaling, reaching 5 deg at 1.33 m needs 11.1 doublings = B ~ 161489 mm.
+   No such stereo head exists. THE TWO MODELS DISAGREE BY ORDERS OF MAGNITUDE, and the
+   measurement that would settle it is exactly the one this hardware cannot make.
+
+----------------------------------------------------------------------------------------------------
+6. THE COUPLING THE BRIEF ASKS FOR (section 12): FOV sets the distance, distance sets B
+----------------------------------------------------------------------------------------------------
+A candidate cannot be judged on baseline alone - a narrower lens pushes the full-body
+distance out, and the required baseline grows as Z^2.
+
+V-FOV deg       Z_min m    dz @Z_min     yaw @75 mm    B for <=5 deg
+50.0               1.88        124.4          20.48            320.2
+60.0               1.52         81.2          13.70            208.9
+70.2               1.24         54.8           9.34            141.0
+80.0               1.04         38.4           6.58             98.9
+95.0               0.80         22.7           3.90             58.5
+
+   Closed form:  B_req = H_body^2 * dd / (2 * h_px * W * tan(eps) * tan(vfov/2))
+   Widening the LENS is as effective as widening the BASELINE, and cheaper: it lets the
+   subject stand closer for the same full-body framing, and the requirement falls as Z^2.

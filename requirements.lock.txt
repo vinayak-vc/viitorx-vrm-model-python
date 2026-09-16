@@ -1,0 +1,23 @@
+# Virtual Mirror sidecar - EXACT versions captured from the working .venv (pip freeze).
+#
+# This file, not requirements.txt, is what setup_sidecar.ps1 installs. requirements.txt is the
+# human-readable intent; this is the reproducible set, including transitive pins.
+#
+# Python 3.10 is required, not merely recommended: the depthai wheels are cp310-only.
+#
+# onnxruntime-directml is the load-bearing line. It was commented out in requirements.txt while the
+# working venv had it installed, so anyone setting up from that file got a sidecar with no inference
+# at all. Do not "simplify" this to plain onnxruntime: the plain package has no DirectML provider,
+# falls back to CPU without raising, and drops RTMW3D from ~31 ms/frame to ~183 ms/frame.
+coloredlogs==15.0.1
+depthai==2.32.0.0
+flatbuffers==25.12.19
+humanfriendly==10.0
+mpmath==1.3.0
+numpy==1.26.4
+onnxruntime-directml==1.23.0
+opencv-python==4.11.0.86
+packaging==26.3
+protobuf==7.35.1
+pyreadline3==3.5.6
+sympy==1.14.0
