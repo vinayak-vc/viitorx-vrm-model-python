@@ -63,44 +63,66 @@ real occlusion, so Unity's gate still makes the final call. Never move safety ou
 
 ## Layout
 
+The root holds the **production path and nothing else**: the two entry points plus the nine modules
+`wholebody_udp_sender.py` imports. Everything else is a harness, a self-test or a superseded
+one-off, and lives under `tools/` or `tests/` (ADR-065).
+
+That split is what lets the Unity build copy the root directory verbatim and get exactly what a
+player needs — see `Editor/SidecarBuildPostprocessor.cs`.
+
 ```
 .
-├── wholebody_udp_sender.py     # PRIMARY sidecar: RTMW3D + measured depth + P0/P1-1/P1-2 → UDP
+├── sidecar_supervisor.py       # ENTRY: watchdog; restarts a dead sidecar. Unity launches this.
+├── wholebody_udp_sender.py     # ENTRY: RTMW3D + measured depth + P0/P1 stages -> UDP 8899
+│
 ├── rtmw3d_pose.py              # RTMW3D ONNX wrapper (SimCC decode, person-box tracking)
-├── oak_depth.py                # DepthAI pipeline, intrinsics, 5x5/p30 depth sampling, back-projection
+├── oak_depth.py                # DepthAI pipeline, intrinsics, depth sampling, back-projection
+├── f18_portrait.py             # F-18/F-19 portrait transform (verified, imported - not re-derived)
 ├── smoothing.py                # P0: One-Euro + per-index displacement caps + bounded hold
-├── joint_tracker.py            # P1-1: JointTracker / SkeletonTracker (temporal state + plausibility)
-├── mock_udp_sender.py          # device-free: synthetic skeleton on the wire contract
+├── joint_tracker.py            # P1-1: temporal state + plausibility
+├── kinematic_recovery.py       # P1-4: skeleton constraints + long-horizon recovery
+├── target_ownership.py         # F-21: single-person target ownership
+├── pose_validation.py          # F-22: human / biomechanical pose validation
+├── f21_cue_display.py          # F-21: on-screen subject cues
+├── _sidecar_path.py            # import shim so harnesses in subfolders resolve the modules above
 │
-├── test_joint_tracker.py       # P1-1 unit tests (37 assertions, no pytest needed)
-├── evaluate_p1.py              # P1-1 replay (false-rejection) + adversarial harness
-├── analyze_capture.py          # P0 acceptance analyzer (displacement, gate, latency, packet loss)
-├── guided_capture.py           # guided human capture: prompts through blocks A–J, writes blocks.json
-├── verify_gate.py              # P0-1 proof: intended vs observed Unity LimbGate holds
-├── inject_occlusion.py         # scripted occlusion injector (device-free, drives Unity directly)
-├── stream_motion.py            # deterministic motion streamer (P1-3 interpolation A/B)
-├── compare_p12.py              # P1-2 A/B comparator (velocity-normalised, not per-frame)
-├── compare_logs.py             # 3-stage pipeline log diff (sender / recv / model)
-├── replay_video.py             # offline RGB replay harness
-├── validate_rtmw3d.py          # draw keypoints on one RGB frame
-├── validate_depth.py           # draw measured/hole depth + report metric XYZ
-├── validate_p0.py              # P0 offline validation (spikes, dropouts, gate simulation)
+├── tests/                      # 8 self-tests. No pytest needed; each prints "N/N assertions passed"
+│                               #   test_target_ownership 75, test_kinematic_recovery 39,
+│                               #   test_joint_tracker 37, test_surface_depth 32, test_pose_validation 22
 │
-├── run_capture.bat             # one-shot capture + compare report
-├── run_p0_acceptance.bat       # P0 human acceptance capture (blocks A–J)
-├── run_p12_ab.bat              # P1-2 human A/B (FIFO vs latest-frame)
+├── tools/
+│   ├── capture/      (23)      # F-16 stereo config sweeps, F-18 portrait, F-19 production capture
+│   ├── deployment/    (7)      # F-20A/F-20B supervisor, USB and failure-injection harnesses
+│   ├── ownership/    (13)      # F-21 two-person ownership: protocols, replays, adversarial
+│   ├── validation/    (6)      # F-22 pose validation: thresholds, rejections, replay soak
+│   ├── video/         (4)      # F-23 video-driven pipeline and demo composition
+│   └── diagnostics/  (11)      # F-24..F-27 jitter, fidelity, humanized-skeleton analysis
 │
-├── requirements.txt
-└── depthai_blazepose/          # vendored geaxgx/depthai_blazepose (MIT) + our OV9782 modifications
-    ├── udp_pose_sender.py       # Phase-1 fallback: BlazePose on the OAK-D VPU → UDP
-    ├── BlazeposeDepthaiEdge.py  # (modified) OV9782 native color mode / full-FOV fix
-    └── models/*.blob            # BlazePose blobs (device NN, needed at runtime)
+├── setup_sidecar.ps1           # one-time target setup; VERIFIES the DirectML provider
+├── requirements.lock.txt       # exact pins - this is what setup installs
+├── requirements.txt            # human-readable intent
+│
+└── depthai_blazepose/          # vendored geaxgx/depthai_blazepose (MIT), Phase-1 fallback.
+                                # Superseded and NOT imported by the production path.
 ```
 
-Capture output (`pipeline_logs*/`, `p12*/`, `probe*/`, …) is **git-ignored** — regenerate on demand.
+**Running a harness.** They are still plain scripts, so only the path changed:
+
+```powershell
+.venv\Scripts\python.exe tests\test_target_ownership.py
+.venv\Scripts\python.exe tools\diagnostics\f26_fidelity_analyze.py --selftest
+.venv\Scripts\python.exe tools\ownership\f21_walkin_protocol.py --help
+```
+
+Anything under `tools/` or `tests/` that imports a project module carries a two-line prelude that
+walks up to `_sidecar_path.py` and puts the root — and every `tools/` group — on `sys.path`. Python
+only puts the *script's own* directory on the path, so without it a harness one level down cannot
+`import rtmw3d_pose`.
+
+Capture output (`pipeline_logs*/`, `oak_v4_evidence/`, `probe*/`, …) is **git-ignored** — regenerate
+on demand; the commands are in the F-report that used them.
 
 ---
-
 ## Setup (Windows, Python 3.10)
 
 ```bash
@@ -169,14 +191,17 @@ different environments and only the venv has DirectML. See `docs/ai_handoff.md` 
 > **oldest** packet, so a full `maxSize=4` queue at 30 fps meant every pose was ~133 ms stale
 > (measured 131 ms). Draining to newest took frame age to **31 ms** with no fps or compute change.
 
-### Device-free — mock sender / scripted occlusion / deterministic motion
+### Device-free — drive Unity without a camera
 
-No camera required; these drive Unity directly over the wire contract.
+`mock_udp_sender.py`, `inject_occlusion.py` and `stream_motion.py` were removed in `29ec57e`
+("Remove legacy verification and video streaming scripts"). Their surviving replacements:
 
 ```bash
-python mock_udp_sender.py                     # synthetic animated skeleton (pure stdlib)
-python inject_occlusion.py                    # scripted 3/5/8/12/20-frame occlusions per limb
-python stream_motion.py --fps 21 --seconds 30 # smooth deterministic swing (interpolation A/B)
+# Replay a video file through the real pipeline and stream the result to Unity (F-23).
+.venv\Scripts\python.exe toolsideo23_video_to_unity.py --help
+
+# A stand-in sidecar for exercising the supervisor's restart paths without hardware (F-20B).
+.venv\Scripts\python.exe tools\deployment20b_fake_sidecar.py
 ```
 
 ### Phase 1 — BlazePose on the OAK-D VPU (fallback)
@@ -193,9 +218,21 @@ Device note: this unit is an **OAK-D-PRO-W** (wide lens, **OV9782** 1280×800 co
 
 ## Tests
 
+Self-contained: no pytest, each prints `N/N assertions passed` and exits 0 on success. Last full run
+after the ADR-065 reorganisation:
+
 ```bash
-.venv\Scripts\python test_joint_tracker.py      # P1-1: 37 assertions, exit 0 on pass
-.venv\Scripts\python evaluate_p1.py --dir pipeline_logs    # replay + adversarial (needs a capture)
+.venv\Scripts\python.exe tests	est_target_ownership.py       # F-21 ownership          75/75
+.venv\Scripts\python.exe tests	est_kinematic_recovery.py     # P1-4 recovery           39/39
+.venv\Scripts\python.exe tests	est_joint_tracker.py          # P1-1 tracker            37/37
+.venv\Scripts\python.exe tests	est_surface_depth.py          # depth sampling          32/32
+.venv\Scripts\python.exe tests	est_pose_validation.py        # F-22 validation         22/22
+
+.venv\Scripts\python.exe tools\diagnostics26_fidelity_analyze.py --selftest    # 28 passed
+.venv\Scripts\python.exe tools\diagnostics27_humanized_analyze.py --selftest   # 18 passed
+
+# Replay + adversarial against a real capture (needs a --log-dir from a session).
+.venv\Scripts\python.exe tools\diagnostics\evaluate_p1.py --dir <capture-dir>
 ```
 
 `test_joint_tracker.py` is self-contained (no pytest). It covers stationary, constant velocity, fast

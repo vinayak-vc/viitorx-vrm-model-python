@@ -167,7 +167,13 @@ Diagnostics are a feature of this repo, not an afterthought.
 
 * Do not create new files unless necessary
 * One responsibility per module; keep the frame loop in `wholebody_udp_sender.py` readable
-* Analysis/validation tools are top-level scripts with `argparse` and a `main()`
+* Analysis/validation tools are scripts with `argparse` and a `main()`, run directly
+* **The repository root is the production path only** (ADR-065): the two entry points plus the nine
+  modules `wholebody_udp_sender.py` imports. A new harness goes in the matching `tools/` group, a
+  new self-test in `tests/` — never at the root. The Unity build copies the root verbatim, so a file
+  left there ships to every player whether or not a player needs it.
+* A harness that imports a project module needs the two-line prelude that resolves `_sidecar_path`;
+  copy it from any existing file under `tools/`
 * Capture output goes to a `--log-dir`; it is git-ignored and must never be committed
 
 ---
