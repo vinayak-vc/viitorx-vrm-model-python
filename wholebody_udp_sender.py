@@ -24,6 +24,9 @@ PoseSpaceConverter + poseFlipX/Y/Z tuning apply the same way. Run:
 """
 
 import argparse
+import io          # F-21 S31.4: _read_cue() uses io.open and this was never imported - the bare
+                   # `except Exception` around it turned a NameError into a silent None on EVERY
+                   # call, so the --cue-file banner never drew. See the F-21 report S31.4.
 import json
 import socket
 import uuid
@@ -347,7 +350,16 @@ def main():
     parser.add_argument("--cue-file", default="",
                         help="live-protocol phase cue (JSON: title/instruction/seconds_left), drawn "
                              "as a banner on the --show preview - see f21_live_protocol.py. Empty = off.")
+    parser.add_argument("--cue-panel", action="store_true",
+                        help="F-21 S32: draw the cue as a LARGE side panel (instruction + top-down "
+                             "diagram) next to the feed in ONE window, instead of the small banner "
+                             "on top of it. The banner is 13 px cap-height in a 400 px AUTOSIZE "
+                             "window - readable at the desk, ~4x too small at the camera, which is "
+                             "where the subjects are. PREVIEW-ONLY and opt-in: without this flag "
+                             "the preview is unchanged. Needs --show and --cue-file.")
     args = parser.parse_args()
+    global _CUE_PANEL
+    _CUE_PANEL = bool(args.cue_panel)
 
     if args.subpixel_bits >= 0:
         # Applied to the shared STEREO_CONFIG BEFORE build_rgbd_pipeline reads it, so the startup
@@ -567,6 +579,32 @@ def main():
             stale_depth += _depth_dropped
             frames += 1
             win_frames += 1
+
+            # ---- IDLE LIVENESS HEARTBEAT ------------------------------------------------------
+            # The detailed "[wb] frames=..." status line further down sits AFTER build_body_landmarks
+            # and the UDP send, so every `continue` above it skips the heartbeat entirely: no hip
+            # depth, and (since F-21) any frame ownership withholds. With nobody in front of the
+            # camera, a perfectly healthy sidecar therefore prints NO frames= line at all.
+            #
+            # That silently breaks F-20B. Its readiness check is "SID banner, then the first
+            # frames= line" (sidecar_supervisor.py SID_MARKER/FRAME_MARKER), so an EMPTY ROOM - the
+            # normal state of an unattended installation between visitors - reads as a stuck
+            # startup. Reproduced on real hardware 2026-09-14 with the OAK-D attached and no person
+            # present: "STARTUP STUCK pid=24460 not ready after 45s - killing for restart", then the
+            # same again on every retry, which reaches FAILED_PERMANENT after 5 restarts (~4 min).
+            # F-20B's live SS17 matrix passed only because a person was standing in frame throughout.
+            #
+            # A liveness heartbeat must report that the CAMERA LOOP is alive, which is not the same
+            # question as whether a SUBJECT is present. This fires only when the detailed line has
+            # been starved (3 s > its own 2 s cadence), so it never doubles up during normal
+            # tracking - it is purely the idle case.
+            if time.time() - t_log > 3.0:
+                print("[wb] frames=%d sent=%d idle - camera loop alive, no pose emitted "
+                      "(no subject / withheld) fps~%.1f age=%.0fms stale=%d"
+                      % (frames, sent, win_frames / (time.time() - t_log + 1e-6),
+                         _cam_lat_ms, stale_rgb), flush=True)
+                t_log = time.time()
+                win_frames = 0
 
             uv, zrel, conf = model.infer(frame, bbox)
             if args.inject_load_ms > 0.0:      # TEST-ONLY, see --inject-load-ms
@@ -1084,6 +1122,88 @@ def _draw_cue(view, cue):
     return banner_h + 4
 
 
+# F-21 S32: set from --cue-panel. False keeps _preview on its original path exactly.
+_CUE_PANEL = False
+_PANEL_CANVAS = (1900, 1000)      # fits a 1920x1080 desktop with the taskbar showing
+_PANEL_CACHE = None               # last rendered cue panel (see _compose_cue_panel)
+_PANEL_KEY = None                 # the cue fields it was rendered for
+_PANEL_OUT = None                 # preallocated composite canvas
+
+
+def _compose_cue_panel(view, cue, ownership, candidate_count, frames, sent, status):
+    """ONE window: the big cue panel on the left, the camera feed upscaled on the right.
+
+    The subjects need an instruction they can read from the cross (2-3 m away); the operator needs
+    the F-21 HUD; the screen recording needs BOTH on one clock so wrong-person frames can be
+    reviewed by eye afterwards against what the protocol was asking for at that moment. Two separate
+    windows satisfied none of those well - the operator had to watch two things and a fullscreen cue
+    would have covered the feed entirely on this single-monitor machine.
+
+    The panel renderer is imported HERE, not at module scope: under the default (no --cue-panel)
+    this function is never called, so the live-critical import graph is unchanged. An import failure
+    degrades to the original small banner rather than taking the camera loop down."""
+    try:
+        import f21_cue_display as CUE
+    except ImportError:
+        return None
+    cw, ch = _PANEL_CANVAS
+    fh, fw = view.shape[:2]
+    feed_w = max(1, int(round(fw * float(ch) / fh)))
+    panel_w = max(320, cw - feed_w)
+
+    # The panel costs 2.74 ms to draw and is IDENTICAL between consecutive frames except when the
+    # countdown's whole second ticks - measured: composite 4.29 ms vs 0.62 ms for the small banner,
+    # +3.67 ms = 11 % of a 30 fps budget, which is real money against a producer whose DURATIONS
+    # this protocol is measuring. Cached on exactly the fields that change what is drawn, so it is
+    # rebuilt ~1x/s instead of ~30x/s. The canvas is allocated once and written through slices, so
+    # the steady state does no per-frame allocation at all.
+    global _PANEL_CACHE, _PANEL_KEY, _PANEL_OUT
+    key = None
+    if cue:
+        secs = cue.get("seconds_left")
+        key = (panel_w, ch, cue.get("title"), cue.get("actor"), cue.get("instruction"),
+               cue.get("detail"), cue.get("case"), cue.get("rep"),
+               None if secs is None else int(secs), cue.get("seconds_total"))
+    if key is None or key != _PANEL_KEY or _PANEL_CACHE is None:
+        _PANEL_CACHE = CUE.render(panel_w, ch, cue)
+        _PANEL_KEY = key
+
+    if _PANEL_OUT is None or _PANEL_OUT.shape[:2] != (ch, panel_w + feed_w):
+        _PANEL_OUT = np.empty((ch, panel_w + feed_w, 3), np.uint8)
+    _PANEL_OUT[:, :panel_w] = _PANEL_CACHE
+    feed = _PANEL_OUT[:, panel_w:]
+    cv2.resize(view, (feed_w, ch), dst=feed, interpolation=cv2.INTER_LINEAR)
+
+    # HUD on the FEED half, scaled for the bigger canvas - it belongs against the picture it
+    # describes, and it is diagnostic only (drawn from ownership.snapshot(), never fed back).
+    # Dark strip behind the HUD: it is drawn over a live camera image, and against a bright ceiling
+    # the thin coloured text was unreadable in the first recording - which matters because this HUD
+    # is what the eye review reads ownership state from, frame by frame, after the session.
+    cv2.rectangle(feed, (0, 0), (feed.shape[1], 112), (0, 0, 0), -1)
+    cv2.putText(feed, "sent=%d %s" % (sent, status), (10, 26), cv2.FONT_HERSHEY_PLAIN, 1.5,
+                (0, 255, 255), 2)
+    if ownership is not None:
+        colour = _OWNERSHIP_COLOURS.get(ownership["state"], (255, 255, 255))
+        cv2.putText(feed, "F21 %s" % ownership["state"], (10, 54), cv2.FONT_HERSHEY_PLAIN, 1.7,
+                    colour, 2)
+        cv2.putText(feed, "owner=%s switches=%d cand=%s conf=%.2f"
+                    % (ownership["target_id"], ownership["switch_count"], candidate_count,
+                       ownership["owner_confidence"]),
+                    (10, 78), cv2.FONT_HERSHEY_PLAIN, 1.3, colour, 1)
+        line = ""
+        if ownership["owner_age_s"] is not None:
+            line += "age=%.1fs " % ownership["owner_age_s"]
+        if ownership["loss_duration_s"] is not None:
+            line += "lost=%.1fs release_in=%.1fs " % (ownership["loss_duration_s"],
+                                                      ownership["release_remaining_s"])
+        if ownership["acquire_needed"] is not None:
+            line += "acquire=%d/%d" % (ownership["acquire_progress"], ownership["acquire_needed"])
+        if line:
+            cv2.putText(feed, line, (10, 100), cv2.FONT_HERSHEY_PLAIN, 1.3, colour, 1)
+
+    return _PANEL_OUT
+
+
 def _preview(frame, uv, conf, thr, frames, sent, status, ownership=None, candidate_count=None,
              cue=None):
     view = frame.copy()
@@ -1091,6 +1211,11 @@ def _preview(frame, uv, conf, thr, frames, sent, status, ownership=None, candida
         if conf[i] > thr:
             cv2.circle(view, (int(uv[i, 0]), int(uv[i, 1])), 2,
                        (0, 255, 0) if i < 91 else (255, 0, 255), -1)
+    if _CUE_PANEL:
+        composed = _compose_cue_panel(view, cue, ownership, candidate_count, frames, sent, status)
+        if composed is not None:
+            cv2.imshow("whole-body OAK sidecar", composed)
+            return
     y0 = _draw_cue(view, cue)
     cv2.putText(view, "sent=%d %s" % (sent, status), (8, y0 + 16), cv2.FONT_HERSHEY_PLAIN, 1.2,
                 (0, 255, 255), 1)

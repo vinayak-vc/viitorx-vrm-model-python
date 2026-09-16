@@ -128,6 +128,25 @@ Capture output (`pipeline_logs*/`, `p12*/`, `probe*/`, …) is **git-ignored** �
 
 Stand ~2–2.5 m out, full body in frame. Beyond ~2.5 m depth coverage and facing both degrade.
 
+### Supervised — restart on a device crash (F-20B)
+
+`sidecar_supervisor.py` owns the sidecar's lifecycle: readiness detection, backoff, crash-loop
+protection and a single-instance guard. Use it for unattended running and for live test sessions,
+where a DepthAI fault would otherwise end the experiment.
+
+```bash
+.venv\Scripts\python sidecar_supervisor.py --model ..\..\..\SentisModel\rtmw3d-x.onnx
+.venv\Scripts\python sidecar_supervisor.py --model <onnx> --show --cue-file <path\to\cue.json>
+```
+
+`--show` and `--cue-file` are forwarded verbatim to the sidecar (F-21 §31). They are named
+explicitly rather than accepted as a generic passthrough: a supervisor that forwards arbitrary
+strings could also forward `--no-ownership`, and then the thing under test is not the thing that was
+configured. With neither flag set the launched command line is byte-identical to before.
+
+Run every command above with `.venv\Scripts\python.exe`, not the `python` on PATH — they are
+different environments and only the venv has DirectML. See `docs/ai_handoff.md` §6.
+
 #### Stability flags (defaults are the shipping configuration — change only with evidence)
 
 | Flag | Default | Stage | What it does |

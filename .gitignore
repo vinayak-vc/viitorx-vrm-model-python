@@ -319,3 +319,40 @@ oak_v4_evidence/f20b/tests/*/logs/
 oak_v4_evidence/f20b/tests/*/harness_stdout.txt
 oak_v4_evidence/f20b/live/logs/
 oak_v4_evidence/f20b/live/supervisor_stdout.txt
+
+# ---- F-21 / F-22 / offline-soak evidence (2026-09-14 offline completion pass) ----------------
+# Same policy as f18/f19/f20a above: the small ANALYSIS outputs the reports actually quote are
+# tracked, the bulk per-frame streams are not. The .png files here are the PRIMARY EVIDENCE for two
+# findings that cannot be carried by a number (ADR-056's silent hand-off, and F-22 SS26's
+# classification of every real-video rejection), so they are kept - stored at 50% scale, which is
+# still far more than enough to see which human a skeleton is drawn on. Regenerate full resolution
+# with f21_handoff_forensics.py / f22_inspect_rejections.py.
+!oak_v4_evidence/f21/
+!oak_v4_evidence/f21/**/*.json
+!oak_v4_evidence/f21/**/*.txt
+!oak_v4_evidence/f21/**/*.png
+!oak_v4_evidence/f22/
+!oak_v4_evidence/f22/**/*.json
+!oak_v4_evidence/f22/**/*.txt
+!oak_v4_evidence/f22/**/*.png
+!oak_v4_evidence/soak/
+!oak_v4_evidence/soak/*.json
+# ---- F-21 S30 hand-off-fix pass (2026-09-15) -------------------------------------------------
+!oak_v4_evidence/soak_s30/
+!oak_v4_evidence/soak_s30/*.json
+!oak_v4_evidence/soak_s30_run.txt
+!oak_v4_evidence/soak_s30_gate/
+!oak_v4_evidence/soak_s30_gate/*.json
+!oak_v4_evidence/soak_s30_gate_run.txt
+
+# per-frame streams stay out - regenerable, and large
+oak_v4_evidence/f21/**/events_*.jsonl
+oak_v4_evidence/f21/**/*_track.jsonl
+oak_v4_evidence/f21/**/target_events.jsonl
+# S30's harness names them <clip>_<ARM>_rows.jsonl / _events.jsonl, which the three patterns above
+# do not match - same policy, stated for the new names. Regenerate with f21_wrongperson_replay.py,
+# or re-score an existing run without re-inferring using f21_relabel.py.
+oak_v4_evidence/f21/**/*_rows.jsonl
+oak_v4_evidence/f21/**/*_events.jsonl
+oak_v4_evidence/f22/**/pose_events.jsonl
+oak_v4_evidence/

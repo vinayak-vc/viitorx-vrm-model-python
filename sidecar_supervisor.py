@@ -212,7 +212,20 @@ class Supervisor(object):
     def _port_ready(self, attempts=5, delay=1.0):
         """SS15: verify the UDP socket is actually free before respawning. Transient (the previous
         process's socket hasn't been released by the OS yet) - NOT a terminal failure, so this just
-        retries a few times rather than escalating to FAILED_PERMANENT."""
+        retries a few times rather than escalating to FAILED_PERMANENT.
+
+        F-21 S34: --allow-port-listener skips this. The check binds the DESTINATION port to infer
+        that no stale producer is holding it, but a UDP sender never binds its destination - what
+        this actually detects is a LISTENER on the far end. That is normally nobody, so the proxy
+        works; it stops working the moment something is deliberately listening there. Two real
+        cases: f24_wire_probe relaying sidecar -> probe -> Unity, and Unity itself while it is in
+        Play mode holding the port. In both, an occupied port is the HEALTHY state and refusing to
+        launch is the wrong call. Off by default, so F-20B's behaviour is unchanged.
+        """
+        if getattr(self.args, "allow_port_listener", False):
+            self.log("PORT CHECK SKIPPED (--allow-port-listener): a listener on %s:%d is expected"
+                     % (self.args.host, self.args.port))
+            return True
         for i in range(attempts):
             if self._probe_port_available():
                 return True
@@ -234,6 +247,24 @@ class Supervisor(object):
         else:
             cmd += ["--no-portrait"]
         cmd += ["--subpixel-bits", str(self.args.subpixel_bits), "--seconds", "0"]
+        # F-21 S31: the two live-session flags, forwarded explicitly.
+        #
+        # Explicitly, and NOT as a generic "--extra-args" passthrough, which was the obvious
+        # smaller change and is the wrong one: a supervisor that forwards arbitrary strings into
+        # a supervised process can also forward --no-ownership or --seconds 30, and then the
+        # thing under test is not the thing that was configured. Two named flags stay auditable
+        # in the SIDECAR CMD log line, and anything else still has to be added here deliberately.
+        #
+        # Neither flag touches watchdog policy (S10) or the readiness/heartbeat contract (S8):
+        # --show only opens a preview window and --cue-file only reads a JSON file the protocol
+        # writes. Both are already argparse flags of wholebody_udp_sender.py, so S6's "do not
+        # invent arguments" rule still holds.
+        if self.args.show:
+            cmd += ["--show"]
+        if self.args.cue_file:
+            cmd += ["--cue-file", self.args.cue_file]
+        if getattr(self.args, "cue_panel", False):
+            cmd += ["--cue-panel"]
         return cmd
 
     # ---- lifecycle ------------------------------------------------------------------------------
@@ -478,6 +509,20 @@ def build_arg_parser():
     ap.add_argument("--crash-loop-count", type=int, default=5,
                      help="N exits within --crash-loop-window -> FAILED_PERMANENT (SS10)")
     ap.add_argument("--crash-loop-window", type=float, default=300.0)
+    ap.add_argument("--show", action="store_true",
+                     help="F-21 S31: forward --show to the sidecar so a live operator gets the "
+                          "preview window and the F-21 HUD while under supervision")
+    ap.add_argument("--allow-port-listener", action="store_true",
+                     help="skip the pre-launch UDP port-availability check. Use when something is "
+                          "DELIBERATELY listening on --port: a recording relay (f24_wire_probe), or "
+                          "Unity itself in Play mode. See _port_ready().")
+    ap.add_argument("--cue-file", default=None,
+                     help="F-21 S31: forward --cue-file to the sidecar, so f21_live_protocol.py "
+                          "can draw its phase banner on that same window")
+    ap.add_argument("--cue-panel", action="store_true",
+                     help="F-21 S32: forward --cue-panel, so the cue is drawn as a LARGE side "
+                          "panel next to the feed in one window instead of a 13 px banner on it. "
+                          "Preview-only, same class of flag as --show.")
     ap.add_argument("--failed-permanent-retry", type=float, default=60.0,
                      help="retry interval while FAILED_PERMANENT - long and throttled, never zero, "
                           "so a camera that comes back after a long absence still self-heals (SS20)")

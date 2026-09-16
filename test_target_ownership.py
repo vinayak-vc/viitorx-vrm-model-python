@@ -266,6 +266,235 @@ def t16_release_timeout_boundary():
           just_over[-1][0] == RELEASED, "state=%s" % just_over[-1][0])
 
 
+# ---------------------------------------------------------------- 17 (regression guard)
+def t17_owner_returning_past_reacquire_window_is_not_released():
+    """REGRESSION GUARD for the defect f21_adversarial.py's scenario s08b found offline.
+
+    Before the fix, matching against the frozen owner reference was gated on
+    `loss_elapsed <= reacquire_window_s`, so an owner who stepped away for longer than
+    REACQUIRE_WINDOW (2.0 s) and returned to their EXACT original position at full confidence was
+    rejected 51 consecutive times as "not_owner", held un-emitted for 1.87 s, RELEASED, and then
+    re-acquired with a TARGET_SWITCH logged - against a person who never moved. RELEASE_TIMEOUT
+    (4.0 s) is the budget that bounds a loss; REACQUIRE_WINDOW only selects the confirm count."""
+    own = new_owner()
+    feed(own, const(A_POS, 0.9, A_SCALE, 10))
+    check("17 setup: locked", own.state == LOCKED)
+
+    # away for 2.33 s - past REACQUIRE_WINDOW (2.0 s), well inside RELEASE_TIMEOUT (4.0 s)
+    feed(own, absent(70), t0=10 * DT)
+    check("17 setup: temporarily lost, not yet released", own.state == TEMPORARILY_LOST,
+          own.state)
+
+    back = feed(own, const(A_POS, 0.9, A_SCALE, 10), t0=80 * DT)
+    check("17 the returning owner is re-locked, not released",
+          own.state == LOCKED and not events_of(own, "TARGET_RELEASED"),
+          "state=%s released=%d" % (own.state, len(events_of(own, "TARGET_RELEASED"))))
+    check("17 it is the SAME ownership epoch (a reacquire, not a new acquisition)",
+          own.epoch == 1 and len(events_of(own, "TARGET_REACQUIRED")) == 1,
+          "epoch=%d reacquired=%d" % (own.epoch, len(events_of(own, "TARGET_REACQUIRED"))))
+    check("17 no TARGET_SWITCH is logged for a person who never moved",
+          own.switch_count == 0 and not events_of(own, "TARGET_SWITCH"),
+          "switch_count=%d" % own.switch_count)
+    check("17 the returning owner is never rejected as a candidate",
+          not events_of(own, "TARGET_REJECTED_CANDIDATE"),
+          "rejections=%d" % len(events_of(own, "TARGET_REJECTED_CANDIDATE")))
+    check("17 emission resumes after the confirm window, not after a release",
+          [e for _, e in back] == [False] * 4 + [True] * 6, str([e for _, e in back]))
+
+
+# ---------------------------------------------------------------- 18 (the widened window is not a hole)
+def t18_widened_match_window_still_rejects_a_different_body():
+    """The fix in t17 widens WHEN a frozen-reference match is attempted; it must not widen WHAT
+    passes. A different body arriving in the same >REACQUIRE_WINDOW interval must still be rejected
+    on position, and must still have to wait out the full release before it can acquire."""
+    own = new_owner()
+    feed(own, const(A_POS, 0.9, A_SCALE, 10))
+    feed(own, absent(70), t0=10 * DT)
+    out = feed(own, const(B_POS, 0.95, A_SCALE, 10), t0=80 * DT)   # B, 0.60 m away, higher conf
+    check("18 a different body past the reacquire window is still rejected",
+          all(not e for _, e in out) and own.state == TEMPORARILY_LOST,
+          "state=%s emitted=%d" % (own.state, sum(1 for _, e in out if e)))
+    rej = events_of(own, "TARGET_REJECTED_CANDIDATE")
+    check("18 the rejection now names the real discriminator, not a flat 'not_owner'",
+          rej and rej[0]["reason"] == "position_jump",
+          rej[0]["reason"] if rej else "no rejection")
+    check("18 no reacquire and no switch were produced by the intruder",
+          not events_of(own, "TARGET_REACQUIRED") and own.switch_count == 0)
+
+
+# ----------------------------------------------------------------------------------------------
+# S30 path consistency. The gate these pin exists because S27 measured a SILENT wrong-person
+# hand-off on real footage: a different body walked into the lost owner's frozen position, passed
+# the position and scale gates, and was re-locked under the same target_id with TARGET_SWITCH still
+# reading 0. These four hold both directions of the fix - it must refuse a tracked walk-in, and it
+# must NOT refuse an owner who simply reappears.
+# ----------------------------------------------------------------------------------------------
+def _walk(p0, p1, n, conf=0.85, scale=A_SCALE):
+    out = []
+    for i in range(n):
+        f = float(i) / max(1, n)
+        out.append((tuple(p0[k] + (p1[k] - p0[k]) * f for k in range(3)), conf, scale))
+    return out
+
+
+def t19_candidate_that_walks_into_the_frozen_position_is_refused():
+    own = new_owner()
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    check("19 setup: locked on A", own.state == LOCKED, own.state)
+    out = feed(own, [(None, 0.0, None)] * 3 + _walk(B_POS, A_POS, 25)
+               + [(A_POS, 0.85, A_SCALE)] * 20, t0=6 * DT)
+    check("19 the walked-in body never becomes the owner",
+          own.state in (TEMPORARILY_LOST, REACQUIRING, RELEASED, NO_TARGET),
+          "state=%s" % own.state)
+    check("19 not one frame of it is emitted", not any(e for _s, e in out),
+          "emitted=%d" % sum(1 for _s, e in out if e))
+    check("19 and the log names the path gate as the reason",
+          any(e.get("reason") == "path_walked_in" for e in own.events),
+          "reasons=%s" % sorted(set(e.get("reason") for e in own.events
+                                    if e["event"] == "TARGET_REJECTED_CANDIDATE")))
+
+
+def t20_owner_reappearing_without_an_observed_approach_still_reacquires():
+    own = new_owner()
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    out = feed(own, [(None, 0.0, None)] * 20 + [(A_POS, 0.85, A_SCALE)] * 12, t0=6 * DT)
+    check("20 an owner who simply reappears is re-locked", own.state == LOCKED, own.state)
+    check("20 it is the same epoch, not a new acquisition", own.epoch == 1, "epoch=%d" % own.epoch)
+    check("20 the path gate did not fire on it",
+          not any(e.get("reason") == "path_walked_in" for e in own.events))
+    check("20 emission resumes", any(e for _s, e in out))
+
+
+def t21_path_consistency_can_be_disabled_and_the_old_behaviour_returns():
+    """The control. Without it, 'the gate fixed it' cannot be distinguished from 'the input
+    changed'."""
+    steps = ([(A_POS, 0.85, A_SCALE)] * 6 + [(None, 0.0, None)] * 3
+             + _walk(B_POS, A_POS, 25) + [(A_POS, 0.85, A_SCALE)] * 20)
+    off = new_owner(OwnershipConfig(path_consistency=False))
+    out_off = feed(off, steps)
+    on = new_owner(OwnershipConfig(path_consistency=True))
+    out_on = feed(on, steps)
+    check("21 CONTROL gate OFF: the walked-in body IS re-locked, silently",
+          off.state == LOCKED and off.epoch == 1 and off.switch_count == 0,
+          "state=%s epoch=%d switches=%d" % (off.state, off.epoch, off.switch_count))
+    check("21 CONTROL gate OFF emits it", sum(1 for _s, e in out_off if e) > 6,
+          "emitted=%d" % sum(1 for _s, e in out_off if e))
+    check("21 gate ON emits only the 2 genuine A frames after acquisition",
+          sum(1 for _s, e in out_on if e) == 2,
+          "emitted=%d" % sum(1 for _s, e in out_on if e))
+
+
+def t22_a_long_observation_gap_breaks_the_chain():
+    """CHAIN_GAP_S is what stops a stale position asserting continuity. A candidate seen far away,
+    then NOT seen for longer than the gap, then appearing inside the margin, is judged fresh - that
+    pattern is indistinguishable from the owner stepping back out, so it stays admissible."""
+    cfg = OwnershipConfig()
+    own = new_owner(cfg)
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    gap_frames = int(cfg.chain_gap_s / DT) + 4
+    feed(own, [(B_POS, 0.85, A_SCALE)] * 4, t0=6 * DT)                 # seen far away
+    out = feed(own, [(None, 0.0, None)] * gap_frames + [(A_POS, 0.85, A_SCALE)] * 12,
+               t0=10 * DT)
+    check("22 the gap is longer than CHAIN_GAP_S", gap_frames * DT > cfg.chain_gap_s,
+          "%.3fs > %.3fs" % (gap_frames * DT, cfg.chain_gap_s))
+    check("22 the chain is broken, so the returning owner is admitted", own.state == LOCKED,
+          "state=%s" % own.state)
+    check("22 same epoch", own.epoch == 1, "epoch=%d" % own.epoch)
+    check("22 emission resumes", any(e for _s, e in out))
+
+
+# ----------------------------------------------------------------------------------------------
+# S34 / ADR-061 owner-reference DRIFT. The live 2026-09-16 session emitted person B under person A's
+# identity for ~97 datagrams inside one epoch with nothing logged, because the LOCKED branch updates
+# owner_pos to every accepted frame - so the reference walks with the observation. Measured on that
+# trace: 0.015 m per frame against a 0.35 m margin (23x under), and B's apparent torso span was
+# +39 % against a +/-45 % scale margin. Neither existing gate can see it, by construction.
+#
+# t23 pins that the DEFAULT is unchanged - drift is measured but nothing acts on it.
+# t24-t26 pin the opt-in mechanism against the real trace's shape.
+# ----------------------------------------------------------------------------------------------
+def _migrate(own, z_from, z_to, n, t0, conf=0.85, scale=A_SCALE):
+    """Walk the observation from z_from to z_to over n frames, as a real migration does - in steps
+    far under SWITCH_MARGIN_M, so every individual frame passes the position test."""
+    out = []
+    for i in range(n):
+        z = z_from + (z_to - z_from) * (float(i + 1) / n)
+        out.append(((A_POS[0], A_POS[1], z), conf, scale))
+    return feed(own, out, t0=t0)
+
+
+def t23_drift_is_measured_but_changes_nothing_by_default():
+    own = new_owner()
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    check("23 setup: locked", own.state == LOCKED, own.state)
+    out = _migrate(own, A_POS[2], A_POS[2] - 0.45, 30, t0=6 * DT)
+    check("23 every migration frame is still EMITTED (behaviour unchanged)",
+          all(e for _s, e in out), "emitted=%d/30" % sum(1 for _s, e in out if e))
+    check("23 the machine never left LOCKED", own.state == LOCKED, own.state)
+    check("23 no drift event was emitted",
+          not any(e["event"] == "TARGET_DRIFT_EXCEEDED" for e in own.events))
+    check("23 but the drift IS measured and available", own.owner_drift_max_m > 0.4,
+          "max drift=%.3f m" % own.owner_drift_max_m)
+    check("23 and it is on the snapshot for the HUD",
+          own.snapshot(1.0)["owner_drift_max_m"] > 0.4,
+          "snapshot=%.3f" % own.snapshot(1.0)["owner_drift_max_m"])
+
+
+def t24_no_single_frame_step_could_have_caught_it():
+    """The measurement that rules out a per-frame fix, asserted rather than asserted-about."""
+    own = new_owner()
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    steps = []
+    prev = A_POS[2]
+    for i in range(30):
+        z = A_POS[2] - 0.45 * (float(i + 1) / 30)
+        steps.append(abs(z - prev))
+        prev = z
+    check("24 the largest single-frame step is far under SWITCH_MARGIN_M",
+          max(steps) < 0.35 / 10.0,
+          "max step=%.4f m vs margin 0.35 m (%.0fx under)" % (max(steps), 0.35 / max(steps)))
+
+
+def t25_a_drift_budget_converts_the_silent_slide_into_a_declared_one():
+    own = new_owner(OwnershipConfig(drift_budget_m=0.30))
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    out = _migrate(own, A_POS[2], A_POS[2] - 0.45, 30, t0=6 * DT)
+    check("25 the budget fires", any(e["event"] == "TARGET_DRIFT_EXCEEDED" for e in own.events),
+          "events=%s" % sorted(set(e["event"] for e in own.events)))
+    check("25 it stops emitting the migrated pose", not all(e for _s, e in out),
+          "emitted=%d/30" % sum(1 for _s, e in out if e))
+    check("25 and it routes through the loss branch, where ADR-057's gate lives",
+          any(e["event"] == "TARGET_TEMP_LOST" and e.get("reason") == "drift_budget"
+              for e in own.events))
+    # NOT "state != LOCKED": recovering is correct, and the machine SHOULD re-lock on the body it
+    # can still see. What the budget buys is that the slide is no longer SILENT - the consumer gets
+    # TARGET_DRIFT_EXCEEDED + TARGET_TEMP_LOST where previously there was nothing at all.
+    kinds = [e["event"] for e in own.events]
+    check("25 the slide is ANNOUNCED, which is the whole point",
+          "TARGET_DRIFT_EXCEEDED" in kinds and "TARGET_TEMP_LOST" in kinds,
+          "events=%s" % sorted(set(kinds)))
+    # Honest limit, pinned so nobody reads more into the budget than it gives: a reacquire
+    # RE-ANCHORS, so a long migration is announced once per budget-length rather than refused. It
+    # converts silence into a repeating announcement; it does not by itself change identity.
+    check("25 a reacquire re-anchors, so the budget is a RATCHET not a refusal",
+          own.owner_drift_max_m < 0.45,
+          "drift after re-anchor=%.3f m (was 0.450 before the budget fired)"
+          % own.owner_drift_max_m)
+
+
+def t26_a_budget_does_not_fire_on_an_owner_who_stays_put():
+    own = new_owner(OwnershipConfig(drift_budget_m=0.30))
+    feed(own, [(A_POS, 0.85, A_SCALE)] * 6)
+    jitter = [((A_POS[0] + 0.02 * ((i % 3) - 1), A_POS[1],
+                A_POS[2] + 0.01 * ((i % 5) - 2)), 0.85, A_SCALE)
+              for i in range(40)]
+    out = feed(own, jitter, t0=6 * DT)
+    check("26 an owner standing still never trips the budget",
+          not any(e["event"] == "TARGET_DRIFT_EXCEEDED" for e in own.events),
+          "max drift=%.3f m" % own.owner_drift_max_m)
+    check("26 and keeps being emitted", all(e for _s, e in out))
+
+
 def main():
     print("=" * 78)
     print("F-21 TargetOwnership unit tests")
@@ -284,7 +513,17 @@ def main():
                t13_no_person_extended_time_stays_quiet,
                t14_new_person_after_long_empty_period_acquires_normally,
                t15_close_scale_variation_does_not_reject,
-               t16_release_timeout_boundary]:
+               t16_release_timeout_boundary,
+               t17_owner_returning_past_reacquire_window_is_not_released,
+               t18_widened_match_window_still_rejects_a_different_body,
+               t19_candidate_that_walks_into_the_frozen_position_is_refused,
+               t20_owner_reappearing_without_an_observed_approach_still_reacquires,
+               t21_path_consistency_can_be_disabled_and_the_old_behaviour_returns,
+               t22_a_long_observation_gap_breaks_the_chain,
+               t23_drift_is_measured_but_changes_nothing_by_default,
+               t24_no_single_frame_step_could_have_caught_it,
+               t25_a_drift_budget_converts_the_silent_slide_into_a_declared_one,
+               t26_a_budget_does_not_fire_on_an_owner_who_stays_put]:
         fn()
     n = len(_results)
     p = sum(1 for _, ok, _ in _results if ok)
