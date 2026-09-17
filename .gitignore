@@ -361,3 +361,8 @@ evidence/oak_v4/f22/**/pose_events.jsonl
 # why the ADR-056 / ADR-061 hand-off images were never committed, and so were lost when the
 # untracked captures were cleaned up. Line 243's `evidence/oak_v4/*` form excludes the
 # contents while still allowing the negations to work, and is the rule that belongs here.
+
+# F-32: the person-detection blob is fetched with blobconverter, not committed. It is a 2.3 MB
+# binary that any machine can re-download, and the fetch command is in multiperson_udp_sender.py's
+# error message and in the README.
+depthai_blazepose/models/person-detection-retail-0013_*.blob

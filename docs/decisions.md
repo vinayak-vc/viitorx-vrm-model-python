@@ -9,6 +9,21 @@ A decision without a number is an opinion.
 IDs are `ADR-Pnnn` (P = Python) so they never collide with the Unity repo's `ADR-nnn`.
 Cross-repo decisions are recorded in **both** files.
 
+> **Since roughly F-16, new ADRs have been written in the Unity repo's `docs/decisions.md`, not
+> here.** That is the working convention (`ai_handoff.md` explains it). Do **not** start a second
+> parallel set — append there, and add a one-line cross-reference below so this index stays honest
+> about which decisions govern this repo's code.
+
+### Decisions made in the Unity repo that govern modules in THIS repo
+
+| ADR (Unity repo) | Governs | One line |
+|---|---|---|
+| ADR-061 | `target_ownership.py` | F-21 single-person identity lock. **CONDITIONAL** — a LOCKED-branch drift route is open and measured; do not ship it as a safety property. |
+| ADR-062 | `pose_validation.py` | F-22 elbow/knee biomechanics on the emitted geometry. A rejected chain zeros only its own hinge's emit confidence. |
+| ADR-066 | `wholebody_udp_sender.py` | F-29 trust channel: `st` / `own` / `lat` are read-only echoes of decisions already made. Additive; nothing reads them back. |
+| ADR-070 | `assignment.py`, `person_tracker.py`, `multiperson_udp_sender.py` | F-32 multi-person: detector on the VPU, optimal assignment on the host, 3-D association, additive wire. |
+| ADR-071 | `person_filters.py`, `smoothing.py` | F-33 per-person filter chains keyed on the track id, with a self-measured sample rate; the feet and head join the filter group. |
+
 ---
 
 ## ADR-P001 — Sidecar process, not a Unity native plugin

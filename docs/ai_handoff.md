@@ -1,6 +1,6 @@
 # AI handoff — Python tracking sidecar
 
-> **Read this first. Updated 2026-09-15.**
+> **Read this first. Updated 2026-09-17.**
 >
 > **Where the detailed reports live.** This file was last substantively updated at F-08 (2026-09-08)
 > and was 14 features stale. Since roughly F-16 the project's feature reports and ADRs have been
@@ -15,6 +15,48 @@
 > That is the working convention, and `AGENTS.md` §12 has not caught up with it. **Do not** start a
 > second parallel set of ADRs here — read the Unity repo's `docs/decisions.md` and append there. This
 > file is kept as the pointer and the current-state summary, which is what it is for.
+
+---
+
+## 0. 2026-09-17: MULTI-PERSON EXISTS NOW (F-32), AND IT RUNS THE FULL FILTER CHAIN (F-33)
+
+Two features that change what this repo is. Reports and ADRs are in the **Unity repo** as usual:
+`docs/F32_MULTIPERSON_2026-09-17.md` (ADR-070), `docs/F33_PER_PERSON_FILTERS_2026-09-17.md`
+(ADR-071). Design summary: `architecture.md` → *Multi-person*.
+
+```text
+F-32   multi-person detection + identity tracking        BUILT, recorded video only
+F-33   per-person P0 + P1-1 + F-22 filter chains         BUILT AND MEASURED, same caveat
+```
+
+**A correction came out of it, and it matters more than either feature.** F-29 treated `456.webm` as
+one subject at 2.9 m and drew range conclusions from it. **The clip contains seven dancers.** The
+tracked body's shoulder width ranges 0.068–0.455 m — a chimera assembled from whichever dancers fell
+inside the migrating crop. Every "degradation with distance" figure from that clip measured IDENTITY
+CONTAMINATION. A genuine single subject at 1.96 m gives 93.7% plausible hands; the real limit beyond
+~2 m is **untested**. The single-person pipeline does not fail loudly on multi-person input — it
+emits a plausible skeleton belonging to nobody, and those numbers reached a report.
+
+**Three things to carry forward:**
+
+1. `multiperson_udp_sender.py` is a SECOND program, not a mode. `wholebody_udp_sender.py` is
+   byte-identical and stays the single-person production path.
+2. A temporal filter belongs to an IDENTITY. The tracker re-sorts most-established-first every
+   frame, so `PersonFilterPool` is keyed on the track id, never on list position.
+3. `freq` is not cosmetic. One-Euro derives velocity as `delta * freq`, and this loop runs at ~16 fps
+   with three people. Told 30, the filter is worse on jitter AND lag at once; at 10 fps it is worse
+   than no filter at all on the median frame.
+
+```text
+implausible steps (>300 mm/frame)   2158 unfiltered -> 77 with F-33, over 2060 person-frames
+filter cost                         0.88 ms per person-frame vs 20.7 ms for the pose solve
+lag at 30 fps                       233 ms - NOT new, it is the single-person tuning. Always say it.
+budget                              RTMW3D 20.7 ms, fixed batch of 1 -> 2 people 24 fps, 3 -> 16
+tests                               270/270 across the suite (46 new)
+```
+
+**NOT TRUE:** never run with real people; the video A/B's stereo depth is synthetic; a slow confident
+drift is still followed (847 mm of an injected 850 mm — P1-4's job, and P1-4 is rejected).
 
 ---
 

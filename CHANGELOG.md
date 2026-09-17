@@ -13,6 +13,44 @@ public interface and is what semver applies to here.
 
 ### Added
 
+- **Per-person filter chains (F-33).** `person_filters.py` gives every tracked person their own
+  complete P0 + P1-1 + F-22 chain, pooled on their **track id** (ADR-071). F-32 shipped
+  multi-person with all of it switched off and said so; this closes that.
+  - Keyed on the id, never on list position: the tracker re-sorts most-established-first every
+    frame, so an index-keyed bank hands one person's One-Euro history to another.
+  - Each person MEASURES their own sample rate, because this loop does not run at camera rate.
+    One-Euro derives velocity as `delta * freq`; told 30 while sampled at 16 it over-estimates
+    speed by 1.9x and opens up when it should damp. At 10 fps the naive port is worse than no
+    filter at all on the median frame (35.6 mm vs 33.5) while costing 400 ms of lag.
+  - `smoothing.py` gained `set_freq()`. Purely ADDITIVE - the diff has zero deleted lines and the
+    single-person sender never calls it.
+  - The FEET (WholeBody 17-22) and HEAD (0-4) joined the filter group, which the single-person
+    sender never put them in. Implausible single-frame steps (>300 mm in 33 ms) 2158 -> 77.
+  - `tools/diagnostics/f33_filter_bench.py` measures against KNOWN ground truth, so lag is
+    reported next to jitter - without that, "the output moved less" cannot be told from
+    over-smoothing.
+  - 46 unit tests, including a guard that reads `wholebody_udp_sender.py`'s source and fails if a
+    shared default drifts apart from `FilterConfig`.
+  - `wholebody_udp_sender.py` remains **byte-identical**.
+
+- **Multi-person sender (F-32).** `multiperson_udp_sender.py` detects every person in frame on the
+  OAK-D's VPU, assigns each a stable id, poses the most-established ones on the host GPU and streams
+  them all in one datagram. The production `wholebody_udp_sender.py` is **byte-identical** - this is
+  a separate file precisely so the measured single-person stack (P0, P1-1, P1-4, F-21, F-22, F-08)
+  is not put at risk. It imports that sender's building blocks, so there is one definition of the
+  landmark contract.
+  - `assignment.py` - pure-numpy optimal assignment. scipy is not in the venv and is not worth
+    ~30 MB for one function. Greedy is suboptimal on 54.6% of random 4x4 cost matrices and its
+    failure mode is exactly an ID swap between crossing people.
+  - `person_tracker.py` - associates in 3-D using metric depth, which no IoU-based tracker can:
+    two people overlapping on screen at different distances are trivially separable in Z.
+    19 unit tests including the crossing case.
+  - `tools/video/f32_multiperson_video.py` - drives the multi-person wire from recorded video.
+  - **Backward compatible**: the most-established person is republished at the payload root in the
+    single-person shape, so every existing consumer works unchanged.
+  - **Measured**: detector free on the VPU (rgb 29.8 -> 29.7 fps); RTMW3D 20.7 ms per person with a
+    fixed batch of 1, so `--max-poses` defaults to 3.
+
 - **Trust channel on the wire (F-29).** Three new OPTIONAL fields, so this is a backward-compatible
   addition exactly as `sid` was — a consumer that ignores them is unaffected, and nothing in the
   sidecar reads them back:
@@ -39,6 +77,24 @@ public interface and is what semver applies to here.
   `FOOT_TO_JOINTID` — heels to JointId 29/30, big toes to 31/32 — inside `lm`. Measured 431/431 and
   330/330 frames on the two regression clips. No change was needed; the consumer simply never drew
   those four slots.
+
+### Fixed
+
+- **`tools/video/f32_multiperson_video.py` drove `PersonTracker` from the WALL CLOCK.** A file
+  replay that reads the wall clock is not reproducible - the tracker's constant-velocity prediction
+  is scaled by `dt`, so the same clip yields different identities on a faster machine, or simply on
+  a second run. It surfaced as an A/B whose two halves disagreed about which ids existed. Both the
+  tracker and the filters now run on the video's own timeline. The live sender is unaffected: there
+  the wall clock IS the frame clock.
+
+### Known
+
+- Lag is 233 ms at 30 fps. Not introduced by F-33 - it is the accepted single-person tuning - but it
+  must be quoted alongside any jitter figure.
+- A slow, confident drift is still followed (847 mm of an injected 850 mm). P1-4 catches it and is
+  rejected for production; both senders share the blind spot deliberately.
+- P1-1's horizons are counted in FRAMES and this loop is slower than the single-person one, so a
+  6-frame prediction spans ~375 ms at 16 fps. Only the P0 smoother adapts to the real rate.
 
 ## [0.1.0] — 2026-09-16
 

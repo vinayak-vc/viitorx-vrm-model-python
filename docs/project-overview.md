@@ -2,6 +2,9 @@
 
 **Status:** Production path. Stability program **P0 + P1-1 + P1-2 COMPLETE** (live-verified with a
 human subject on real OAK-D hardware). See `ai_handoff.md` for the status table.
+**Second path (F-32/F-33):** `multiperson_udp_sender.py` tracks several people at once with stable
+ids and runs the full signal chain per person. Backward compatible with every existing consumer, and
+**never run with real people** — all its evidence is recorded video.
 **Stack:** Python 3.10 + DepthAI (OAK-D-PRO-W) + RTMW3D-x ONNX (ONNX Runtime / DirectML) + NumPy + OpenCV
 **Transport:** local UDP JSON, `127.0.0.1:8899`
 
@@ -48,6 +51,9 @@ with **0.00% packet loss** over 55 000+ packets. That is a good trade.
 - Per-keypoint depth sampling and back-projection to metric camera space
 - Signal conditioning: One-Euro smoothing, displacement caps, bounded hold (**P0**)
 - Per-joint temporal tracking and plausibility (**P1-1**)
+- Biomechanical validation of the emitted geometry (**F-22**)
+- **Person detection, identity tracking and per-person signal conditioning** (**F-32**, **F-33**) —
+  who is in frame, which of them is which across frames, and one filter chain per identity
 - The UDP wire format, and every diagnostic that explains it
 
 **Out of scope (the Unity repo owns):**
@@ -64,7 +70,12 @@ with **0.00% packet loss** over 55 000+ packets. That is a good trade.
 2. **Freshness beats completeness.** Dropping a stale frame is correct; processing it is not.
 3. **This repo improves the signal; Unity owns safety.** A `LOST` joint is emitted as `[0,0,0,0]` —
    the "invalid" signal — never as a fabricated position.
-4. **The UDP datagram is a cross-repo contract.** Changing it needs an ADR in both repos.
+4. **The UDP datagram is a cross-repo contract.** Changing it needs an ADR in both repos, and it
+   is extended only ADDITIVELY — `sid`, then the F-29 trust fields, then the F-32 `persons` array
+   were each added without breaking a consumer that ignores them.
+5. **A temporal filter belongs to an IDENTITY, not to a slot in a list.** The multi-person tracker
+   re-sorts its output every frame; anything carrying per-frame state must be keyed on the track id
+   (F-33).
 
 ---
 
@@ -78,4 +89,5 @@ with **0.00% packet loss** over 55 000+ packets. That is a good trade.
 | What is done / next | `roadmap.md`, `tasks.md` |
 | Why a constant is that value | `decisions.md` |
 | Resume work here | `ai_handoff.md` |
+| Multi-person design + the filter chain | `architecture.md` → *Multi-person*; Unity repo `docs/F32_*`, `docs/F33_*` |
 | Unity-side counterpart | Unity repo `docs/` + its `AGENTS.md` |

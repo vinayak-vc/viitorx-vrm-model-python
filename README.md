@@ -349,6 +349,120 @@ recovery would report `LOST` for a joint that was reconstructed and sent.
 `own` **absent** means ownership is not running (`--no-ownership`); it does **not** mean "not
 locked". Those mean opposite things to an operator and must not be rendered the same way.
 
+## Multi-person (F-32)
+
+`multiperson_udp_sender.py` is a SECOND sender that tracks several people at once. The production
+`wholebody_udp_sender.py` is untouched and remains the single-person path.
+
+```text
+OAK-D VPU : stereo depth (30 fps) + person detection (11.4 fps)   <- free, the VPU was idle
+host      : PersonTracker assigns persistent, never-reused ids    <- pure numpy
+host GPU  : RTMW3D per tracked person, N capped by --max-poses    <- 20.7 ms each, the budget
+```
+
+### The multi-person payload
+
+```jsonc
+{ "persons": [ { "id": 3,                  // STABLE across frames, never reused once retired
+                 "state": "CONFIRMED",     // or "LOST" (held through an occlusion on prediction)
+                 "lm":  [[x,y,z,vis] x33],
+                 "xyz": [hipX,hipY,hipZ],
+                 "src": [0|1 x33],
+                 "st":  [-1..4 x33],
+                 "lh":  [...], "rh": [...] },  ... ],
+  "n": 3,          // people posed this frame
+  "ndet": 5,       // people the DETECTOR saw - can exceed n, the GPU budget is the limit
+  "ntrack": 4,     // people the tracker is holding, posed or not
+  "seq": 1234, "sid": "...", "t": 1788846511.02, "lat": 41.3,
+
+  // ...PLUS every single-person field, carrying persons[0]:
+  "lm": [...], "xyz": [...], "src": [...], "st": [...], "lh": [...], "rh": [...] }
+```
+
+**The last part is the whole compatibility story.** The most-established person is republished at the
+payload ROOT in the exact single-person shape, so the Unity provider, the VRM mirror app and every
+existing experience scene consume this sender **unchanged and unaware** - they see one person, as
+they always have. Verified: `root lm == persons[0].lm` on every packet, and across 752 Unity frames
+the primary body and `Bodies[0]` were the same person.
+
+Cost: one duplicated person, ~6 KB of a ~9.3 KB payload (max measured 10.2 KB against a 65 KB UDP
+limit). `--no-legacy-primary` drops it for a purely multi-person consumer.
+
+### Budget - `--max-poses` is real
+
+RTMW3D is **20.7 ms p50** with a **fixed batch of 1** (no batch axis in the ONNX), so N people cost
+N sequential inferences:
+
+| people | pose ms | max fps |
+|---|---|---|
+| 2 | 41.4 | 24 |
+| 3 | 62.1 | 16 |
+| 4 | 82.8 | 12 |
+
+Defaults to 3. The tracker emits most-established-first, so the cap drops the people least likely to
+still be there next frame rather than an arbitrary subset.
+
+### The detector blob is not committed
+
+2.3 MB binary; fetch it once:
+
+```powershell
+.venv\Scripts\python.exe -c "import blobconverter,shutil;shutil.copy(blobconverter.from_zoo(name='person-detection-retail-0013',shaves=6,zoo_type='intel'),'depthai_blazepose/models/person-detection-retail-0013_openvino_2022.1_6shave.blob')"
+```
+
+### Per-person filters (F-33)
+
+Each tracked person carries a complete `person_filters.PersonFilters` chain - P0 `KeypointSmoother`,
+P1-1 `SkeletonTracker`, F-22 `PoseValidator`, and P1-4 available behind `--filter-recovery` and off -
+pooled on their **track id**, created when the identity is born and dropped 3 s after it stops being
+seen.
+
+Keyed on the id, never on list position: the tracker re-sorts people most-established-first every
+frame, so an index-keyed bank would hand one person's One-Euro history to another.
+
+**Each person measures their own sample rate.** One-Euro derives velocity as `delta * freq`, and this
+loop does not run at camera rate - three people cost three sequential 20.7 ms solves, so ~16 fps, and
+a person below `--max-poses` is updated rarer still. Told 30 while sampled at 16, the filter
+over-estimates speed by 1.9x and opens up exactly when it should damp. Measured against known ground
+truth (`tools/diagnostics/f33_filter_bench.py`):
+
+| 10 fps | jitter median | lag |
+|---|---|---|
+| no filters | 33.5 mm | 0 ms |
+| told `freq=30` (the naive port) | **35.6 mm** | 400 ms |
+| self-measured rate | 29.9 mm | 200 ms |
+
+The naive port is worse than not filtering at all on the median frame, while costing 400 ms of lag.
+
+**ADR-071: the feet and the head are in the filter group**, which the single-person sender never put
+them in. Implausible single-frame steps (over 300 mm in 33 ms - 9 m/s, not a person) across 2060
+person-frames of identical input:
+
+| | steps > 300 mm | worst step |
+|---|---|---|
+| `--no-filters` (raw F-32) | 2158 | 2091 mm |
+| `--no-filter-feet --no-filter-head` (single-person grouping) | 630 | 2018 mm |
+| default | **77** | **960 mm** |
+
+Cost: **0.88 ms per person-frame** against 20.7 ms for the pose solve. Off-switches for every arm of
+that table: `--no-filters`, `--no-adaptive-rate`, `--no-filter-feet`, `--no-filter-head`.
+
+### Known limits
+
+* **Lag is 233 ms at 30 fps.** Not introduced by F-33 - it is the accepted single-person tuning
+  (`--min-cutoff 0.5`, `--beta 0.4`). Quote it alongside any jitter figure.
+* **A slow confident drift is still followed** (847 mm of an injected 850 mm). P1-4 catches it
+  (264 mm) and P1-4 is rejected for production. Inherited from the single-person path on purpose.
+* **P1-1's horizons are counted in FRAMES**, so a 6-frame prediction spans ~375 ms at 16 fps against
+  ~200 ms in the single-person loop. Only the P0 smoother adapts to the real rate.
+* **Never run with two real people in front of the camera.** All evidence is recorded video.
+* Long occlusions still cost an identity. Metric depth should improve that; video cannot test it.
+  (The earlier "11 ids for 7 people" figure was machine-dependent - the video harness read the wall
+  clock, so its constant-velocity prediction changed with host speed. On the video clock it is
+  **9 ids across two passes**.)
+
+---
+
 `lat` is the sidecar's leg only. A consumer adds its own receive-to-present time for an end-to-end
 figure — and must compare `t` against its own **epoch** clock to do so, never against a
 monotonic/stopwatch clock.

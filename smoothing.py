@@ -55,6 +55,18 @@ class OneEuro:
         self._last = x
         return y
 
+    def set_freq(self, freq):
+        """Retune the assumed sample rate WITHOUT losing the filter's history.
+
+        ADDITIVE, for F-33. The single-person sender constructs this once at 30 Hz and never calls
+        this, so its behaviour is unchanged. Multi-person cannot: N people cost N sequential pose
+        solves, so the loop rate depends on how many people are in the room, and a person below the
+        --max-poses cap is sampled rarer still. freq is not cosmetic here - velocity is derived as
+        `delta * freq`, so a filter told the wrong rate mis-estimates speed and its adaptive cutoff
+        opens up exactly when it should damp (see person_filters.py for the measurement).
+        """
+        self.freq = max(1e-3, float(freq))
+
     def reset(self):
         self._x.reset()
         self._dx.reset()
@@ -93,6 +105,19 @@ class KeypointSmoother:
                             dbeta if i in self.limb_indices else beta) for i in range(count)]
         self._last = [None] * count
         self._hold = [0] * count
+
+    def set_freq(self, freq):
+        """Retune every keypoint filter's assumed sample rate, keeping all history (F-33, additive).
+
+        Only the multi-person path calls this; the single-person sender constructs at 30 Hz and
+        leaves it, so nothing about its measured behaviour changes.
+        """
+        for f in self._fx:
+            f.set_freq(freq)
+        for f in self._fy:
+            f.set_freq(freq)
+        for f in self._fz:
+            f.set_freq(freq)
 
     def filter(self, index, x, y, z, valid):
         # Returns (x, y, z, effective_valid, action, displacement). effective_valid can be True even when the
