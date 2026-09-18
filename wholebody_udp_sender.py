@@ -362,6 +362,27 @@ def main():
     parser.add_argument("--subpixel-bits", type=int, default=-1,
                         help="F-19: -1 (default) = production stereo settings untouched. "
                              "0 = sub-pixel off, 3 = 1/8 px (the configuration F-18 validated).")
+    # F-43: the OAK-D-PRO's IR dot projector, which had never been switched on. It textures blank
+    # walls and plain clothing for the mono pair without appearing in the IR-cut RGB frame, so it
+    # buys depth exactly where block matching fails. Default ON; 0 restores the previous behaviour.
+    # F-44 WORKING VOLUME. Both sensors are 1280x800 and the pipeline discarded half the linear
+    # resolution on each path. These are the two independent 2x levers, and neither costs GPU time:
+    # RTMW3D always resizes its crop to 288x384 and the person detector always runs at 544x320, so
+    # the pose solve (20.4 ms/person, the expensive part) is UNCHANGED. The cost lands on the VPU
+    # and USB. Defaults leave production exactly as shipped.
+    parser.add_argument("--mono-res", default="", choices=["", "400p", "480p", "720p", "800p"],
+                        help="F-44: stereo mono resolution. Empty (default) = untouched. 800p "
+                             "doubles focal px, so f.B doubles and depth error HALVES at every "
+                             "range. Costs VPU time in the stereo matcher.")
+    parser.add_argument("--rgb-isp", default="", choices=["", "1/1", "1/2"],
+                        help="F-44: RGB ISP scale. Empty (default) = untouched (1/2 -> 640x400). "
+                             "1/1 keeps the native 1280x800 at full FOV, which doubles pixels on a "
+                             "body and therefore doubles the distance at which the pose model sees "
+                             "the same detail. Costs USB bandwidth.")
+    parser.add_argument("--ir-dot", type=float, default=D.IR_DOT_INTENSITY,
+                        help="F-43: IR laser dot projector intensity, 0..1 (default %(default)s). "
+                             "0 turns it off, restoring the pre-F-43 unassisted stereo pair. "
+                             "Ignored with a banner note on boards that have no IR driver.")
     parser.add_argument("--log-dir", default="", help="pipeline logging: write sender_log.jsonl (seq + key landmarks per SENT frame) to this dir, to diff against Unity's recv_log.jsonl / model_log.jsonl via compare_logs.py. Empty = off.")
     # ---- F-21 TARGET OWNERSHIP ---------------------------------------------------------------
     # Default ON: an unattended installation must not silently switch to a second person (F-19's
@@ -413,6 +434,11 @@ def main():
         # banner and the pipeline cannot disagree.
         D.STEREO_CONFIG["subpixel"] = args.subpixel_bits > 0
         D.STEREO_CONFIG["subpixelBits"] = args.subpixel_bits
+    # F-44: same rule - mutate the shared config, never the pipeline call, so one place decides.
+    if args.mono_res:
+        D.STEREO_CONFIG["monoRes"] = args.mono_res
+    if args.rgb_isp:
+        D.STEREO_CONFIG["rgbIsp"] = tuple(int(v) for v in args.rgb_isp.split("/"))
 
     log_f = None
     holds_f = None
@@ -431,6 +457,7 @@ def main():
     print("[wb] loading RTMW3D ...")
     model = R.RTMW3D(args.model)
     print("[wb] providers:", model.active_providers)
+    print("[wb] model:", model.describe())  # F-45: fp16 vs fp32 is 2.97x, and only the file says which
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     addr = (args.host, args.port)
@@ -465,6 +492,9 @@ def main():
               % (PORTRAIT.fov_deg(intr[0], dw), PORTRAIT.fov_deg(intr[1], dh)))
         # Read back from oak_depth.STEREO_CONFIG, never hand-written: see the note there.
         print("[wb]   stereo: %s" % D.stereo_config_str())
+        # F-43. Reports what the DEVICE actually did, not what was asked for, so a board without the
+        # emitter says so here instead of silently looking identical to one that has it.
+        print("[wb]   IR dot projector: %s" % D.enable_ir_dot_projector(device, args.ir_dot))
         print("[wb]   depth sampling: surfaceDepth=%s kwin=%d (F-08)"
               % (args.surface_depth, args.kwin))
         print("[wb]   working-distance target: 0.90 m (F-18 preferred)")
@@ -801,7 +831,7 @@ def main():
                         _preview(frame, uv, conf, args.conf, frames, sent,
                                  "F21 %s" % _own_state, ownership=_own_snap,
                                  candidate_count=int(raw_hip_valid), cue=_cue)
-                        if cv2.waitKey(1) in (27, ord("q")):
+                        if cv2.waitKey(1) == ord("q"):
                             break
                     continue
             else:
@@ -858,7 +888,7 @@ def main():
                 if args.show:
                     _preview(frame, uv, conf, args.conf, frames, sent, "no hip depth",
                              ownership=_own_snap, candidate_count=int(raw_hip_valid), cue=_cue)
-                    if cv2.waitKey(1) in (27, ord("q")):
+                    if cv2.waitKey(1) == ord("q"):
                         break
                 continue
             hip_z = float(mid_hip[2])
@@ -1103,7 +1133,12 @@ def main():
             if args.show:
                 _preview(frame, uv, conf, args.conf, frames, sent, "hip %.2fm" % hip_z,
                          ownership=_own_snap, candidate_count=int(raw_hip_valid), cue=_cue)
-                if cv2.waitKey(1) in (27, ord("q")):
+                # ESC IS NOT A QUIT KEY (all three preview sites). Unity's own on-screen hint reads
+                # "ESC menu", so ESC is the key a person presses while this window happens to have
+                # focus - and it used to end the producer. Measured on 2026-09-17: "SIDECAR EXIT
+                # rc=0 uptime=30.6s cause=exited", a clean exit 30 seconds into a session nobody
+                # meant to end. The supervisor restarted it, which is why it was survivable at all.
+                if cv2.waitKey(1) == ord("q"):
                     break
 
     sock.close()

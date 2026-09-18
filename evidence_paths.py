@@ -40,8 +40,27 @@ ASSETS_ROOT = os.path.dirname(os.path.dirname(UNITY_PROJECT_ROOT))
 #: move it resolved two levels too shallow for anything under tools/ or tests/, to a SentisModel
 #: directory that does not exist. Same failure shape as the evidence paths below.
 #: Override with VIRTUAL_MIRROR_MODEL.
-DEFAULT_MODEL = os.environ.get("VIRTUAL_MIRROR_MODEL") or os.path.join(
-    ASSETS_ROOT, "SentisModel", "rtmw3d-x.onnx")
+def _default_model():
+    """F-45: prefer the FP16 model when it exists, and say so.
+
+    FP16 is 2.97x faster on the GPU stage (18.59 -> 6.25 ms), which takes three people from 15.5 fps
+    to 37.1 and makes the camera the limit instead of the GPU. It would be the obvious hard default
+    except for one thing: **the .onnx files are not in version control.** A hard default would break
+    every machine that has not run tools/model/f45_make_fp16.py, with a missing-file error on a path
+    nobody chose. So this prefers it when present and falls back silently to fp32 when not, and the
+    senders print which one they loaded so the difference is never invisible.
+
+    VIRTUAL_MIRROR_MODEL still overrides both, and an explicit --model beats all of it.
+    """
+    override = os.environ.get("VIRTUAL_MIRROR_MODEL")
+    if override:
+        return override
+    fp32 = os.path.join(ASSETS_ROOT, "SentisModel", "rtmw3d-x.onnx")
+    fp16 = os.path.join(ASSETS_ROOT, "SentisModel", "rtmw3d-x-fp16.onnx")
+    return fp16 if os.path.isfile(fp16) else fp32
+
+
+DEFAULT_MODEL = _default_model()
 
 #: Root of the capture tree. Override with VIRTUAL_MIRROR_EVIDENCE_DIR.
 EVIDENCE_ROOT = os.environ.get("VIRTUAL_MIRROR_EVIDENCE_DIR") or os.path.join(PROJECT_ROOT, "evidence")

@@ -30,6 +30,13 @@ Run:
     python-sidecar~/.venv/Scripts/python.exe sidecar_supervisor.py --portrait --portrait-dir ccw
         --subpixel-bits 3
 (all defaults already match the F-19/F-20A production configuration; see run_supervisor.bat)
+
+Multi-person:
+    python-sidecar~/.venv/Scripts/python.exe sidecar_supervisor.py
+        --script multiperson_udp_sender.py --max-poses 3
+Either sender can be supervised. They take different flags, so `--script` (or `--sender`) selects
+the command shape - see SENDER_BY_SCRIPT and build_command. Nothing else differs: one state
+machine, one backoff table, one readiness contract, which both senders satisfy.
 """
 
 import evidence_paths as EV
@@ -49,6 +56,37 @@ DEFAULT_PYTHON = os.path.join(HERE, ".venv", "Scripts", "python.exe")
 DEFAULT_SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
 DEFAULT_MODEL = EV.DEFAULT_MODEL
 DEFAULT_EVIDENCE_DIR = EV.oak_v4("f20b")
+
+# ---- which sender is being supervised (F-36 follow-up) -------------------------------------------
+#
+# The supervisor used to be able to launch exactly one program. Its command builder emits
+# --portrait/--portrait-dir/--subpixel-bits/--seconds, which only wholebody_udp_sender.py's argparse
+# defines, so pointing --script at the multi-person sender made Python exit on an unrecognised flag
+# before the camera was ever opened. That is why the multi-person path was launched DIRECTLY from
+# Unity instead - and a directly launched sidecar has no watchdog at all, so anything that ended the
+# process (including its own preview window) took tracking down for the rest of the session.
+#
+# Rather than a generic "--extra-args" passthrough - rejected below for good reasons that still
+# hold - each sender declares the flags it accepts. Everything else is unchanged: same state
+# machine, same backoff, same readiness and heartbeat contract, which both senders now satisfy by
+# printing the SID banner and `frames=` lines.
+SENDER_WHOLEBODY = "wholebody"
+SENDER_MULTIPERSON = "multiperson"
+
+#: Script basename -> sender kind, so --script alone picks the right command shape and an operator
+#: cannot silently get the wrong one by forgetting a second flag.
+SENDER_BY_SCRIPT = {
+    "wholebody_udp_sender.py": SENDER_WHOLEBODY,
+    "multiperson_udp_sender.py": SENDER_MULTIPERSON,
+}
+
+#: Must match multiperson_udp_sender.DEFAULT_DETECTOR. Spelled out rather than imported: importing
+#: that module pulls in depthai, cv2 and onnxruntime, and the supervisor deliberately loads none of
+#: them - its whole job is to survive a child that cannot. Checked in _validate so a missing blob is
+#: a TERMINAL failure with a useful message, rather than five silent crash-loop restarts (SS7).
+MULTIPERSON_DETECTOR_BLOB = os.path.join(
+    HERE, "depthai_blazepose", "models",
+    "person-detection-retail-0013_openvino_2022.1_6shave.blob")
 
 STOPPED = "STOPPED"
 STARTING = "STARTING"
@@ -197,6 +235,10 @@ class Supervisor(object):
             return False, "sidecar script not found: %s" % self.args.script
         if self.args.model and not os.path.isfile(self.args.model):
             return False, "model file not found: %s" % self.args.model
+        if (self.sender_kind() == SENDER_MULTIPERSON
+                and not os.path.isfile(MULTIPERSON_DETECTOR_BLOB)):
+            return False, ("person detector blob not found: %s (fetch it with blobconverter - see "
+                           "docs/F32)" % MULTIPERSON_DETECTOR_BLOB)
         if full:
             # SS7: "depthai imports" - checked once at startup and again whenever we resume from a
             # crash loop, not on every ordinary restart (that would slow down the common case for a
@@ -238,18 +280,56 @@ class Supervisor(object):
         return False
 
     # ---- launch config (SS6) ------------------------------------------------------------------
+    def sender_kind(self):
+        """Which sender --script names. Explicit --sender wins; otherwise the basename decides."""
+        if getattr(self.args, "sender", None):
+            return self.args.sender
+        return SENDER_BY_SCRIPT.get(os.path.basename(self.args.script or ""), SENDER_WHOLEBODY)
+
     def build_command(self):
-        """Explicit and logged, per SS6 - and restricted to flags wholebody_udp_sender.py's own
-        argparse already defines (SS6: "do not invent arguments")."""
+        """Explicit and logged, per SS6 - and restricted to flags the TARGET sender's own argparse
+        already defines (SS6: "do not invent arguments"). Each branch below lists only what that
+        sender accepts, which is the whole reason this is a branch and not a shared tail."""
         cmd = [self.args.python, "-u", self.args.script,
                "--host", self.args.host, "--port", str(self.args.port)]
         if self.args.model:
             cmd += ["--model", self.args.model]
+
+        if self.sender_kind() == SENDER_MULTIPERSON:
+            # multiperson_udp_sender.py does not take --seconds (it runs until stopped), so that one
+            # stays out. Everything else is now the SAME flag in both senders and is forwarded to
+            # both, because the alternative is what happened twice already: Unity asks for a
+            # configuration, one sender honours it, the other silently does not, and the two produce
+            # different data from the same camera.
+            #   --subpixel-bits : whole-pixel vs 1/8-pixel disparity, an 8x multiplier on depth
+            #                     error at every range. Only the single-person sender could act on
+            #                     it, so every crowd scene ran coarse.
+            #   --portrait      : this sender had NO portrait support at all, so a rotated camera
+            #                     gave the two senders different coordinate frames.
+            #   --ir-dot        : F-43's IR dot projector. Forwarded to both for the same reason as
+            #                     --subpixel-bits: it changes the DEPTH the sender measures, so one
+            #                     sender running textured and the other unassisted would mean the
+            #                     two columns disagree about the same room.
+            # --max-poses is multi-person only, forwarded by name for the same auditability reason.
+            cmd += ["--max-poses", str(self.args.max_poses)]
+            cmd += ["--subpixel-bits", str(self.args.subpixel_bits)]
+            cmd += ["--ir-dot", str(self.args.ir_dot)]
+            cmd += ["--mono-res", self.args.mono_res, "--rgb-isp", self.args.rgb_isp]
+            if self.args.portrait:
+                cmd += ["--portrait", "--portrait-dir", self.args.portrait_dir]
+            else:
+                cmd += ["--no-portrait"]
+            if self.args.show:
+                cmd += ["--show"]
+            return cmd
+
         if self.args.portrait:
             cmd += ["--portrait", "--portrait-dir", self.args.portrait_dir]
         else:
             cmd += ["--no-portrait"]
         cmd += ["--subpixel-bits", str(self.args.subpixel_bits), "--seconds", "0"]
+        cmd += ["--ir-dot", str(self.args.ir_dot)]
+        cmd += ["--mono-res", self.args.mono_res, "--rgb-isp", self.args.rgb_isp]
         # F-21 S31: the two live-session flags, forwarded explicitly.
         #
         # Explicitly, and NOT as a generic "--extra-args" passthrough, which was the obvious
@@ -492,6 +572,12 @@ def build_arg_parser():
     ap = argparse.ArgumentParser(description="F-20B sidecar supervisor/watchdog")
     ap.add_argument("--python", default=DEFAULT_PYTHON)
     ap.add_argument("--script", default=DEFAULT_SCRIPT)
+    ap.add_argument("--sender", default=None, choices=[SENDER_WHOLEBODY, SENDER_MULTIPERSON],
+                     help="which sender --script names, and therefore which flags it is launched "
+                          "with. Inferred from the script's basename when omitted.")
+    ap.add_argument("--max-poses", type=int, default=3,
+                     help="multi-person only: people posed per frame, forwarded to the sender. "
+                          "Ignored for the single-person sender, which has no such flag.")
     ap.add_argument("--model", default=DEFAULT_MODEL)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8899)
@@ -499,6 +585,15 @@ def build_arg_parser():
                      help="production default is portrait ON (F-19/F-20A); --no-portrait for dev")
     ap.add_argument("--portrait-dir", default="ccw", choices=["ccw", "cw"])
     ap.add_argument("--subpixel-bits", type=int, default=3)
+    ap.add_argument("--mono-res", default="800p", choices=["400p", "480p", "720p", "800p"],
+                     help="F-44: stereo mono resolution, forwarded to whichever sender runs. "
+                          "800p halves depth error at every range; 400p is the pre-F-44 default.")
+    ap.add_argument("--rgb-isp", default="1/1", choices=["1/1", "1/2"],
+                     help="F-44: RGB ISP scale. 1/1 is native 1280x800 at full FOV (2x pixels "
+                          "on a body); 1/2 is the pre-F-44 640x400.")
+    ap.add_argument("--ir-dot", type=float, default=0.8,
+                     help="F-43: IR dot projector intensity 0..1, forwarded to whichever sender "
+                          "runs. 0 disables. Mirrors oak_depth.IR_DOT_INTENSITY.")
     ap.add_argument("--evidence-dir", default=None,
                      help="default evidence/oak_v4/f20b; tests point this at their own subfolder")
     ap.add_argument("--lock-port", type=int, default=8897,

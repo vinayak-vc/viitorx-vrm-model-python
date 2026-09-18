@@ -32,6 +32,12 @@ ap.add_argument("--portrait", action="store_true")
 ap.add_argument("--no-portrait", dest="portrait", action="store_false")
 ap.add_argument("--portrait-dir", default="ccw")
 ap.add_argument("--subpixel-bits", type=int, default=3)
+# F-43. This stub uses strict parse_args on purpose - it is the thing that catches the supervisor
+# forwarding a flag the real sender would reject. So every flag build_command() emits has to be
+# declared here too, and adding one without this line is the failure it exists to find.
+ap.add_argument("--ir-dot", type=float, default=0.8)
+ap.add_argument("--mono-res", default="800p")
+ap.add_argument("--rgb-isp", default="1/1")
 ap.add_argument("--seconds", type=float, default=0.0)
 args = ap.parse_args()
 

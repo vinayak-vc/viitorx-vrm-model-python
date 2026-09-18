@@ -24,7 +24,36 @@ STEREO_CONFIG = {
     "subpixel": False,          # <- production default; F-16 measured 1/8 sub-pixel as a large
     "subpixelBits": 0,          #    quantisation win, but enabling it is NOT part of F-19.
     "depthAlign": "CAM_A",
-    "monoRes": "400p",
+    # F-44: these two were the pipeline's most expensive silence. Both sensors are 1280x800 and the
+    # pipeline threw away HALF the linear resolution on each path -- `monoRes` was even a declared
+    # parameter of build_rgbd_pipeline() that the body ignored, so it could be passed and reported
+    # while THE_400_P was hard-coded two lines below. They are read from here now, so the banner and
+    # the pipeline cannot disagree. See stereo_config_str()'s note and ADR-077's on sub-pixel.
+    # MEASURED on the device before these defaults were changed (F-44, empty room, sub-pixel 1/8,
+    # IR dot on, 150 frames per config after a 30-frame warm-up):
+    #
+    #   config                 rgb/depth     fps    valid%   px on a 1.7 m body @2m  @4m
+    #   400p + isp 1/2  (old)  640x400      30.0     14.3            242            121
+    #   800p + isp 1/1  (new)  1280x800     29.2     19.9            484            242
+    #
+    # 2x the pixels on a body and +5.6pp valid depth for 2.6% of the frame rate. The pose solve is
+    # untouched because RTMW3D always resizes its crop to 288x384 and the detector always runs at
+    # 544x320 -- neither sees the source resolution, so the 20.4 ms/person cost is unchanged. The
+    # cost lands on the VPU's matcher and the USB link, which is what the fps column measures.
+    "monoRes": "800p",          # 800p = 1280x800 -> mono fx 287 -> 574, so f.B doubles and depth
+                                #        error HALVES at every range. 400p = 640x400 (the old half).
+    "rgbIsp": (1, 1),           # (1,1) = native 1280x800 at FULL FOV (verified: H 70.22 / V 96.70
+                                #        unchanged, fy 284.6 -> 569.3). (1,2) = the old half-res.
+}
+
+#: DepthAI's mono resolution enums, by the name used in STEREO_CONFIG. Looked up rather than
+#: hard-coded at the call site so an unknown value fails loudly here instead of silently building
+#: something other than what the banner claims.
+MONO_RES = {
+    "400p": ("THE_400_P", 640, 400),
+    "480p": ("THE_480_P", 640, 480),
+    "720p": ("THE_720_P", 1280, 720),
+    "800p": ("THE_800_P", 1280, 800),
 }
 
 
@@ -33,27 +62,86 @@ def stereo_config_str():
     c = STEREO_CONFIG
     sp = ("on(1/%d)" % (1 << c["subpixelBits"])) if c["subpixel"] and c["subpixelBits"] else (
         "on" if c["subpixel"] else "OFF")
-    return ("preset=%s subpixel=%s LR-check=%s align=%s mono=%s"
+    mono = c["monoRes"]
+    mw, mh = MONO_RES.get(mono, (None, 0, 0))[1:]
+    isp = c["rgbIsp"]
+    return ("preset=%s subpixel=%s LR-check=%s align=%s mono=%s(%dx%d) rgbIsp=%d/%d"
             % (c["preset"], sp, "on" if c["leftRightCheck"] else "off",
-               c["depthAlign"], c["monoRes"]))
+               c["depthAlign"], mono, mw, mh, isp[0], isp[1]))
 
 
-def build_rgbd_pipeline(color_res="800p", isp_num=1, isp_den=2, mono_res="400p"):
-    """OAK-D-PRO-W: full-FOV color (OV9782 1280x800 -> 640x400 via ISP 1/2) + stereo depth aligned to RGB."""
+#: F-43: IR laser dot projector intensity, 0..1. The OAK-D-PRO's projector paints a dot pattern onto
+#: the scene that the UNFILTERED mono pair sees and the IR-CUT colour sensor does not (F-17 section 8
+#: established that split on this exact board). That is the useful asymmetry: it adds texture to
+#: blank walls and plain clothing -- precisely where block matching has nothing to match and depth
+#: comes back as holes -- WITHOUT putting dots in the RGB frame the pose model reads.
+#:
+#: It was never enabled. DepthAI leaves the emitter off by default and neither sender ever called
+#: the setter, so every measurement this project has taken was on an unassisted stereo pair.
+IR_DOT_INTENSITY = 0.8
+
+
+def enable_ir_dot_projector(device, intensity=None):
+    """Turn on the IR dot projector. Returns a one-line description for the startup banner.
+
+    Guarded rather than assumed, because this is optional hardware and a wrong assumption here would
+    be invisible: a non-PRO board has no IR drivers at all, getIrDrivers() is the device's own answer
+    to that question, and the setter still returns False when the firmware declines. Nothing in here
+    raises -- a camera without a projector must keep working exactly as it did before.
+    """
+    if intensity is None:
+        intensity = IR_DOT_INTENSITY
+    intensity = max(0.0, min(1.0, float(intensity)))
+    if intensity <= 0.0:
+        return "OFF (disabled)"
+    try:
+        drivers = device.getIrDrivers()
+    except Exception as e:  # noqa: BLE001 - optional hardware, never fatal
+        return "unavailable (getIrDrivers failed: %s)" % e
+    if not drivers:
+        return "unavailable (no IR driver on this board - not a PRO?)"
+    try:
+        ok = device.setIrLaserDotProjectorIntensity(intensity)
+    except Exception as e:  # noqa: BLE001 - optional hardware, never fatal
+        return "FAILED (%s)" % e
+    if not ok:
+        return "REFUSED by firmware at %.2f" % intensity
+    return "on (%.0f%%, driver %s)" % (intensity * 100.0, drivers[0][0])
+
+
+def build_rgbd_pipeline(color_res="800p", isp_num=None, isp_den=None, mono_res=None):
+    """OAK-D-PRO-W: full-FOV color (OV9782 1280x800, ISP-scaled) + stereo depth aligned to RGB.
+
+    F-44: `isp_num`/`isp_den`/`mono_res` default to STEREO_CONFIG rather than to literals, and
+    `mono_res` is now actually APPLIED. It was previously a declared parameter that the body ignored
+    in favour of a hard-coded THE_400_P, so a caller could ask for 800p, be told it got 800p by the
+    banner, and run at 400p. That is the same failure ADR-077 records for the sub-pixel banner.
+    """
+    if isp_num is None or isp_den is None:
+        isp_num, isp_den = STEREO_CONFIG["rgbIsp"]
+    if mono_res is None:
+        mono_res = STEREO_CONFIG["monoRes"]
+    if mono_res not in MONO_RES:
+        raise ValueError("unknown mono_res %r; expected one of %s"
+                         % (mono_res, ", ".join(sorted(MONO_RES))))
+
     pipeline = dai.Pipeline()
 
     cam = pipeline.create(dai.node.ColorCamera)
     cam.setBoardSocket(dai.CameraBoardSocket.CAM_A)
     cam.setResolution(dai.ColorCameraProperties.SensorResolution.THE_800_P)
-    cam.setIspScale(isp_num, isp_den)  # 640x400 full FOV
+    # ISP 1/2 halves 1280x800 to 640x400 at FULL FOV (a crop would narrow the FOV; this does not).
+    # 1/1 keeps the sensor's native 1280x800, which doubles pixels on a body at every distance.
+    cam.setIspScale(isp_num, isp_den)
     cam.setInterleaved(False)
     cam.setColorOrder(dai.ColorCameraProperties.ColorOrder.BGR)
     cam.setFps(30)
 
+    mono_enum = getattr(dai.MonoCameraProperties.SensorResolution, MONO_RES[mono_res][0])
     mono_left = pipeline.create(dai.node.MonoCamera)
     mono_right = pipeline.create(dai.node.MonoCamera)
-    mono_left.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
-    mono_right.setResolution(dai.MonoCameraProperties.SensorResolution.THE_400_P)
+    mono_left.setResolution(mono_enum)
+    mono_right.setResolution(mono_enum)
     mono_left.setBoardSocket(dai.CameraBoardSocket.CAM_B)
     mono_right.setBoardSocket(dai.CameraBoardSocket.CAM_C)
     mono_left.setFps(30)

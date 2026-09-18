@@ -20,6 +20,8 @@ Decode (mmpose SimCC / SimCC3DLabel):
   z_m  = (argmax(z)/(576/2) - 1) * 2.1744869   root-relative metres, centred at 0
 """
 
+import os
+
 import numpy as np
 import cv2
 import onnxruntime as ort
@@ -99,6 +101,20 @@ class RTMW3D:
         self.session = ort.InferenceSession(model_path, sess_options=options, providers=providers)
         self.input_name = self.session.get_inputs()[0].name
         self.active_providers = self.session.get_providers()
+        self.model_path = model_path
+        self.model_mb = (os.path.getsize(model_path) / 1e6) if os.path.isfile(model_path) else 0.0
+
+    def describe(self):
+        """F-45: one line for the startup banner, naming the WEIGHTS actually loaded.
+
+        The size is the honest signal and the reason this is reported at all: the FP16 build is
+        ~185 MB against ~369 MB for FP32, and it runs 2.97x faster on the GPU stage. With
+        `keep_io_types` the session's declared input is fp32 either way, so the tensor types cannot
+        tell them apart from in here — the file can. `tools/model/f45_make_fp16.py` writes the
+        `-fp16` name, and evidence_paths.DEFAULT_MODEL prefers it when it exists, so without this
+        line a machine that never ran the converter would look identical to one that did.
+        """
+        return "%s (%.0f MB)" % (os.path.basename(self.model_path), self.model_mb)
 
     def _preprocess(self, frame_bgr, bbox):
         """bbox = (cx,cy,w,h) already aspect-adjusted. Returns (blob, meta) with a translate+scale

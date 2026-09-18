@@ -44,10 +44,16 @@ import sys
 import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PY = os.path.join(HERE, ".venv", "Scripts", "python.exe")
-SUPERVISOR = os.path.join(HERE, "sidecar_supervisor.py")
-REAL_SCRIPT = os.path.join(HERE, "wholebody_udp_sender.py")
-FAKE_SCRIPT = os.path.join(HERE, "f20b_fake_sidecar.py")
+#: The sidecar ROOT, not this file's directory. Everything below lives at the root (or under
+#: tools/), and this harness moved into tests/ in the "root is the production path" refactor without
+#: these paths following it - so every one of them resolved under tests/ and the harness died on
+#: CreateProcess before running a single scenario. `_d` is the root the import preamble found.
+ROOT = _d
+PY = os.path.join(ROOT, ".venv", "Scripts", "python.exe")
+SUPERVISOR = os.path.join(ROOT, "sidecar_supervisor.py")
+REAL_SCRIPT = os.path.join(ROOT, "wholebody_udp_sender.py")
+MULTI_SCRIPT = os.path.join(ROOT, "multiperson_udp_sender.py")
+FAKE_SCRIPT = os.path.join(ROOT, "tools", "deployment", "f20b_fake_sidecar.py")
 REAL_MODEL = EV.DEFAULT_MODEL
 BASE_EVIDENCE = EV.oak_v4("f20b", "tests")
 
@@ -81,7 +87,7 @@ def start_supervisor(evidence_dir, extra_args, label, env=None):
     os.makedirs(evidence_dir, exist_ok=True)
     cmd = [PY, "-u", SUPERVISOR, "--evidence-dir", evidence_dir] + extra_args
     log = io.open(os.path.join(evidence_dir, "harness_stdout.txt"), "w", encoding="utf-8")
-    p = subprocess.Popen(cmd, cwd=HERE, stdout=log, stderr=subprocess.STDOUT, env=env)
+    p = subprocess.Popen(cmd, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, env=env)
     print("[f20b-test] %-24s supervisor pid=%d evidence=%s" % (label, p.pid, evidence_dir))
     return p, log
 
@@ -222,7 +228,7 @@ def test_e_crash_loop():
 # ------------------------------------------------------------------------------------------- F
 def test_f_dependency_failure():
     d = os.path.join(BASE_EVIDENCE, "f_dep_failure")
-    bad_python = os.path.join(HERE, "does_not_exist_python.exe")
+    bad_python = os.path.join(ROOT, "does_not_exist_python.exe")
     proc, log = start_supervisor(
         d, ["--python", bad_python, "--script", REAL_SCRIPT, "--model", REAL_MODEL,
             "--lock-port", "8924", "--port", "8990"], "F_DEP_FAILURE")
